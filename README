@@ -1,0 +1,18 @@
+
+A Nosql Bundle for Symfony 2. 
+
+Author: Thomas Lundquist <thomasez@redpill-linpro.com>
+
+Project started june 2011. 
+
+
+This is yet another way to access MongoDB (for now) in Symfony 2 and was
+created because of the disliking of the concept of the Doctrine ODM.
+
+This is way smaller, simpler and definately not enterprisey but seems to 
+work on schema less databases. 
+
+The concept is to use MongoDB for storage of array objects with as little
+work as possible to maintain the arrays.
+
+-- more will arrive in this README later
