@@ -59,7 +59,6 @@ abstract class BaseManagerMongo
     }
 
     $object = new static::$model($data);
-    // $object = new Model\Contract($data);
     $object->setId($data['_id']);
 
     return $object;
