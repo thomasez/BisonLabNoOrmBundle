@@ -86,26 +86,13 @@ Creating the MongoDB database and add the settings to parameters.ini
 
       services:
           simple_mongo:
-            class: RedpillLinpro\NosqlBundle\SimpleMongo
-              arguments:
-                dbhost: %simple_mongo.dbhost%
-                dbname: %simple_mongo.dbname%
-                dbuser: %simple_mongo.dbuser%
-                dbpass: %simple_mongo.dbpass%
-
-
+              class: RedpillLinpro\NosqlBundle\SimpleMongo
+                arguments:
+                    dbhost: %simple_mongo.dbhost%
+                    dbname: %simple_mongo.dbname%
+                    dbuser: %simple_mongo.dbuser%
+                    dbpass: %simple_mongo.dbpass%
 
 
 .. _Download: http://github.com/thomasez/RedpillLinproNosqlBundle
-
-
-Creating an example application
--------------------------------
-
-We'll do this quite simple, by some cooking.
-
-This bundle does have another bundle inside it and it's perfect for playing.
-
-    cd src
-    cp -a NosqlBundle/Resources/Examples/ExamplesBundle .
 
