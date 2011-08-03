@@ -14,7 +14,7 @@ namespace RedpillLinpro\NosqlBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilder;
 
-class BaseForm extends AbstractType
+abstract class BaseForm extends AbstractType
 {
 
     public function buildForm(FormBuilder $builder, array $options)
