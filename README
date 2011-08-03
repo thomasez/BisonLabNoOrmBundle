@@ -15,4 +15,6 @@ work on schema less databases.
 The concept is to use MongoDB for storage of array objects with as little
 work as possible to maintain the arrays.
 
+Documentation can be found in  Resources/doc/index.rst
+
 -- more will arrive in this README later
