@@ -67,3 +67,15 @@ Second, 'app/config/routing.yml':
           prefix:   /example
 
 
+And then it might even work.
+
+
+Cooking
+-------
+
+If you want to play directly with it, the whole meat of this is found in 
+model/Example.php where you can find the array used for defining the 
+"schema" / data array. This is the only place to do this, for now. 
+
+It should of course be handled by depencency injection and configurations
+in app/config/ or the bundles config.
