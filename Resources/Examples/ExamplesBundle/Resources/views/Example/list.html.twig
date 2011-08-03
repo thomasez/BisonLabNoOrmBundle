@@ -1,0 +1,29 @@
+{% extends "RedpillLinproExamplesBundle::layout.html.twig" %}
+
+{% block title "Examples" %}
+
+{% block content %}
+    <h1>Examples</h1>
+
+<table>
+    <tr>
+    <th>Name</th>
+    <th>&nbsp;</th>
+    </tr>
+    {% for example in examples %}
+      <tr>
+      <td>
+      <a href="{{ path('example_get',{ 'id': example.id}) }}">{{ example.Name }}</a>
+
+      </td>
+      <td>
+      <a href="{{ path('example_delete',{ 'id': example.id}) }}">Delete</a>
+      </td>
+      </tr>
+    {% endfor %}
+</table>
+
+{% set code = code(_self) %}
+
+{% endblock %}
+

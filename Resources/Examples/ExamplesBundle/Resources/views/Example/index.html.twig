@@ -1,0 +1,17 @@
+{% extends "RedpillLinproExamplesBundle::layout.html.twig" %}
+
+{% block title "Example " %}
+
+{% block content %}
+    <h1>New Example</h1>
+
+<form action="{{ path('example_insert') }}" method="post" {{ form_enctype(form) }}>
+    {{ form_widget(form) }}
+
+    <input type="submit" />
+</form>
+
+{% set code = code(_self) %}
+
+{% endblock %}
+
