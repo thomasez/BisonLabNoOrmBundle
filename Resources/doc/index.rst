@@ -26,8 +26,10 @@ into RedpillLinpro/NosqlBundle you have to do a quick mkdir and mv yourself.
 
 Usually in src/ do:
 
-    cd src
+    cd src 
+
     mkdir RedpillLinpro
+
     mv RedpillLinproNosqlBundle RedpillLinpro/NosqlBundle
 
 You probably does not have one so creating the src/RedpillLinpro directory
