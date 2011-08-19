@@ -9,7 +9,7 @@
  */
 
 
-namespace RedpillLinpro\NosqlBundle;
+namespace RedpillLinpro\NosqlBundle\Services;
 
 class SimpleMongo
 {
