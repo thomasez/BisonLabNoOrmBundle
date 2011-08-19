@@ -88,7 +88,7 @@ Creating the MongoDB database and add the settings to parameters.ini
 
       services:
           simple_mongo:
-              class: RedpillLinpro\NosqlBundle\SimpleMongo
+              class: RedpillLinpro\NosqlBundle\Services\SimpleMongo
                 arguments:
                     dbhost: %simple_mongo.dbhost%
                     dbname: %simple_mongo.dbname%
