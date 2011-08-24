@@ -16,17 +16,38 @@ abstract class BaseModel implements \ArrayAccess
 
     public $id;
 
+    /*
+     * This one might be named wrongly so I'll try to describe what
+     * it does.
+     * If there are no model_setup we should presume the user of this Bundle
+     * wants it all, which means we should drop the key-check 
+     * and swallow everything instead.
+     */
+    private $_strict_model = false;
+
     public function __construct($data = array())
     {
-      foreach (static::$model_setup as $key => $val)
+      if (empty(static::$model_setup)) 
       {
-        if (isset($data[$key]))
+        $this->_strict_model = false;
+        foreach ($data as $key => $val)
         {
-          $this->$key = $data[$key];
-        }
-        else
+          $this->$key = $val;
+        } 
+      }
+      else
+      {
+        $this->_strict_model = true;
+        foreach (static::$model_setup as $key => $val)
         {
-        $this->$key = null;
+          if (isset($data[$key]))
+          {
+            $this->$key = $data[$key];
+          }
+          else
+          {
+          $this->$key = null;
+          }
         }
       }
     }
@@ -77,28 +98,38 @@ abstract class BaseModel implements \ArrayAccess
 
     public function offsetGet($offset)
     {
-      if (array_key_exists($offset, static::$model_setup))
+      if ( $this->_strict_model 
+            && !array_key_exists($offset, static::$model_setup))
       {
-        return $this->$offset;
+        throw new \Exception("The property {$offset} doesn't exist");
       }
-      throw new \Exception("The property {$offset} doesn't exist");
+
+      return $this->$offset;
     }
 
     public function offsetSet($offset, $value)
     {
-      if (array_key_exists($offset, static::$model_setup))
-      {
-        $this->$offset = $value;;
-      }
-      else
+      if ( $this->_strict_model 
+            && !array_key_exists($offset, static::$model_setup))
       {
         throw new \Exception("The property {$offset} doesn't exist");
       }
+
+      $this->$offset = $value;;
+
     }
 
     public function offsetUnset($offset)
     {
+
+      if ( $this->_strict_model 
+            && !array_key_exists($offset, static::$model_setup))
+      {
+        throw new \Exception("The property {$offset} doesn't exist");
+      }
+
       $this->$offsetSet($offset, null);
+
     }
 
 }
