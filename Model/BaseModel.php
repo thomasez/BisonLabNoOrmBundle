@@ -14,8 +14,6 @@ namespace RedpillLinpro\NosqlBundle\Model;
 abstract class BaseModel implements \ArrayAccess
 {
 
-    public $id;
-
     /*
      * This one might be named wrongly so I'll try to describe what
      * it does.
@@ -25,14 +23,18 @@ abstract class BaseModel implements \ArrayAccess
      */
     private $_strict_model = false;
 
+    private $_property_keys = array();
+
     public function __construct($data = array())
     {
       if (empty(static::$model_setup)) 
       {
         $this->_strict_model = false;
+        $this->id = null;
         foreach ($data as $key => $val)
         {
           $this->$key = $val;
+          $this->_property_keys[$key] = null;
         } 
       }
       else
@@ -40,6 +42,7 @@ abstract class BaseModel implements \ArrayAccess
         $this->_strict_model = true;
         foreach (static::$model_setup as $key => $val)
         {
+          $this->_property_keys[$key] = null;
           if (isset($data[$key]))
           {
             $this->$key = $data[$key];
@@ -83,7 +86,8 @@ abstract class BaseModel implements \ArrayAccess
     public function toSimpleArray()
     {
       $simple_array = array();
-      foreach (array_keys(static::$model_setup) as $key)
+
+      foreach (array_keys($this->_property_keys) as $key)
       {
         $simple_array[$key] = $this->$key;
       }
@@ -93,7 +97,7 @@ abstract class BaseModel implements \ArrayAccess
 
     public function offsetExists($offset)
     {
-      return array_key_exists($offset, static::$model_setup);
+      return array_key_exists($offset, $this->_property_keys);
     }
 
     public function offsetGet($offset)
@@ -109,13 +113,17 @@ abstract class BaseModel implements \ArrayAccess
 
     public function offsetSet($offset, $value)
     {
+
+
       if ( $this->_strict_model 
             && !array_key_exists($offset, static::$model_setup))
       {
         throw new \Exception("The property {$offset} doesn't exist");
       }
 
-      $this->$offset = $value;;
+      $this->_property_keys[$key] = null;
+      $this->$offset = $value;
+    
 
     }
 
@@ -127,6 +135,9 @@ abstract class BaseModel implements \ArrayAccess
       {
         throw new \Exception("The property {$offset} doesn't exist");
       }
+
+      // Should I really do this? unset is unset so I guess so, for now.
+      unset($this->_property_keys[$key]);
 
       $this->$offsetSet($offset, null);
 
