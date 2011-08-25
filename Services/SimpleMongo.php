@@ -25,7 +25,6 @@ class SimpleMongo
 
   public function save($data, $collection = null)
   {
-error_log("Saving:" . join(";", array_keys($data)));
     if (is_object($data))
     {
       if (!$collection) 
