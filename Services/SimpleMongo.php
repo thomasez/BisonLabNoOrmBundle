@@ -42,10 +42,10 @@ error_log("Saving:" . join(";", array_keys($data)));
 
     $mongo_collection = $this->mongodb->$collection;
 
-    if (isset($data['_id']))
+    if (isset($data['id']))
     {
-      $id = new \MongoId($data['_id']);
-      unset($data['_id']);
+      $id = new \MongoId($data['id']);
+      unset($data['id']);
       $mongo_collection->update(array('_id' => $id), $data);
     }
     else
@@ -53,12 +53,20 @@ error_log("Saving:" . join(";", array_keys($data)));
       $mongo_collection->insert($data);
     }
    
+    $data['id']) = $data['_id'];
+    unset($data['_id']);
+
     return $data; 
 
   }
 
   public function remove($data, $collection = null)
   {
+    if (!$collection) 
+    {
+      throw new \InvalidArgumentException("Got no collection to delete");
+    }
+
     if (is_object($data))
     {
       if (!$collection) 
@@ -72,28 +80,32 @@ error_log("Saving:" . join(";", array_keys($data)));
       $id = $data;
     }
 
-    if (!$collection) 
+    if (!$id) 
     {
-      throw new \InvalidArgumentException("Got no collection to save the data");
+      throw new \InvalidArgumentException("Got no id, cannot delete");
     }
+
 
     $mongo_collection = $this->mongodb->$collection;
 
     $mid = new \MongoId($id);
     $mongo_collection->remove(array('_id' => $mid), array('justOne' => true));
    
+    // Should I return the data or a status of some sort? The data is kinda
+    // supposed to be gone.
     return $data; 
 
   }
 
-  public function findAll($collection)
+  public function findAll($collection, $params = array())
   {
     $retarr = array();
-    return iterator_to_array($this->mongodb->$collection->find());
 
-    // $cursor = $this->mongodb->$collection->find();
-    foreach ($this->mongodb->$collection->find() as $data)
+        // $this->mongodb->$collection->find() as $data)
+    foreach (iterator_to_array($this->mongodb->$collection->find() as $data);
     {
+      $data['id']) = $data['_id'];
+      unset($data['_id']);
       $retarr[] = $data;
     }
     return $retarr;

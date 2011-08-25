@@ -31,11 +31,11 @@ abstract class BaseManager
   /*
    * Finders
    */
-  public function findAll()
+  public function findAll($params = array())
   {
 
     $objects = array();
-    foreach ($this->access_service->findAll(static::$collection) as $o)
+    foreach ($this->access_service->findAll(static::$collection, $params) as $o)
     {
       $object = new static::$model($o);
       $object->setId($o['id']);
@@ -79,7 +79,7 @@ abstract class BaseManager
   {
     if ($object->getClassName() != static::$collection)
     {
-      throw new \InvalidArgumentExceptio('This is not an object I can save');
+      throw new \InvalidArgumentException('This is not an object I can save');
     }
 
     // Save can do both insert and update with MongoDB.
@@ -101,7 +101,7 @@ abstract class BaseManager
     {
       if ($object->getClassName() != static::$collection)
       {
-        throw new \InvalidArgumentExceptio('This is not an object I can delete');
+        throw new \InvalidArgumentException('This is not an object I can delete');
       }
 
       if ($object->getId())
@@ -116,7 +116,7 @@ abstract class BaseManager
 
     if (empty($id))
     {
-      throw new \InvalidArgumentExceptio('This is not an object I can delete since I do not have a unique identifier which right now is "id"');
+      throw new \InvalidArgumentException('This is not an object I can delete since I do not have a unique identifier which right now is "id"');
     }
 
     // Save can do both insert and update with MongoDB.
