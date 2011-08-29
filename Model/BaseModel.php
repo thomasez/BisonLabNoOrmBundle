@@ -22,7 +22,6 @@ abstract class BaseModel implements \ArrayAccess
      * and swallow everything instead.
      */
     private $_strict_model = false;
-
     private $_property_keys = array();
 
     public function __construct($data = array())
@@ -34,7 +33,7 @@ abstract class BaseModel implements \ArrayAccess
         foreach ($data as $key => $val)
         {
           $this->$key = $val;
-          $this->_property_keys[$key] = null;
+          $this->_property_keys[$key] = true;
         } 
       }
       else
@@ -42,7 +41,7 @@ abstract class BaseModel implements \ArrayAccess
         $this->_strict_model = true;
         foreach (static::$model_setup as $key => $val)
         {
-          $this->_property_keys[$key] = null;
+          $this->_property_keys[$key] = true;
           if (isset($data[$key]))
           {
             $this->$key = $data[$key];
@@ -87,12 +86,14 @@ abstract class BaseModel implements \ArrayAccess
     {
       $simple_array = array();
 
-      foreach (array_keys($this->_property_keys) as $key)
+      foreach ($this as $key => $value) 
       {
-        $simple_array[$key] = $this->$key;
+        // This feeels soooo wrong!
+        if (preg_match("/^_/", $key)) { continue; }
+        $simple_array[$key] = $value;
       }
-
       return $simple_array;
+  
     }
 
     public function offsetExists($offset)
@@ -114,16 +115,14 @@ abstract class BaseModel implements \ArrayAccess
     public function offsetSet($offset, $value)
     {
 
-
       if ( $this->_strict_model 
             && !array_key_exists($offset, static::$model_setup))
       {
         throw new \Exception("The property {$offset} doesn't exist");
       }
 
-      $this->_property_keys[$key] = null;
+      $this->_property_keys[$key] = true;
       $this->$offset = $value;
-    
 
     }
 
