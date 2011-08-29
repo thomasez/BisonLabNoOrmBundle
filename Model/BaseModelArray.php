@@ -11,7 +11,7 @@
 
 namespace RedpillLinpro\NosqlBundle\Model;
 
-abstract class BaseModel implements \ArrayAccess
+abstract class BaseModelArray implements StorableObjectInterface, \ArrayAccess 
 {
 
     /*
@@ -24,7 +24,7 @@ abstract class BaseModel implements \ArrayAccess
     private $_strict_model = false;
     private $_property_keys = array();
 
-    public function __construct($data = array())
+    public function fromDataArray($data = array())
     {
       if (empty(static::$model_setup)) 
       {
@@ -82,7 +82,7 @@ abstract class BaseModel implements \ArrayAccess
      * Functions implementing ArrayAccess
      */
 
-    public function toSimpleArray()
+    public function toDataArray()
     {
       $simple_array = array();
 

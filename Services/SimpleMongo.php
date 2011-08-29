@@ -11,7 +11,7 @@
 
 namespace RedpillLinpro\NosqlBundle\Services;
 
-class SimpleMongo
+class SimpleMongo implements ServiceInterface
 {
 
   private $mongo;
@@ -31,7 +31,7 @@ class SimpleMongo
       {
         $collection  = $data->getClassName();
       }
-      $data = $data->toSimpleArray();
+      $data = $data->toDataArray();
     }
 
     if (!$collection) 
