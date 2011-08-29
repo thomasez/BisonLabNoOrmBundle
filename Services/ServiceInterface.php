@@ -17,13 +17,13 @@ interface ServiceInterface
 
   public function remove($data, $collection = null);
 
-  public function findAll($collection);
+  public function findAll($collection, $params = array());
 
-  public function findOneById($collection, $id);
+  public function findOneById($collection, $id, $params = array());
 
-  public function findOneByKeyVal($collection, $key, $val);
+  public function findOneByKeyVal($collection, $key, $val, $params = array());
 
-  public function findByKeyVal($collection, $key, $val);
+  public function findByKeyVal($collection, $key, $val, $params = array());
 
 
 }

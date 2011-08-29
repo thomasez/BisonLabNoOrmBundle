@@ -48,10 +48,10 @@ abstract class BaseManager
 
   }
 
-  public function findOneById($id)
+  public function findOneById($id, $params = array())
   {
     $data = $this->access_service->findOneById(
-        static::$collection, $id);
+        static::$collection, $id, $params);
 
     if (!$data)
     {
@@ -64,12 +64,12 @@ abstract class BaseManager
     return $object;
   }
 
-  public function findByKeyVal($key, $val)
+  public function findByKeyVal($key, $val, $params = array())
   {
     $objects = array();
 
     foreach ($this->access_service->findByKeyVal(
-        static::$collection, $key, $val) as $o)
+        static::$collection, $key, $val, $params) as $o)
     {
       $object = new static::$model();
       $object->fromDataArray($o);

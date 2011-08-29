@@ -52,7 +52,7 @@ class SimpleMongo implements ServiceInterface
       $mongo_collection->insert($data);
     }
    
-    $data['id']) = $data['_id'];
+    $data['id'] = $data['_id'];
     unset($data['_id']);
 
     return $data; 
@@ -101,27 +101,27 @@ class SimpleMongo implements ServiceInterface
     $retarr = array();
 
         // $this->mongodb->$collection->find() as $data)
-    foreach (iterator_to_array($this->mongodb->$collection->find() as $data);
+    foreach (iterator_to_array($this->mongodb->$collection->find()) as $data);
     {
-      $data['id']) = $data['_id'];
+      $data['id'] = $data['_id'];
       unset($data['_id']);
       $retarr[] = $data;
     }
     return $retarr;
   }
 
-  public function findOneById($collection, $id)
+  public function findOneById($collection, $id, $params = array())
   {
     return $this->mongodb->$collection->findOne(
         array('_id' => new \MongoId($id)));
   }
 
-  public function findOneByKeyVal($collection, $key, $val)
+  public function findOneByKeyVal($collection, $key, $val, $params = array())
   {
     return $this->mongodb->$collection->findOne(array($key => $val));
   }
 
-  public function findByKeyVal($collection, $key, $val)
+  public function findByKeyVal($collection, $key, $val, $params = array())
   {
     $retarr = array();
 
