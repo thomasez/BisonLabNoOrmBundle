@@ -21,7 +21,10 @@ abstract class BaseModelAnnotation implements StorableObjectInterface
 
     public function toDataArray()
     {
-
+//        dd($this->_extractToDataArray());
+        $array = $this->_extractToDataArray();
+        $array['id'] = $array[static::$_id_column];
+        return $array;
     }
 
     /*
@@ -37,6 +40,9 @@ abstract class BaseModelAnnotation implements StorableObjectInterface
      * @var \ReflectionClass
      */
     protected static $_reflectedclass = null;
+    
+    protected static $_id_property = null;
+    protected static $_id_column = null;
     
     /**
      * Get an Annotationn reader object
@@ -70,7 +76,15 @@ abstract class BaseModelAnnotation implements StorableObjectInterface
 
     protected function _applyDataArrayProperty($property, $result, $extracted = null)
     {
+        $id_annotation = (static::$_id_property !== null || $extracted !== null) ? null : self::getAnnotationsReader()->getPropertyAnnotation($property, 'RedpillLinpro\\NosqlBundle\\Annotations\\Id');
         $column_annotation = ($extracted !== null) ? null : self::getAnnotationsReader()->getPropertyAnnotation($property, 'RedpillLinpro\\NosqlBundle\\Annotations\\Column');
+        
+        if ($id_annotation) {
+            if (!$column_annotation) throw new Exception('You must set the Id annotation on a property annotated with @Column');
+            static::$_id_column = ($column_annotation->name) ? $column_annotation->name : $property->name;
+            static::$_id_property = $property->name;
+        }
+
         if ($column_annotation !== null || $extracted !== null) {
             if ($extracted !== null) {
                 if (array_key_exists($extracted, $result)) {
@@ -79,12 +93,44 @@ abstract class BaseModelAnnotation implements StorableObjectInterface
             } else {
                 $name = ($column_annotation->name) ? $column_annotation->name : $property->name;
                 if ($extract_annotation = self::getAnnotationsReader()->getPropertyAnnotation($property, 'RedpillLinpro\\NosqlBundle\\Annotations\\Extract')) {
-                    $columns = ($extract_annotation->hasColumns()) ? $extract_annotation->columns : array_keys($result[$name]);
-                    foreach ($columns as $column => $extract_to_property) {
+                    
+                    if (!$extract_annotation->hasColumns()) 
+                        throw new \Exception('No columns defined for the extract annotation');
+                        
+                    foreach ($extract_annotation->columns as $column => $extract_to_property) {
                         $this->_applyDataArrayProperty($extract_to_property, $result[$name], $column);
                     }
                 } elseif (array_key_exists($name, $result)) {
                     $this->{$property->name} = $result[$name];
+                }
+            }
+        }
+    }
+    
+    protected function _extractDataArrayProperty($property, &$result, $extracted = null)
+    {
+        $id_annotation = (static::$_id_property !== null || $extracted !== null) ? null : self::getAnnotationsReader()->getPropertyAnnotation($property, 'RedpillLinpro\\NosqlBundle\\Annotations\\Id');
+        $column_annotation = ($extracted !== null) ? null : self::getAnnotationsReader()->getPropertyAnnotation($property, 'RedpillLinpro\\NosqlBundle\\Annotations\\Column');
+        
+        if ($id_annotation) {
+            if (!$column_annotation) throw new Exception('You must set the Id annotation on a property annotated with @Column');
+            static::$_id_column = ($column_annotation->name) ? $column_annotation->name : $property->name;
+            static::$_id_property = $property->name;
+        }
+
+        if ($column_annotation !== null || $extracted !== null) {
+            if ($extracted !== null) {
+                $result[$extracted] = $this->$property;
+            } else {
+                $name = ($column_annotation->name) ? $column_annotation->name : $property->name;
+                if ($extract_annotation = self::getAnnotationsReader()->getPropertyAnnotation($property, 'RedpillLinpro\\NosqlBundle\\Annotations\\Extract')) {
+                    $return_value = array();
+                    foreach ($extract_annotation->columns as $column => $extract_from_property) {
+                        $this->_extractDataArrayProperty($extract_from_property, $return_value, $column);
+                    }
+                    $result[$name] = $return_value;
+                } else {
+                    $result[$name] = $this->{$property->name};
                 }
             }
         }
@@ -98,10 +144,20 @@ abstract class BaseModelAnnotation implements StorableObjectInterface
      */
     protected function _dataArrayMap($result)
     {
-        $reflection_class = static::getReflectedClass();
-        foreach ($reflection_class->getProperties() as $property) {
+        foreach (static::getReflectedClass()->getProperties() as $property) {
             $this->_applyDataArrayProperty($property, $result);
         }
+    }
+    
+    protected function _extractToDataArray()
+    {
+        $result = array();
+        
+        foreach (static::getReflectedClass()->getProperties() as $property) {
+            $this->_extractDataArrayProperty($property, $result);
+        }
+        
+        return $result;
     }
 
     static function getFormSetup()
@@ -111,7 +167,7 @@ abstract class BaseModelAnnotation implements StorableObjectInterface
 
     static function getClassName()
     {
-      return static::$classname;
+      return 'user';
     }
 
 }
