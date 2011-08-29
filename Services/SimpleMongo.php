@@ -27,10 +27,6 @@ class SimpleMongo implements ServiceInterface
   {
     if (is_object($data))
     {
-      if (!$collection) 
-      {
-        $collection  = $data->getClassName();
-      }
       $data = $data->toDataArray();
     }
 
@@ -68,10 +64,6 @@ class SimpleMongo implements ServiceInterface
 
     if (is_object($data))
     {
-      if (!$collection) 
-      {
-        $collection  = $data->getClassName();
-      }
       $id = $data->getId();
     }
     else

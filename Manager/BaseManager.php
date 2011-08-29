@@ -81,7 +81,7 @@ abstract class BaseManager
 
   public function save($object)
   {
-    if ($object->getClassName() != static::$collection)
+    if (!$object instanceof static::$model)
     {
       throw new \InvalidArgumentException('This is not an object I can save');
     }
@@ -103,7 +103,7 @@ abstract class BaseManager
 
     if (is_object($object))
     {
-      if ($object->getClassName() != static::$collection)
+      if (!$object instanceof static::$model)
       {
         throw new \InvalidArgumentException('This is not an object I can delete');
       }
