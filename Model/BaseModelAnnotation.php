@@ -21,15 +21,20 @@ abstract class BaseModelAnnotation implements StorableObjectInterface
 
     public function toDataArray()
     {
-//        dd($this->_extractToDataArray());
         $array = $this->_extractToDataArray();
         $array['id'] = $array[static::$_id_column];
         return $array;
     }
-
-    /*
-     * Statics.
-     */
+    
+    public function getDataArrayIdentifierValue()
+    {
+        return $this->{static::$_id_property};
+    }
+    
+    public function getDataArrayIdentifierColumn()
+    {
+        return static::$_id_column;
+    }
 
     /**
      * @var \Doctrine\Common\Annotations\AnnotationReader
