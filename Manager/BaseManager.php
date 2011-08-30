@@ -199,7 +199,7 @@ abstract class BaseManager
   public function save($object)
   {
       $classname = static::getModelClassname();
-    if ($object instanceof $classname)
+    if (!$object instanceof $classname)
     {
       throw new \InvalidArgumentException('This is not an object I can save, it must be of the same classname defined in this manager');
     }
@@ -228,7 +228,7 @@ abstract class BaseManager
   {
 
       $classname = static::getModelClassname();
-      if ($object instanceof $classname)
+      if (!$object instanceof $classname)
       {
         throw new \InvalidArgumentException('This is not an object I can delete, it must be of the same classname defined in this manager');
       }
