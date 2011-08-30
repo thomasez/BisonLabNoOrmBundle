@@ -8,35 +8,35 @@
  *
  */
 
-
 namespace RedpillLinpro\NosqlBundle\Manager;
 
 abstract class BaseManager
 {
-  /* 
-   * Remember to put these in the Manages extending this one.
-   * Right now they are all the same but I define different names here.
-   * Or rather, they have to be defined in the object extending this one.
-   */
-  // protected static $collection  = 'Base';
-  // protected static $model       = 'Model\Base';
+    /*
+     * Remember to put these in the Manages extending this one.
+     * Right now they are all the same but I define different names here.
+     * Or rather, they have to be defined in the object extending this one.
+     */
 
-  protected $access_service;
-  protected static $model;
-  protected static $collection_resource;
-  protected static $unique_resource;
-  protected static $new_unique_resource;
+    // protected static $collection  = 'Base';
+    // protected static $model       = 'Model\Base';
+
+    protected $access_service;
+    protected static $model;
+    protected static $collection_resource;
+    protected static $unique_resource;
+    protected static $new_unique_resource;
 
     /**
      * @var \Doctrine\Common\Annotations\AnnotationReader
      */
     protected static $_reader = null;
-    
+
     /**
      * @var \ReflectionClass
      */
     protected static $_reflectedclass = null;
-    
+
     /**
      * Get an Annotationn reader object
      *
@@ -51,7 +51,7 @@ abstract class BaseManager
         }
         return self::$_reader;
     }
-    
+
     /**
      * Get a reflection class object valid for this static class, so we don't
      * have to instantiate a new one for each instance with the overhead that
@@ -66,7 +66,7 @@ abstract class BaseManager
         }
         return static::$_reflectedclass;
     }
-  
+
     public function __construct($access_service, $options = array())
     {
         $this->access_service = $access_service;
@@ -103,13 +103,13 @@ abstract class BaseManager
             }
         }
     }
-  
+
     /**
      * @return RedpillLinpro\NosqlBundle\Annotations\Resources
      */
     public static function getResourceAnnotation()
     {
-      return self::getAnnotationsReader()->getClassAnnotation(static::getReflectedClass(), 'RedpillLinpro\\NosqlBundle\\Annotations\\Resources');
+        return self::getAnnotationsReader()->getClassAnnotation(static::getReflectedClass(), 'RedpillLinpro\\NosqlBundle\\Annotations\\Resources');
     }
 
     /**
@@ -117,131 +117,119 @@ abstract class BaseManager
      */
     public static function getModelAnnotation()
     {
-      return self::getAnnotationsReader()->getClassAnnotation(static::getReflectedClass(), 'RedpillLinpro\\NosqlBundle\\Annotations\\Model');
+        return self::getAnnotationsReader()->getClassAnnotation(static::getReflectedClass(), 'RedpillLinpro\\NosqlBundle\\Annotations\\Model');
     }
 
     public static function getCollectionResource()
     {
-      return static::$collection_resource;
+        return static::$collection_resource;
     }
 
     public static function getUniqueResource()
     {
-      return static::$unique_resource;
+        return static::$unique_resource;
     }
 
     public static function getNewUniqueResource()
     {
-      return static::$new_unique_resource;
+        return static::$new_unique_resource;
     }
 
     public static function getModelClassname()
     {
-      return static::$model;
+        return static::$model;
     }
-  
-  public static function getInstantiatedModel()
-  {
-      $classname = static::getModelClassname();
-      return new $classname();
-  }
-  
-  /*
-   * Finders
-   */
-  public function findAll($params = array())
-  {
 
-    $objects = array();
-    foreach ($this->access_service->findAll(static::getCollectionResource(), $params) as $o)
+    public static function getInstantiatedModel()
     {
-      $object = static::getInstantiatedModel();
-      $object->fromDataArray($o);
-      $objects[] = $object;
+        $classname = static::getModelClassname();
+        return new $classname();
     }
 
-    return $objects;
+    /*
+     * Finders
+     */
 
-  }
-
-  public function findOneById($id, $params = array())
-  {
-    $resource = str_replace(':id', $id, static::getUniqueResource());
-    $data = $this->access_service->findOneById(
-        $resource, $id, $params);
-
-    if (!$data)
+    public function findAll($params = array())
     {
-      return null;
+        $objects = array();
+        foreach ($this->access_service->findAll(static::getCollectionResource(), $params) as $o) {
+            $object = static::getInstantiatedModel();
+            $object->fromDataArray($o);
+            $objects[] = $object;
+        }
+
+        return $objects;
     }
 
-      $object = static::getInstantiatedModel();
-      $object->fromDataArray($data);
-
-    return $object;
-  }
-
-  public function findByKeyVal($key, $val, $params = array())
-  {
-    $objects = array();
-
-    foreach ($this->access_service->findByKeyVal(
-        static::getCollectionResource(), $key, $val, $params) as $o)
+    public function findOneById($id, $params = array())
     {
-      $object = static::getInstantiatedModel();
-      $object->fromDataArray($o);
-      $objects[] = $object;
+        $resource = str_replace(':id', $id, static::getUniqueResource());
+        $data = $this->access_service->findOneById(
+                $resource, $id, $params);
+
+        if (!$data) {
+            return null;
+        }
+
+        $object = static::getInstantiatedModel();
+        $object->fromDataArray($data);
+
+        return $object;
     }
 
-    return $objects;
-  }
-
-  public function save($object)
-  {
-      $classname = static::getModelClassname();
-    if (!$object instanceof $classname)
+    public function findByKeyVal($key, $val, $params = array())
     {
-      throw new \InvalidArgumentException('This is not an object I can save, it must be of the same classname defined in this manager');
+        $objects = array();
+
+        foreach ($this->access_service->findByKeyVal(
+                static::getCollectionResource(), $key, $val, $params) as $o) {
+            $object = static::getInstantiatedModel();
+            $object->fromDataArray($o);
+            $objects[] = $object;
+        }
+
+        return $objects;
     }
 
-    // Save can do both insert and update with MongoDB.
-    if ($object->getDataArrayIdentifierValue())
+    public function save($object)
     {
-        $resource = str_replace(':id', $object->getDataArrayIdentifierValue(), static::getUniqueResource());
+        $classname = static::getModelClassname();
+        if (!$object instanceof $classname) {
+            throw new \InvalidArgumentException('This is not an object I can save, it must be of the same classname defined in this manager');
+        }
+
+        // Save can do both insert and update with MongoDB.
+        if ($object->getDataArrayIdentifierValue()) {
+            $resource = str_replace(':id', $object->getDataArrayIdentifierValue(), static::getUniqueResource());
+        } else {
+            $resource = static::getNewUniqueResource();
+        }
+        $new_data = $this->access_service->save($object, $resource);
+
+        if (isset($new_data[$object->getDataArrayIdentifierColumn()])) {
+            $object->setId($new_data[$object->getDataArrayIdentifierColumn()]);
+        }
+
+        return $object;
     }
-    else
+
+    public function delete($object)
     {
-        $resource = static::getNewUniqueResource();
+
+        $classname = static::getModelClassname();
+        if (!$object instanceof $classname) {
+            throw new \InvalidArgumentException('This is not an object I can delete, it must be of the same classname defined in this manager');
+        }
+
+        if (!$object->getDataArrayIdentifierValue()) {
+            throw new \InvalidArgumentException('This is not an object I can delete since it does not have a unique identifier value');
+        }
+
+        // Save can do both insert and update with MongoDB.
+        $status = $this->access_service->remove($object->getDataArrayIdentifierValue(), static::getUniqueResource());
+
+        return $status;
     }
-    $new_data = $this->access_service->save($object, $resource);
 
-    if (isset($new_data[$object->getDataArrayIdentifierColumn()]))
-    {
-      $object->setId($new_data[$object->getDataArrayIdentifierColumn()]);
-    }
-
-    return $object;
-
-  }
-
-  public function delete($object)
-  {
-
-      $classname = static::getModelClassname();
-      if (!$object instanceof $classname)
-      {
-        throw new \InvalidArgumentException('This is not an object I can delete, it must be of the same classname defined in this manager');
-      }
-
-      if (!$object->getDataArrayIdentifierValue())
-      {
-        throw new \InvalidArgumentException('This is not an object I can delete since it does not have a unique identifier value');
-      }
-
-    // Save can do both insert and update with MongoDB.
-    $status = $this->access_service->remove($object->getDataArrayIdentifierValue(), static::getUniqueResource());
-
-    return $status;
-
-  }
 }

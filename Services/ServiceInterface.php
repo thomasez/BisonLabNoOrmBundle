@@ -25,5 +25,4 @@ interface ServiceInterface
 
   public function findByKeyVal($collection, $key, $val, $params = array());
 
-
 }

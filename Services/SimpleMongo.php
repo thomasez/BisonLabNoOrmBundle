@@ -8,131 +8,115 @@
  *
  */
 
-
 namespace RedpillLinpro\NosqlBundle\Services;
 
 class SimpleMongo implements ServiceInterface
 {
 
-  private $mongo;
-  private $mongodb;
+    private $mongo;
+    private $mongodb;
 
-  public function __construct($dbhost, $dbname, $dbuser)
-  {
-    $this->mongo = new \Mongo();
-    $this->mongodb = $this->mongo->selectDB($dbname);
-  }
-
-  public function save($data, $collection = null)
-  {
-    if (is_object($data))
+    public function __construct($dbhost, $dbname, $dbuser)
     {
-      $data = $data->toDataArray();
+        $this->mongo = new \Mongo();
+        $this->mongodb = $this->mongo->selectDB($dbname);
     }
 
-    if (!$collection) 
+    public function save($data, $collection = null)
     {
-      throw new \InvalidArgumentException("Got no collection to save the data");
+        if (is_object($data)) {
+            $data = $data->toDataArray();
+        }
+
+        if (!$collection) {
+            throw new \InvalidArgumentException("Got no collection to save the data");
+        }
+
+        $mongo_collection = $this->mongodb->$collection;
+
+        if (isset($data['id'])) {
+            $id = new \MongoId($data['id']);
+            unset($data['id']);
+            $mongo_collection->update(array('_id' => $id), $data);
+        } else {
+            $mongo_collection->insert($data);
+        }
+
+        $data['id'] = $data['_id'];
+        unset($data['_id']);
+
+        return $data;
     }
 
-    $mongo_collection = $this->mongodb->$collection;
-
-    if (isset($data['id']))
+    public function remove($data, $collection = null)
     {
-      $id = new \MongoId($data['id']);
-      unset($data['id']);
-      $mongo_collection->update(array('_id' => $id), $data);
-    }
-    else
-    {
-      $mongo_collection->insert($data);
-    }
-   
-    $data['id'] = $data['_id'];
-    unset($data['_id']);
+        if (!$collection) {
+            throw new \InvalidArgumentException("Got no collection to delete");
+        }
 
-    return $data; 
+        if (is_object($data)) {
+            $id = $data->getId();
+        } else {
+            $id = $data;
+        }
 
-  }
+        if (!$id) {
+            throw new \InvalidArgumentException("Got no id, cannot delete");
+        }
 
-  public function remove($data, $collection = null)
-  {
-    if (!$collection) 
-    {
-      throw new \InvalidArgumentException("Got no collection to delete");
-    }
 
-    if (is_object($data))
-    {
-      $id = $data->getId();
-    }
-    else
-    {
-      $id = $data;
+        $mongo_collection = $this->mongodb->$collection;
+
+        $mid = new \MongoId($id);
+        $mongo_collection->remove(array('_id' => $mid), array('justOne' => true));
+
+        // Should I return the data or a status of some sort? The data is kinda
+        // supposed to be gone.
+        return $data;
     }
 
-    if (!$id) 
+    public function findAll($collection, $params = array())
     {
-      throw new \InvalidArgumentException("Got no id, cannot delete");
-    }
-
-
-    $mongo_collection = $this->mongodb->$collection;
-
-    $mid = new \MongoId($id);
-    $mongo_collection->remove(array('_id' => $mid), array('justOne' => true));
-   
-    // Should I return the data or a status of some sort? The data is kinda
-    // supposed to be gone.
-    return $data; 
-
-  }
-
-  public function findAll($collection, $params = array())
-  {
-    $retarr = array();
+        $retarr = array();
 
         // $this->mongodb->$collection->find() as $data)
-    foreach (iterator_to_array($this->mongodb->$collection->find()) as $data);
-    {
-      $data['id'] = $data['_id'];
-      unset($data['_id']);
-      $retarr[] = $data;
-    }
-    return $retarr;
-  }
-
-  public function findOneById($collection, $id, $params = array())
-  {
-    return $this->mongodb->$collection->findOne(
-        array('_id' => new \MongoId($id)));
-  }
-
-  public function findOneByKeyVal($collection, $key, $val, $params = array())
-  {
-    return $this->mongodb->$collection->findOne(array($key => $val));
-  }
-
-  public function findByKeyVal($collection, $key, $val, $params = array())
-  {
-    $retarr = array();
-
-    // PHPs Mongodb thingie has an issue with numbers, it quotes them 
-    // unless it is explocitly typecasted or manipulated in math context.
-    if (is_numeric($val))
-    {
-      $val = $val * 1;
+        foreach (iterator_to_array($this->mongodb->$collection->find()) as $data)
+            ; {
+            $data['id'] = $data['_id'];
+            unset($data['_id']);
+            $retarr[] = $data;
+        }
+        return $retarr;
     }
 
-    $cursor = $this->mongodb->$collection->find(array($key => $val));
-    // Since I am cooking rigth from php.net I'll use while here:
-    while ($cursor->hasNext())
+    public function findOneById($collection, $id, $params = array())
     {
-      $data = $cursor->getNext();
-      $retarr[] = $data;
+        return $this->mongodb->$collection->findOne(
+                        array('_id' => new \MongoId($id)));
     }
-    return $retarr;
 
-  }
+    public function findOneByKeyVal($collection, $key, $val, $params = array())
+    {
+        return $this->mongodb->$collection->findOne(array($key => $val));
+    }
+
+    public function findByKeyVal($collection, $key, $val, $params = array())
+    {
+        $retarr = array();
+
+        // PHPs Mongodb thingie has an issue with numbers, it quotes them 
+        // unless it is explocitly typecasted or manipulated in math context.
+        if (is_numeric($val)) {
+            $val = $val * 1;
+        }
+
+        $cursor = $this->mongodb->$collection->find(array($key => $val));
+        // Since I am cooking rigth from php.net I'll use while here:
+        while ($cursor->hasNext()) {
+            $data = $cursor->getNext();
+            $retarr[] = $data;
+        }
+        return $retarr;
+    }
 
 }
