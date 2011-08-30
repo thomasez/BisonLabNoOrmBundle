@@ -32,6 +32,22 @@ class SimpleMongo implements ServiceInterface
             throw new \InvalidArgumentException("Got no collection to save the data");
         }
 
+        if (isset($data['id']))
+        {
+            $mongo_id = new \MongoId($data['id']);
+            // Back 
+            unset($data['id']);
+            $mongo_collection->update(array('_id' => $mongo_id), $data);
+            // and Forth
+            $data['id'] = $mongo_id->{'$id'};
+        }
+        else
+        {
+            $mongo_collection->insert($data);
+            $data['id'] = $data['_id']->{'$id'};
+            unset($data['_id']);
+        }
+   
         $mongo_collection = $this->mongodb->$collection;
 
         if (isset($data['id'])) {
@@ -60,19 +76,11 @@ class SimpleMongo implements ServiceInterface
             $id = $data;
         }
 
-        if (!$id) {
-            throw new \InvalidArgumentException("Got no id, cannot delete");
-        }
-
-
         $mongo_collection = $this->mongodb->$collection;
 
         $mid = new \MongoId($id);
-        $mongo_collection->remove(array('_id' => $mid), array('justOne' => true));
-
-        // Should I return the data or a status of some sort? The data is kinda
-        // supposed to be gone.
-        return $data;
+        return $mongo_collection->remove(array('_id' => $mid), 
+                array('justOne' => true));
     }
 
     public function findAll($collection, $params = array())
@@ -88,28 +96,34 @@ class SimpleMongo implements ServiceInterface
         }
         return $retarr;
     }
-
+    
     public function findOneById($collection, $id, $params = array())
     {
-        return $this->mongodb->$collection->findOne(
-                        array('_id' => new \MongoId($id)));
+        $data = $this->mongodb->$collection->findOne(
+           array('_id' => new \MongoId($id)));
+        $data['id'] = $data['_id']->{'$id'};
+        unset($data['_id']);
+        return $data;
     }
-
+    
     public function findOneByKeyVal($collection, $key, $val, $params = array())
     {
-        return $this->mongodb->$collection->findOne(array($key => $val));
+        $data = $this->mongodb->$collection->findOne(array($key => $val));
+        $data['id'] = $data['_id'];
+        unset($data['_id']);
+        return $data;
     }
-
+    
     public function findByKeyVal($collection, $key, $val, $params = array())
     {
         $retarr = array();
-
+    
         // PHPs Mongodb thingie has an issue with numbers, it quotes them 
         // unless it is explocitly typecasted or manipulated in math context.
         if (is_numeric($val)) {
             $val = $val * 1;
         }
-
+    
         $cursor = $this->mongodb->$collection->find(array($key => $val));
         // Since I am cooking rigth from php.net I'll use while here:
         while ($cursor->hasNext()) {

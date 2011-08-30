@@ -23,7 +23,7 @@ abstract class BaseModelArray implements StorableObjectInterface, \ArrayAccess
     private $_strict_model = false;
     private $_property_keys = array();
 
-    public function fromDataArray($data = array())
+    public function __construct()
     {
         if (empty(static::$model_setup)) {
             $this->_strict_model = false;
@@ -42,6 +42,14 @@ abstract class BaseModelArray implements StorableObjectInterface, \ArrayAccess
                     $this->$key = null;
                 }
             }
+        }
+    }
+
+    public function fromDataArray($data = array())
+    {
+        foreach ($data as $key => $val)
+        {
+            $this->$key = $val;
         }
     }
 
@@ -94,7 +102,7 @@ abstract class BaseModelArray implements StorableObjectInterface, \ArrayAccess
 
     public function offsetGet($offset)
     {
-        if ($this->_strict_model
+        if ($offset != 'id' &&  $this->_strict_model 
                 && !array_key_exists($offset, static::$model_setup)) {
             throw new \Exception("The property {$offset} doesn't exist");
         }
@@ -105,7 +113,7 @@ abstract class BaseModelArray implements StorableObjectInterface, \ArrayAccess
     public function offsetSet($offset, $value)
     {
 
-        if ($this->_strict_model
+        if ($offset != 'id' &&  $this->_strict_model 
                 && !array_key_exists($offset, static::$model_setup)) {
             throw new \Exception("The property {$offset} doesn't exist");
         }

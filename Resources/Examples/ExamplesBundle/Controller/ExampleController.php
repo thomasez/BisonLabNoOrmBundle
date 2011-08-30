@@ -64,13 +64,13 @@ class ExampleController extends BaseController
       $request = $this->get('request');
       $form->bindRequest($request);
 
-      if ($form->isValid() )
+      if (!$form->isValid() )
       {
-        error_log("Valid");
+        error_log("Not valid");
       }
-      if ($form->isBound() )
+      if (!$form->isBound() )
       {
-        error_log("Bound");
+        error_log("Not bound");
       }
 
       $example->setId($id);
@@ -118,13 +118,13 @@ class ExampleController extends BaseController
       $request = $this->get('request');
       $form->bindRequest($request);
 
-      if ($form->isValid() )
+      if (!$form->isValid() )
       {
-        error_log("Valid");
+        error_log("Not valid");
       }
-      if ($form->isBound() )
+      if (!$form->isBound() )
       {
-        error_log("Bound");
+        error_log("Not bound");
       }
 
       $example_manager = $this->get('example_manager');
