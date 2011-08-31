@@ -24,8 +24,8 @@ abstract class BaseManager
     protected $access_service;
     protected static $model;
     protected static $collection_resource;
-    protected static $unique_resource;
-    protected static $new_unique_resource;
+    protected static $entity_resource;
+    protected static $new_entity_resource;
 
     /**
      * @var \Doctrine\Common\Annotations\AnnotationReader
@@ -76,23 +76,23 @@ abstract class BaseManager
         if (array_key_exists('collection_resource', $options)) {
             static::$collection_resource = $options['collection_resource'];
         }
-        if (array_key_exists('unique_resource', $options)) {
-            static::$unique_resource = $options['unique_resource'];
+        if (array_key_exists('entity_resource', $options)) {
+            static::$entity_resource = $options['entity_resource'];
         }
-        if (array_key_exists('new_unique_resource', $options)) {
-            static::$new_unique_resource = $options['new_unique_resource'];
+        if (array_key_exists('new_entity_resource', $options)) {
+            static::$new_entity_resource = $options['new_entity_resource'];
         }
-        if (!isset(static::$new_unique_resource) || !isset(static::$unique_resource) || !isset(static::$collection_resource) || !isset(static::$model)) {
+        if (!isset(static::$new_entity_resource) || !isset(static::$entity_resource) || !isset(static::$collection_resource) || !isset(static::$model)) {
             $resource_annotation = static::getResourceAnnotation();
             if ($resource_annotation instanceof \RedpillLinpro\NosqlBundle\Annotations\Resources) {
                 if ($resource_annotation->collection) {
                     static::$collection_resource = $resource_annotation->collection;
                 }
-                if ($resource_annotation->unique) {
-                    static::$unique_resource = $resource_annotation->unique;
+                if ($resource_annotation->entity) {
+                    static::$entity_resource = $resource_annotation->entity;
                 }
-                if ($resource_annotation->new_unique) {
-                    static::$new_unique_resource = $resource_annotation->new_unique;
+                if ($resource_annotation->new_entity) {
+                    static::$new_entity_resource = $resource_annotation->new_entity;
                 }
             }
             $model_annotation = static::getModelAnnotation();
@@ -125,14 +125,14 @@ abstract class BaseManager
         return static::$collection_resource;
     }
 
-    public static function getUniqueResource()
+    public static function getEntityResource()
     {
-        return static::$unique_resource;
+        return static::$entity_resource;
     }
 
-    public static function getNewUniqueResource()
+    public static function getNewEntityResource()
     {
-        return static::$new_unique_resource;
+        return static::$new_entity_resource;
     }
 
     public static function getModelClassname()
@@ -164,7 +164,7 @@ abstract class BaseManager
 
     public function findOneById($id, $params = array())
     {
-        $resource = str_replace(':id', $id, static::getUniqueResource());
+        $resource = str_replace(':id', $id, static::getEntityResource());
         $data = $this->access_service->findOneById(
                 $resource, $id, $params);
 
@@ -201,9 +201,9 @@ abstract class BaseManager
 
         // Save can do both insert and update with MongoDB.
         if ($object->getDataArrayIdentifierValue()) {
-            $resource = str_replace(':id', $object->getDataArrayIdentifierValue(), static::getUniqueResource());
+            $resource = str_replace(':id', $object->getDataArrayIdentifierValue(), static::getEntityResource());
         } else {
-            $resource = static::getNewUniqueResource();
+            $resource = static::getNewEntityResource();
         }
         $new_data = $this->access_service->save($object, $resource);
 
@@ -223,11 +223,11 @@ abstract class BaseManager
         }
 
         if (!$object->getDataArrayIdentifierValue()) {
-            throw new \InvalidArgumentException('This is not an object I can delete since it does not have a unique identifier value');
+            throw new \InvalidArgumentException('This is not an object I can delete since it does not have a entity identifier value');
         }
 
         // Save can do both insert and update with MongoDB.
-        $status = $this->access_service->remove($object->getDataArrayIdentifierValue(), static::getUniqueResource());
+        $status = $this->access_service->remove($object->getDataArrayIdentifierValue(), static::getEntityResource());
 
         return $status;
     }
