@@ -13,16 +13,35 @@ namespace RedpillLinpro\NosqlBundle\Model;
 abstract class BaseModelAnnotation implements StorableObjectInterface
 {
 
-    public function fromDataArray($data = array())
+    /**
+     * @var \Doctrine\Common\Annotations\AnnotationReader
+     */
+    protected static $_reader = null;
+
+    /**
+     * @var \RedpillLinpro\NosqlBundle\Manager\BaseManager
+     */
+    protected static $_entitymanager = null;
+    
+    /**
+     * @var \ReflectionClass
+     */
+    protected static $_reflectedclass = null;
+    
+    protected static $_id_property = null;
+    protected static $_id_column = null;
+    
+    protected $_resource_location = null;
+
+    public function fromDataArray($data, \RedpillLinpro\NosqlBundle\Manager\BaseManager $manager)
     {
         $this->_dataArrayMap($data);
+        static::$_entitymanager = $manager;
     }
 
     public function toDataArray()
     {
-        $array = $this->_extractToDataArray();
-        $array['id'] = $array[static::$_id_column];
-        return $array;
+        return $this->_extractToDataArray();
     }
 
     public function getDataArrayIdentifierValue()
@@ -34,18 +53,6 @@ abstract class BaseModelAnnotation implements StorableObjectInterface
     {
         return static::$_id_column;
     }
-
-    /**
-     * @var \Doctrine\Common\Annotations\AnnotationReader
-     */
-    protected static $_reader = null;
-
-    /**
-     * @var \ReflectionClass
-     */
-    protected static $_reflectedclass = null;
-    protected static $_id_property = null;
-    protected static $_id_column = null;
 
     /**
      * Get an Annotationn reader object
@@ -72,15 +79,50 @@ abstract class BaseModelAnnotation implements StorableObjectInterface
     protected static function getReflectedClass()
     {
         if (static::$_reflectedclass === null) {
-            static::$_reflectedclass = new \ReflectionClass(get_called_class());
+            $called_class = get_called_class();
+            $reflection_obj = new \ReflectionClass($called_class);
+            $called_class::$_reflectedclass =& $reflection_obj;
         }
         return static::$_reflectedclass;
     }
+    
+    /**
+     * @return RedpillLinpro\NosqlBundle\Annotations\Id
+     */
+    public static function getIdAnnotation($property)
+    {
+        return self::getAnnotationsReader()->getPropertyAnnotation($property, 'RedpillLinpro\\NosqlBundle\\Annotations\\Id');
+    }
+    
+    /**
+     * @return RedpillLinpro\NosqlBundle\Annotations\Column
+     */
+    public static function getColumnAnnotation($property)
+    {
+        return self::getAnnotationsReader()->getPropertyAnnotation($property, 'RedpillLinpro\\NosqlBundle\\Annotations\\Column');
+    }
 
+    /**
+     * @return RedpillLinpro\NosqlBundle\Annotations\Relates
+     */
+    public static function getRelatesAnnotation($property)
+    {
+        return self::getAnnotationsReader()->getPropertyAnnotation($property, 'RedpillLinpro\\NosqlBundle\\Annotations\\Relates');
+    }
+    
+    protected function _getResourceLocation()
+    {
+        if ($this->_resource_location === null) {
+            $this->_resource_location = str_replace(':id', $this->{static::$_id_property}, static::$_entitymanager->getEntityResource());
+        }
+        return $this->_resource_location;
+    }
+    
     protected function _applyDataArrayProperty($property, $result, $extracted = null)
     {
-        $id_annotation = (static::$_id_property !== null || $extracted !== null) ? null : self::getAnnotationsReader()->getPropertyAnnotation($property, 'RedpillLinpro\\NosqlBundle\\Annotations\\Id');
-        $column_annotation = ($extracted !== null) ? null : self::getAnnotationsReader()->getPropertyAnnotation($property, 'RedpillLinpro\\NosqlBundle\\Annotations\\Column');
+        $id_annotation = (static::$_id_property !== null || $extracted !== null) ? null : static::getIdAnnotation($property);
+        $column_annotation = ($extracted !== null) ? null : static::getColumnAnnotation($property);
+        $relates_annotation = ($extracted !== null) ? null : static::getRelatesAnnotation($property);
 
         if ($id_annotation) {
             if (!$column_annotation)
@@ -105,10 +147,50 @@ abstract class BaseModelAnnotation implements StorableObjectInterface
                         $this->_applyDataArrayProperty($extract_to_property, $result[$name], $column);
                     }
                 } elseif (array_key_exists($name, $result)) {
-                    $this->{$property->name} = $result[$name];
+                    if ($relates_annotation !== null && is_array($result[$name])) {
+                        $this->_mapRelationData($property, $result[$name], $relates_annotation);
+                    } else {
+                        $this->{$property->name} = $result[$name];
+                    }
                 }
             }
         }
+    }
+    
+    protected function _populateRelatedObject($property)
+    {
+        if (is_array($this->$property) || is_object($this->$property)) return;
+        
+        $reflected_property = static::getReflectedClass()->getProperty($property);
+        $relates_annotation = static::getRelatesAnnotation($reflected_property);
+        if (is_numeric($this->$property)) {
+            $related_resource_location = str_replace(':id', $this->$property, $relates_annotation->resource);
+        } else {
+            $related_resource_location = $relates_annotation->resource;
+        }
+        $data = static::$_entitymanager->getAccessService()->call($this->_getResourceLocation() . '/' . $related_resource_location, 'GET', array());
+        
+        $this->_mapRelationData($property, $data, $relates_annotation);
+    }
+    
+    protected function _mapRelationData($property, $data, \RedpillLinpro\NosqlBundle\Annotations\Relates $relates_annotation)
+    {
+        $classname = $relates_annotation->model;
+        if (!$classname) {
+            $value = $data;
+        } elseif ($relates_annotation->collection) {
+            $value = array();
+            foreach ($data as $single_result) {
+                $object = new $classname();
+                $object->fromDataArray($single_result, static::$_entitymanager);
+                $value[] = $object;
+            }
+        } else {
+            $value = new $classname();
+            $value->fromDataArray($data, static::$_entitymanager);
+        }
+        
+        $this->$property = $value;
     }
 
     protected function _extractDataArrayProperty($property, &$result, $extracted = null)

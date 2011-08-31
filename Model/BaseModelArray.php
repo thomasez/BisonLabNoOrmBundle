@@ -23,23 +23,25 @@ abstract class BaseModelArray implements StorableObjectInterface, \ArrayAccess
     private $_strict_model = false;
     private $_property_keys = array();
 
-    public function __construct()
+    public function fromDataArray($data, \RedpillLinpro\NosqlBundle\Manager\BaseManager $manager)
     {
-        if (empty(static::$model_setup)) {
-            $this->_strict_model = false;
-            $this->id = null;
-            foreach ($data as $key => $val) {
-                $this->$key = $val;
-                $this->_property_keys[$key] = true;
-            }
-        } else {
-            $this->_strict_model = true;
-            foreach (static::$model_setup as $key => $val) {
-                $this->_property_keys[$key] = true;
-                if (isset($data[$key])) {
-                    $this->$key = $data[$key];
-                } else {
-                    $this->$key = null;
+        if (!empty($data)) {
+            if (empty(static::$model_setup)) {
+                $this->_strict_model = false;
+                $this->id = null;
+                foreach ($data as $key => $val) {
+                    $this->$key = $val;
+                    $this->_property_keys[$key] = true;
+                }
+            } else {
+                $this->_strict_model = true;
+                foreach (static::$model_setup as $key => $val) {
+                    $this->_property_keys[$key] = true;
+                    if (isset($data[$key])) {
+                        $this->$key = $data[$key];
+                    } else {
+                        $this->$key = null;
+                    }
                 }
             }
         }

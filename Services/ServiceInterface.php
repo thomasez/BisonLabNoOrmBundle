@@ -24,5 +24,7 @@ interface ServiceInterface
   public function findOneByKeyVal($collection, $key, $val, $params = array());
 
   public function findByKeyVal($collection, $key, $val, $params = array());
+  
+  public function call($resource, $method, $data);
 
 }

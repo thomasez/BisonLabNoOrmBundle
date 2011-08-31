@@ -51,7 +51,7 @@ abstract class BaseManager
         }
         return self::$_reader;
     }
-
+    
     /**
      * Get a reflection class object valid for this static class, so we don't
      * have to instantiate a new one for each instance with the overhead that
@@ -102,6 +102,14 @@ abstract class BaseManager
                 }
             }
         }
+    }
+    
+    /**
+     * @return \RedpillLinpro\NosqlBundle\Services\ServiceInterface
+     */
+    public function getAccessService()
+    {
+        return $this->access_service;
     }
 
     /**
@@ -155,7 +163,7 @@ abstract class BaseManager
         $objects = array();
         foreach ($this->access_service->findAll(static::getCollectionResource(), $params) as $o) {
             $object = static::getInstantiatedModel();
-            $object->fromDataArray($o);
+            $object->fromDataArray($o, $this);
             $objects[] = $object;
         }
 
@@ -173,7 +181,7 @@ abstract class BaseManager
         }
 
         $object = static::getInstantiatedModel();
-        $object->fromDataArray($data);
+        $object->fromDataArray($data, $this);
 
         return $object;
     }
@@ -185,7 +193,7 @@ abstract class BaseManager
         foreach ($this->access_service->findByKeyVal(
                 static::getCollectionResource(), $key, $val, $params) as $o) {
             $object = static::getInstantiatedModel();
-            $object->fromDataArray($o);
+            $object->fromDataArray($o, $this);
             $objects[] = $object;
         }
 

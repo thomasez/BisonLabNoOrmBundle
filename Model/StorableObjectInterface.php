@@ -13,7 +13,7 @@ namespace RedpillLinpro\NosqlBundle\Model;
 interface StorableObjectInterface
 {
 
-    public function fromDataArray($data);
+    public function fromDataArray($data, \RedpillLinpro\NosqlBundle\Manager\BaseManager $manager);
 
     public function toDataArray();
 
