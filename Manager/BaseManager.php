@@ -216,7 +216,7 @@ abstract class BaseManager
         $new_data = $this->access_service->save($object, $resource);
 
         if (isset($new_data[$object->getDataArrayIdentifierColumn()])) {
-            $object->setId($new_data[$object->getDataArrayIdentifierColumn()]);
+            $object->setDataArrayIdentifierValue($new_data[$object->getDataArrayIdentifierColumn()]);
         }
 
         return $object;

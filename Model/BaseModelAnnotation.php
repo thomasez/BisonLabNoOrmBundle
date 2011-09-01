@@ -44,16 +44,45 @@ abstract class BaseModelAnnotation implements StorableObjectInterface
         return $this->_extractToDataArray();
     }
 
+    protected function _populateAnnotatedIdValues()
+    {
+        if (static::$_id_column === null || static::$_id_property === null) {
+            foreach (static::getReflectedClass()->getProperties() as $property) {
+                if ($id_annotation = static::getIdAnnotation($property)) {
+                    if (!$column_annotation = static::getColumnAnnotation($property))
+                        throw new Exception('You must set the Id annotation on a property annotated with @Column');
+
+                    $tmp = null;
+                    static::$_id_column =& $tmp;
+                    static::$_id_property =& $tmp;
+                    unset($tmp);
+
+                    static::$_id_column = ($column_annotation->name) ? $column_annotation->name : $property->name;
+                    static::$_id_property = $property->name;
+                    break;
+                }
+            }
+        }
+    }
+    
     public function getDataArrayIdentifierValue()
     {
+        $this->_populateAnnotatedIdValues();
         return $this->{static::$_id_property};
+    }
+    
+    public function setDataArrayIdentifierValue($identifier_value)
+    {
+        $this->_populateAnnotatedIdValues();
+        $this->{static::$_id_property} = $identifier_value;
     }
 
     public function getDataArrayIdentifierColumn()
     {
+        $this->_populateAnnotatedIdValues();
         return static::$_id_column;
     }
-
+    
     /**
      * Get an Annotationn reader object
      *
@@ -201,6 +230,12 @@ abstract class BaseModelAnnotation implements StorableObjectInterface
         if ($id_annotation) {
             if (!$column_annotation)
                 throw new Exception('You must set the Id annotation on a property annotated with @Column');
+            
+            $tmp = null;
+            static::$_id_column =& $tmp;
+            static::$_id_property =& $tmp;
+            unset($tmp);
+            
             static::$_id_column = ($column_annotation->name) ? $column_annotation->name : $property->name;
             static::$_id_property = $property->name;
         }
