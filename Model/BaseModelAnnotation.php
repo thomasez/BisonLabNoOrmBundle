@@ -44,7 +44,7 @@ abstract class BaseModelAnnotation implements StorableObjectInterface
         return $this->_extractToDataArray();
     }
 
-    protected function _populateAnnotatedIdValues()
+    protected static function _populateAnnotatedIdValues()
     {
         if (static::$_id_column === null || static::$_id_property === null) {
             foreach (static::getReflectedClass()->getProperties() as $property) {
@@ -67,19 +67,19 @@ abstract class BaseModelAnnotation implements StorableObjectInterface
     
     public function getDataArrayIdentifierValue()
     {
-        $this->_populateAnnotatedIdValues();
+        static::_populateAnnotatedIdValues();
         return $this->{static::$_id_property};
     }
     
     public function setDataArrayIdentifierValue($identifier_value)
     {
-        $this->_populateAnnotatedIdValues();
+        static::_populateAnnotatedIdValues();
         $this->{static::$_id_property} = $identifier_value;
     }
 
-    public function getDataArrayIdentifierColumn()
+    public static function getDataArrayIdentifierColumn()
     {
-        $this->_populateAnnotatedIdValues();
+        static::_populateAnnotatedIdValues();
         return static::$_id_column;
     }
     
@@ -142,7 +142,7 @@ abstract class BaseModelAnnotation implements StorableObjectInterface
     protected function _getResourceLocation()
     {
         if ($this->_resource_location === null) {
-            $this->_resource_location = str_replace(':id', $this->{static::$_id_property}, static::$_entitymanager->getEntityResource());
+            $this->_resource_location = str_replace('{'.static::getDataArrayIdentifierColumn().'}', $this->{static::$_id_property}, static::$_entitymanager->getEntityResource());
         }
         return $this->_resource_location;
     }
@@ -192,8 +192,9 @@ abstract class BaseModelAnnotation implements StorableObjectInterface
         
         $reflected_property = static::getReflectedClass()->getProperty($property);
         $relates_annotation = static::getRelatesAnnotation($reflected_property);
+        $related_classname = $relates_annotation->model;
         if (is_numeric($this->$property)) {
-            $related_resource_location = str_replace(':id', $this->$property, $relates_annotation->resource);
+            $related_resource_location = str_replace('{'.$related_classname::getDataArrayIdentifierColumn().'}', $this->$property, $relates_annotation->resource);
         } else {
             $related_resource_location = $relates_annotation->resource;
         }

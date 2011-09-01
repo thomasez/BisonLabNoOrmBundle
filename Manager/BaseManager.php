@@ -172,7 +172,11 @@ abstract class BaseManager
 
     public function findOneById($id, $params = array())
     {
-        $resource = str_replace(':id', $id, static::getEntityResource());
+        $classname = static::getModelClassname();
+        if (strpos(static::getEntityResource(), '{'.$classname::getDataArrayIdentifierColumn().'}') === false)
+            throw new Exception('This route does not have the required identification parameter, {'.$classname::getDataArrayIdentifierColumn().'}');
+                
+        $resource = str_replace('{'.$classname::getDataArrayIdentifierColumn().'}', $id, static::getEntityResource());
         $data = $this->access_service->findOneById(
                 $resource, $id, $params);
 
@@ -207,16 +211,19 @@ abstract class BaseManager
             throw new \InvalidArgumentException('This is not an object I can save, it must be of the same classname defined in this manager');
         }
 
+        if (strpos(static::getEntityResource(), '{'.$classname::getDataArrayIdentifierColumn().'}') === false)
+            throw new Exception('This route does not have the required identification parameter, {'.$classname::getDataArrayIdentifierColumn().'}');
+        
         // Save can do both insert and update with MongoDB.
         if ($object->getDataArrayIdentifierValue()) {
-            $resource = str_replace(':id', $object->getDataArrayIdentifierValue(), static::getEntityResource());
+            $resource = str_replace('{'.$classname::getDataArrayIdentifierColumn().'}', $object->getDataArrayIdentifierValue(), static::getEntityResource());
         } else {
             $resource = static::getNewEntityResource();
         }
         $new_data = $this->access_service->save($object, $resource);
 
-        if (isset($new_data[$object->getDataArrayIdentifierColumn()])) {
-            $object->setDataArrayIdentifierValue($new_data[$object->getDataArrayIdentifierColumn()]);
+        if (isset($new_data[$classname::getDataArrayIdentifierColumn()])) {
+            $object->setDataArrayIdentifierValue($new_data[$classname::getDataArrayIdentifierColumn()]);
         }
 
         return $object;
