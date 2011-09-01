@@ -197,7 +197,8 @@ abstract class BaseModelAnnotation implements StorableObjectInterface
         } else {
             $related_resource_location = $relates_annotation->resource;
         }
-        $data = static::$_entitymanager->getAccessService()->call($this->_getResourceLocation() . '/' . $related_resource_location, 'GET', array());
+        $final_resource_location = (substr($related_resource_location, 0, 1) == "/") ? $this->_getResourceLocation() . '/' . $related_resource_location : $related_resource_location;
+        $data = static::$_entitymanager->getAccessService()->call($final_resource_location, 'GET', array());
         
         $this->_mapRelationData($property, $data, $relates_annotation);
     }
