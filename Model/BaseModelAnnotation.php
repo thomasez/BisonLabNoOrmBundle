@@ -24,6 +24,7 @@ abstract class BaseModelAnnotation implements StorableObjectInterface
     protected $_entitymanager = null;
     
     protected $_resource_location = null;
+    protected $_resource_location_prefix = null;
 
     /**
      * Called from the manager, populates the object with data from a response
@@ -110,6 +111,11 @@ abstract class BaseModelAnnotation implements StorableObjectInterface
     {
         return $this->_entitymanager->getAnnotationsReader()->getPropertyAnnotation($property, 'RedpillLinpro\\NosqlBundle\\Annotations\\Relates');
     }
+    
+    public function setResourceLocationPrefix($rlp)
+    {
+        $this->_resource_location_prefix = $rlp;
+    }
 
     /**
      * Returns the resource location for this object, used when saving this
@@ -122,7 +128,7 @@ abstract class BaseModelAnnotation implements StorableObjectInterface
         if ($this->_resource_location === null) {
             $this->_resource_location = str_replace('{'.$this->_entitymanager->getDataArrayIdentifierColumn().'}', $this->{$this->_entitymanager->getDataArrayIdentifierProperty()}, $this->_entitymanager->getEntityResource());
         }
-        return $this->_resource_location;
+        return $this->_resource_location_prefix . $this->_resource_location;
     }
     
     protected function getResourceByRoutename($routename, $params = array())
@@ -221,11 +227,13 @@ abstract class BaseModelAnnotation implements StorableObjectInterface
             foreach ($data as $single_result) {
                 $object = $manager->getInstantiatedModel();
                 $object->fromDataArray($single_result, $manager);
+                $object->setResourceLocationPrefix($this->_getResourceLocation());
                 $value[] = $object;
             }
         } else {
             $value = $manager->getInstantiatedModel();
             $value->fromDataArray($data, $manager);
+            $value->setResourceLocationPrefix($this->_getResourceLocation());
         }
         
         $this->$property = $value;
