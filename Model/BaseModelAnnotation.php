@@ -193,33 +193,33 @@ abstract class BaseModelAnnotation implements StorableObjectInterface
         
         $reflected_property = $this->_entitymanager->getReflectedClass()->getProperty($property);
         $relates_annotation = $this->getRelatesAnnotation($reflected_property);
-        $related_classname = $relates_annotation->model;
+        $related_manager = $relates_annotation->manager;
+        $related_manager = new $related_manager($this->_entitymanager->getAccessService());
         if (is_numeric($this->$property)) {
-            $related_resource_location = str_replace('{'.$related_classname::getDataArrayIdentifierColumn().'}', $this->$property, $relates_annotation->resource);
+            $related_resource_location = str_replace('{'.$related_manager->getDataArrayIdentifierColumn().'}', $this->$property, $relates_annotation->resource);
         } else {
             $related_resource_location = $relates_annotation->resource;
         }
         $final_resource_location = (substr($related_resource_location, 0, 1) == "/") ? $related_resource_location : $this->_getResourceLocation() . '/' . $related_resource_location;
         $data = $this->_entitymanager->getAccessService()->call($final_resource_location, 'GET', array());
         
-        $this->_mapRelationData($property, $data, $relates_annotation);
+        $this->_mapRelationData($property, $data, $relates_annotation, $related_manager);
     }
     
-    protected function _mapRelationData($property, $data, \RedpillLinpro\NosqlBundle\Annotations\Relates $relates_annotation)
+    protected function _mapRelationData($property, $data, \RedpillLinpro\NosqlBundle\Annotations\Relates $relates_annotation, $manager = null)
     {
-        $classname = $relates_annotation->model;
-        if (!$classname) {
+        if (!$manager) {
             $value = $data;
         } elseif ($relates_annotation->collection) {
             $value = array();
             foreach ($data as $single_result) {
-                $object = new $classname();
-                $object->fromDataArray($single_result, $this->_entitymanager);
+                $object = $manager->getInstantiatedModel();
+                $object->fromDataArray($single_result, $manager);
                 $value[] = $object;
             }
         } else {
-            $value = new $classname();
-            $value->fromDataArray($data, $this->_entitymanager);
+            $value = $manager->getInstantiatedModel();
+            $value->fromDataArray($data, $manager);
         }
         
         $this->$property = $value;
