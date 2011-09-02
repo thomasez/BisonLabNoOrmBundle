@@ -33,17 +33,40 @@ abstract class BaseModelAnnotation implements StorableObjectInterface
     
     protected $_resource_location = null;
 
+    /**
+     * Called from the manager, populates the object with data from a response
+     * Also passes the manager in, so a reference to it can be statically cached
+     * for later calls (lazy-loading / auto-retrieving), etc.
+     * 
+     * @param array $data
+     * @param \RedpillLinpro\NosqlBundle\Manager\BaseManager $manager 
+     */
     public function fromDataArray($data, \RedpillLinpro\NosqlBundle\Manager\BaseManager $manager)
     {
         $this->_dataArrayMap($data);
         static::$_entitymanager = $manager;
     }
 
+    /**
+     * The manager calls this method to retrieve an array representation of the
+     * object data, based on the structure defined in the object's annotations
+     * 
+     * @return array
+     */
     public function toDataArray()
     {
         return $this->_extractToDataArray();
     }
 
+    /**
+     * This method is called internally from the class. It reads through the 
+     * annotated properties to find which columns and resultset array keys is
+     * defined as the identifier columns
+     * 
+     * This is needed for auto-populating object's id value for new objects, as
+     * well as being able to return a proper array representation of the object
+     * to the manager for storage.
+     */
     protected static function _populateAnnotatedIdValues()
     {
         if (static::$_id_column === null || static::$_id_property === null) {
@@ -65,18 +88,38 @@ abstract class BaseModelAnnotation implements StorableObjectInterface
         }
     }
     
+    /**
+     * Returns the unique identifier value for this object, usually the value
+     * of an $id property, $<objecttype>Id or similar
+     * 
+     * @return mixed
+     */
     public function getDataArrayIdentifierValue()
     {
         static::_populateAnnotatedIdValues();
         return $this->{static::$_id_property};
     }
     
+    /**
+     * Set the unique identifier value for this object
+     * 
+     * This method is used by the manager to set the identifier value to the
+     * value retrieved from the remote call after storing this object
+     * 
+     * @param mixed $identifier_value 
+     */
     public function setDataArrayIdentifierValue($identifier_value)
     {
         static::_populateAnnotatedIdValues();
         $this->{static::$_id_property} = $identifier_value;
     }
 
+    /**
+     * Returns the identifier column, used by the manager when finding which
+     * data array column to use as the identifier value
+     * 
+     * @return string
+     */
     public static function getDataArrayIdentifierColumn()
     {
         static::_populateAnnotatedIdValues();
@@ -84,7 +127,11 @@ abstract class BaseModelAnnotation implements StorableObjectInterface
     }
     
     /**
-     * Get an Annotationn reader object
+     * Get an annotation reader object
+     * 
+     * This reader object is class cached so it's always the same object. This
+     * allows the annotation reader to cache properties so it's not re-parsed
+     * when the same object is read repeatedly
      *
      * @return \Doctrine\Common\Annotations\AnnotationReader
      */
@@ -101,7 +148,10 @@ abstract class BaseModelAnnotation implements StorableObjectInterface
     /**
      * Get a reflection class object valid for this static class, so we don't
      * have to instantiate a new one for each instance with the overhead that
-     * comes with it
+     * comes with it. 
+     * 
+     * This reflection class uses the "global" annotation reader cached in 
+     * this basemodel
      * 
      * @return \ReflectionClass
      */
@@ -116,6 +166,10 @@ abstract class BaseModelAnnotation implements StorableObjectInterface
     }
     
     /**
+     * Returns an @Id annotation for a specified property if it exists
+     * 
+     * @param \ReflectionProperty $property
+     * 
      * @return RedpillLinpro\NosqlBundle\Annotations\Id
      */
     public static function getIdAnnotation($property)
@@ -124,6 +178,10 @@ abstract class BaseModelAnnotation implements StorableObjectInterface
     }
     
     /**
+     * Returns an @Column annotation for a specified property if it exists
+     * 
+     * @param \ReflectionProperty $property
+     * 
      * @return RedpillLinpro\NosqlBundle\Annotations\Column
      */
     public static function getColumnAnnotation($property)
@@ -132,6 +190,10 @@ abstract class BaseModelAnnotation implements StorableObjectInterface
     }
 
     /**
+     * Returns an @Relates annotation for a specified property if it exists
+     * 
+     * @param \ReflectionProperty $property
+     * 
      * @return RedpillLinpro\NosqlBundle\Annotations\Relates
      */
     public static function getRelatesAnnotation($property)
@@ -140,13 +202,11 @@ abstract class BaseModelAnnotation implements StorableObjectInterface
     }
 
     /**
-     * @return array|RedpillLinpro\NosqlBundle\Annotations\ResourceAction
+     * Returns the resource location for this object, used when saving this
+     * object via the manager
+     * 
+     * @return string
      */
-    public static function getResourceActionAnnotations($property)
-    {
-        return self::getAnnotationsReader()->getPropertyAnnotation($property, 'RedpillLinpro\\NosqlBundle\\Annotations\\Relates');
-    }
-    
     protected function _getResourceLocation()
     {
         if ($this->_resource_location === null) {
@@ -273,6 +333,8 @@ abstract class BaseModelAnnotation implements StorableObjectInterface
             if (!$column_annotation)
                 throw new Exception('You must set the Id annotation on a property annotated with @Column');
             
+            // Semi-dirty refererence hack for late static inherited singleton properties
+            // http://stackoverflow.com/questions/4577187/php-5-3-late-static-binding-doesnt-work-for-properties-when-defined-in-parent-c
             $tmp = null;
             static::$_id_column =& $tmp;
             static::$_id_property =& $tmp;
