@@ -22,10 +22,6 @@ abstract class BaseManager
     // protected static $model       = 'Model\Base';
 
     protected $access_service;
-    protected static $model;
-    protected static $collection_resource;
-    protected static $entity_resource;
-    protected static $new_entity_resource;
 
     /**
      * @var \Doctrine\Common\Annotations\AnnotationReader
