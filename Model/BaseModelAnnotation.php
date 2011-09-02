@@ -184,7 +184,7 @@ abstract class BaseModelAnnotation implements StorableObjectInterface
                         } else {
                             $related_manager = null;
                         }
-                        $this->_mapRelationData($property, $result[$name], $relates_annotation, $related_manager);
+                        $this->_mapRelationData($property->name, $result[$name], $relates_annotation, $related_manager);
                     } else {
                         $this->{$property->name} = $result[$name];
                     }
