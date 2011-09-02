@@ -21,6 +21,9 @@ abstract class BaseManager
     // protected static $collection  = 'Base';
     // protected static $model       = 'Model\Base';
 
+    /**
+     * @var \RedpillLinpro\NosqlBundle\Services\ServiceInterface
+     */
     protected $access_service;
 
     /**
@@ -118,6 +121,14 @@ abstract class BaseManager
     {
         $this->_populateAnnotatedIdValues();
         return $this->_id_property;
+    }
+    
+    public function getResourceRoute($routename)
+    {
+        if (!array_key_exists($routename, static::$resource_routes))
+            throw new Exception('This route does not exist in the static array property $resource_routes on this manager');
+                
+        return static::$resource_routes[$routename];
     }
     
     public function __construct($access_service, $options = array())

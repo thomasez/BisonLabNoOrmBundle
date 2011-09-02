@@ -125,15 +125,13 @@ abstract class BaseModelAnnotation implements StorableObjectInterface
         return $this->_resource_location;
     }
     
-    protected static function getResourceByRoutename($routename, $params = array())
+    protected function getResourceByRoutename($routename, $params = array())
     {
-        if (!array_key_exists($routename, static::$resource_routes))
-            throw new Exception('This route does not exist in the static array property $resource_routes on this manager');
-                
-        $resource = static::$resource_routes[$routename];
+        $resource = $this->_entitymanager->getResourceRoute($routename);
         foreach ($params as $key => $value) {
             $resource = str_replace("{:{$key}}", $value, $resource);
         }
+        return $resource;
     }
     
     protected function _apiCall($routename, $params = array())
@@ -143,7 +141,7 @@ abstract class BaseModelAnnotation implements StorableObjectInterface
     
     protected function _apiGet($routename, $params = array())
     {
-        $resource_route = static::getResourceByRoutename($routename, $params);
+        $resource_route = $this->getResourceByRoutename($routename, $params);
         $resource_route = (substr($resource_route, 0, 1) == "/") ? $this->_getResourceLocation() . '/' . $resource_route : $resource_route;
         
         return $this->_entitymanager->getAccessService()->call($resource_route);
@@ -151,7 +149,7 @@ abstract class BaseModelAnnotation implements StorableObjectInterface
     
     protected function _apiSet($routename, $params = array(), $post_params = array())
     {
-        $resource_route = static::getResourceByRoutename($routename, $params);
+        $resource_route = $this->getResourceByRoutename($routename, $params);
         $resource_route = (substr($resource_route, 0, 1) == "/") ? $this->_getResourceLocation() . '/' . $resource_route : $resource_route;
         
         return $this->_entitymanager->getAccessService()->call($resource_route, 'POST', $post_params);
