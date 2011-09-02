@@ -142,7 +142,7 @@ abstract class BaseModelAnnotation implements StorableObjectInterface
     protected function _apiGet($routename, $params = array())
     {
         $resource_route = $this->getResourceByRoutename($routename, $params);
-        $resource_route = (substr($resource_route, 0, 1) == "/") ? $this->_getResourceLocation() . '/' . $resource_route : $resource_route;
+        $resource_route = (substr($resource_route, 0, 1) == "/") ? $resource_route : $this->_getResourceLocation() . '/' . $resource_route;
         
         return $this->_entitymanager->getAccessService()->call($resource_route);
     }
@@ -150,7 +150,7 @@ abstract class BaseModelAnnotation implements StorableObjectInterface
     protected function _apiSet($routename, $params = array(), $post_params = array())
     {
         $resource_route = $this->getResourceByRoutename($routename, $params);
-        $resource_route = (substr($resource_route, 0, 1) == "/") ? $this->_getResourceLocation() . '/' . $resource_route : $resource_route;
+        $resource_route = (substr($resource_route, 0, 1) == "/") ? $resource_route : $this->_getResourceLocation() . '/' . $resource_route;
         
         return $this->_entitymanager->getAccessService()->call($resource_route, 'POST', $post_params);
     }
