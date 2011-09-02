@@ -228,7 +228,7 @@ abstract class BaseModelAnnotation implements StorableObjectInterface
                 $object = $manager->getInstantiatedModel();
                 $object->fromDataArray($single_result, $manager);
                 $object->setResourceLocationPrefix($this->_getResourceLocation());
-                $value[] = $object;
+                $value[$object->getDataArrayIdentifierValue()] = $object;
             }
         } else {
             $value = $manager->getInstantiatedModel();
