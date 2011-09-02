@@ -31,14 +31,22 @@ abstract class BaseManager
     /**
      * @var \ReflectionClass
      */
-    protected static $_reflectedclass = null;
+    protected $_reflectedclass = null;
+    
+    protected $collection_resource;
+    protected $entity_resource;
+    protected $new_entity_resource;
+
+    protected $model;
+    protected $_id_property = null;
+    protected $_id_column = null;
 
     /**
      * Get an Annotationn reader object
      *
      * @return \Doctrine\Common\Annotations\AnnotationReader
      */
-    protected static function getAnnotationsReader()
+    public static function getAnnotationsReader()
     {
         if (self::$_reader === null) {
             self::$_reader = new \Doctrine\Common\Annotations\AnnotationReader(new \Doctrine\Common\Cache\ArrayCache());
@@ -55,46 +63,96 @@ abstract class BaseManager
      * 
      * @return \ReflectionClass
      */
-    protected static function getReflectedClass()
+    public function getReflectedClass()
     {
-        if (static::$_reflectedclass === null) {
-            static::$_reflectedclass = new \ReflectionClass(get_called_class());
+        if ($this->_reflectedclass === null) {
+            $this->_reflectedclass = new \ReflectionClass($this->model);
         }
-        return static::$_reflectedclass;
+        return $this->_reflectedclass;
     }
 
+    /**
+     * This method is called internally from the class. It reads through the 
+     * annotated properties to find which columns and resultset array keys is
+     * defined as the identifier columns
+     * 
+     * This is needed for auto-populating object's id value for new objects, as
+     * well as being able to return a proper array representation of the object
+     * to the manager for storage.
+     */
+    protected function _populateAnnotatedIdValues()
+    {
+        if ($this->_id_column === null || $this->_id_property === null) {
+            foreach ($this->getReflectedClass($this->model)->getProperties() as $property) {
+                if ($id_annotation = $this->getIdAnnotation($property)) {
+                    if (!$column_annotation = $this->getColumnAnnotation($property))
+                        throw new Exception('You must set the Id annotation on a property annotated with @Column');
+
+                    $this->_id_column = ($column_annotation->name) ? $column_annotation->name : $property->name;
+                    $this->_id_property = $property->name;
+                    break;
+                }
+            }
+        }
+    }
+    
+    /**
+     * Returns the identifier column, used by the manager when finding which
+     * data array column to use as the identifier value
+     * 
+     * @return string
+     */
+    public function getDataArrayIdentifierColumn()
+    {
+        $this->_populateAnnotatedIdValues();
+        return $this->_id_column;
+    }
+    
+    /**
+     * Returns the identifier property, used by the entity when finding which
+     * property to use as the identifier value
+     * 
+     * @return string
+     */
+    public function getDataArrayIdentifierProperty()
+    {
+        $this->_populateAnnotatedIdValues();
+        return $this->_id_property;
+    }
+    
     public function __construct($access_service, $options = array())
     {
         $this->access_service = $access_service;
         if (array_key_exists('model', $options)) {
-            static::$model = $options['model'];
+            $this->model = $options['model'];
         }
         if (array_key_exists('collection_resource', $options)) {
-            static::$collection_resource = $options['collection_resource'];
+            $this->collection_resource = $options['collection_resource'];
         }
         if (array_key_exists('entity_resource', $options)) {
-            static::$entity_resource = $options['entity_resource'];
+            $this->entity_resource = $options['entity_resource'];
         }
         if (array_key_exists('new_entity_resource', $options)) {
-            static::$new_entity_resource = $options['new_entity_resource'];
+            $this->new_entity_resource = $options['new_entity_resource'];
         }
-        if (!isset(static::$new_entity_resource) || !isset(static::$entity_resource) || !isset(static::$collection_resource) || !isset(static::$model)) {
-            $resource_annotation = static::getResourceAnnotation();
+        if (!isset($this->new_entity_resource) || !isset($this->entity_resource) || !isset($this->collection_resource) || !isset($this->model)) {
+            $rc = new \ReflectionClass(get_called_class());
+            $resource_annotation = $this->getResourceAnnotation($rc);
             if ($resource_annotation instanceof \RedpillLinpro\NosqlBundle\Annotations\Resources) {
                 if ($resource_annotation->collection) {
-                    static::$collection_resource = $resource_annotation->collection;
+                    $this->collection_resource = $resource_annotation->collection;
                 }
                 if ($resource_annotation->entity) {
-                    static::$entity_resource = $resource_annotation->entity;
+                    $this->entity_resource = $resource_annotation->entity;
                 }
                 if ($resource_annotation->new_entity) {
-                    static::$new_entity_resource = $resource_annotation->new_entity;
+                    $this->new_entity_resource = $resource_annotation->new_entity;
                 }
             }
-            $model_annotation = static::getModelAnnotation();
+            $model_annotation = $this->getModelAnnotation($rc);
             if ($model_annotation instanceof \RedpillLinpro\NosqlBundle\Annotations\Model) {
                 if ($model_annotation->name) {
-                    static::$model = $model_annotation->name;
+                    $this->model = $model_annotation->name;
                 }
             }
         }
@@ -111,42 +169,66 @@ abstract class BaseManager
     /**
      * @return RedpillLinpro\NosqlBundle\Annotations\Resources
      */
-    public static function getResourceAnnotation()
+    public function getResourceAnnotation($rc)
     {
-        return self::getAnnotationsReader()->getClassAnnotation(static::getReflectedClass(), 'RedpillLinpro\\NosqlBundle\\Annotations\\Resources');
+        return self::getAnnotationsReader()->getClassAnnotation($rc, 'RedpillLinpro\\NosqlBundle\\Annotations\\Resources');
     }
 
     /**
+     * Returns an Id annotation for a specified property if it exists
+     * 
+     * @param \ReflectionProperty $property
+     * 
+     * @return RedpillLinpro\NosqlBundle\Annotations\Id
+     */
+    public function getIdAnnotation($property)
+    {
+        return self::getAnnotationsReader()->getPropertyAnnotation($property, 'RedpillLinpro\\NosqlBundle\\Annotations\\Id');
+    }
+    
+    /**
+     * Returns a Column annotation for a specified property if it exists
+     * 
+     * @param \ReflectionProperty $property
+     * 
+     * @return RedpillLinpro\NosqlBundle\Annotations\Column
+     */
+    public function getColumnAnnotation($property)
+    {
+        return self::getAnnotationsReader()->getPropertyAnnotation($property, 'RedpillLinpro\\NosqlBundle\\Annotations\\Column');
+    }
+    
+    /**
      * @return RedpillLinpro\NosqlBundle\Annotations\Model
      */
-    public static function getModelAnnotation()
+    public function getModelAnnotation($rc)
     {
-        return self::getAnnotationsReader()->getClassAnnotation(static::getReflectedClass(), 'RedpillLinpro\\NosqlBundle\\Annotations\\Model');
+        return self::getAnnotationsReader()->getClassAnnotation($rc, 'RedpillLinpro\\NosqlBundle\\Annotations\\Model');
     }
 
-    public static function getCollectionResource()
+    public function getCollectionResource()
     {
-        return static::$collection_resource;
+        return $this->collection_resource;
     }
 
-    public static function getEntityResource()
+    public function getEntityResource()
     {
-        return static::$entity_resource;
+        return $this->entity_resource;
     }
 
-    public static function getNewEntityResource()
+    public function getNewEntityResource()
     {
-        return static::$new_entity_resource;
+        return $this->new_entity_resource;
     }
 
-    public static function getModelClassname()
+    public function getModelClassname()
     {
-        return static::$model;
+        return $this->model;
     }
 
-    public static function getInstantiatedModel()
+    public function getInstantiatedModel()
     {
-        $classname = static::getModelClassname();
+        $classname = $this->getModelClassname();
         return new $classname();
     }
 
@@ -157,8 +239,8 @@ abstract class BaseManager
     public function findAll($params = array())
     {
         $objects = array();
-        foreach ($this->access_service->findAll(static::getCollectionResource(), $params) as $o) {
-            $object = static::getInstantiatedModel();
+        foreach ($this->access_service->findAll($this->getCollectionResource(), $params) as $o) {
+            $object = $this->getInstantiatedModel();
             $object->fromDataArray($o, $this);
             $objects[] = $object;
         }
@@ -168,11 +250,10 @@ abstract class BaseManager
 
     public function findOneById($id, $params = array())
     {
-        $classname = static::getModelClassname();
-        if (strpos(static::getEntityResource(), '{'.$classname::getDataArrayIdentifierColumn().'}') === false)
-            throw new Exception('This route does not have the required identification parameter, {'.$classname::getDataArrayIdentifierColumn().'}');
+        if (strpos($this->getEntityResource(), '{'.$this->getDataArrayIdentifierColumn().'}') === false)
+            throw new \Exception('This route does not have the required identification parameter, {'.$this->getDataArrayIdentifierColumn().'}');
                 
-        $resource = str_replace('{'.$classname::getDataArrayIdentifierColumn().'}', $id, static::getEntityResource());
+        $resource = str_replace('{'.$this->getDataArrayIdentifierColumn().'}', $id, $this->getEntityResource());
         $data = $this->access_service->findOneById(
                 $resource, $id, $params);
 
@@ -180,7 +261,7 @@ abstract class BaseManager
             return null;
         }
 
-        $object = static::getInstantiatedModel();
+        $object = $this->getInstantiatedModel();
         $object->fromDataArray($data, $this);
 
         return $object;
@@ -191,8 +272,8 @@ abstract class BaseManager
         $objects = array();
 
         foreach ($this->access_service->findByKeyVal(
-                static::getCollectionResource(), $key, $val, $params) as $o) {
-            $object = static::getInstantiatedModel();
+                $this->getCollectionResource(), $key, $val, $params) as $o) {
+            $object = $this->getInstantiatedModel();
             $object->fromDataArray($o, $this);
             $objects[] = $object;
         }
@@ -202,24 +283,24 @@ abstract class BaseManager
 
     public function save($object)
     {
-        $classname = static::getModelClassname();
+        $classname = $this->getModelClassname();
         if (!$object instanceof $classname) {
             throw new \InvalidArgumentException('This is not an object I can save, it must be of the same classname defined in this manager');
         }
 
-        if (strpos(static::getEntityResource(), '{'.$classname::getDataArrayIdentifierColumn().'}') === false)
-            throw new Exception('This route does not have the required identification parameter, {'.$classname::getDataArrayIdentifierColumn().'}');
+        if (strpos($this->getEntityResource(), '{'.$this->getDataArrayIdentifierColumn().'}') === false)
+            throw new \Exception('This route does not have the required identification parameter, {'.$this->getDataArrayIdentifierColumn().'}');
         
         // Save can do both insert and update with MongoDB.
         if ($object->getDataArrayIdentifierValue()) {
-            $resource = str_replace('{'.$classname::getDataArrayIdentifierColumn().'}', $object->getDataArrayIdentifierValue(), static::getEntityResource());
+            $resource = str_replace('{'.$this->getDataArrayIdentifierColumn().'}', $object->getDataArrayIdentifierValue(), $this->getEntityResource());
         } else {
-            $resource = static::getNewEntityResource();
+            $resource = $this->getNewEntityResource();
         }
         $new_data = $this->access_service->save($object, $resource);
 
-        if (isset($new_data[$classname::getDataArrayIdentifierColumn()])) {
-            $object->setDataArrayIdentifierValue($new_data[$classname::getDataArrayIdentifierColumn()]);
+        if (isset($new_data[$this->getDataArrayIdentifierColumn()])) {
+            $object->setDataArrayIdentifierValue($new_data[$this->getDataArrayIdentifierColumn()]);
         }
 
         return $object;
@@ -228,7 +309,7 @@ abstract class BaseManager
     public function delete($object)
     {
 
-        $classname = static::getModelClassname();
+        $classname = $this->getModelClassname();
         if (!$object instanceof $classname) {
             throw new \InvalidArgumentException('This is not an object I can delete, it must be of the same classname defined in this manager');
         }
@@ -238,7 +319,7 @@ abstract class BaseManager
         }
 
         // Save can do both insert and update with MongoDB.
-        $status = $this->access_service->remove($object->getDataArrayIdentifierValue(), static::getEntityResource());
+        $status = $this->access_service->remove($object->getDataArrayIdentifierValue(), $this->getEntityResource());
 
         return $status;
     }
