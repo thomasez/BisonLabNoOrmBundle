@@ -126,7 +126,7 @@ abstract class BaseModelAnnotation implements StorableObjectInterface
     protected function _getResourceLocation()
     {
         if ($this->_resource_location === null) {
-            $this->_resource_location = str_replace('{'.$this->_entitymanager->getDataArrayIdentifierColumn().'}', $this->{$this->_entitymanager->getDataArrayIdentifierProperty()}, $this->_entitymanager->getEntityResource());
+            $this->_resource_location = str_replace('{:'.$this->_entitymanager->getDataArrayIdentifierColumn().'}', $this->{$this->_entitymanager->getDataArrayIdentifierProperty()}, $this->_entitymanager->getEntityResource());
         }
         return $this->_resource_location_prefix . $this->_resource_location;
     }
@@ -216,7 +216,7 @@ abstract class BaseModelAnnotation implements StorableObjectInterface
         $related_manager = $relates_annotation->manager;
         $related_manager = new $related_manager($this->_entitymanager->getAccessService());
         if (is_numeric($this->$property)) {
-            $related_resource_location = str_replace('{'.$related_manager->getDataArrayIdentifierColumn().'}', $this->$property, $relates_annotation->resource);
+            $related_resource_location = str_replace('{:'.$related_manager->getDataArrayIdentifierColumn().'}', $this->$property, $relates_annotation->resource);
         } else {
             $related_resource_location = $relates_annotation->resource;
         }

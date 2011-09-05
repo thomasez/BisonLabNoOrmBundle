@@ -261,10 +261,10 @@ abstract class BaseManager
 
     public function findOneById($id, $params = array())
     {
-        if (strpos($this->getEntityResource(), '{'.$this->getDataArrayIdentifierColumn().'}') === false)
+        if (strpos($this->getEntityResource(), '{:'.$this->getDataArrayIdentifierColumn().'}') === false)
             throw new \Exception('This route does not have the required identification parameter, {'.$this->getDataArrayIdentifierColumn().'}');
                 
-        $resource = str_replace('{'.$this->getDataArrayIdentifierColumn().'}', $id, $this->getEntityResource());
+        $resource = str_replace('{:'.$this->getDataArrayIdentifierColumn().'}', $id, $this->getEntityResource());
         $data = $this->access_service->findOneById(
                 $resource, $id, $params);
 
@@ -299,12 +299,12 @@ abstract class BaseManager
             throw new \InvalidArgumentException('This is not an object I can save, it must be of the same classname defined in this manager');
         }
 
-        if (strpos($this->getEntityResource(), '{'.$this->getDataArrayIdentifierColumn().'}') === false)
+        if (strpos($this->getEntityResource(), '{:'.$this->getDataArrayIdentifierColumn().'}') === false)
             throw new \Exception('This route does not have the required identification parameter, {'.$this->getDataArrayIdentifierColumn().'}');
         
         // Save can do both insert and update with MongoDB.
         if ($object->getDataArrayIdentifierValue()) {
-            $resource = str_replace('{'.$this->getDataArrayIdentifierColumn().'}', $object->getDataArrayIdentifierValue(), $this->getEntityResource());
+            $resource = str_replace('{:'.$this->getDataArrayIdentifierColumn().'}', $object->getDataArrayIdentifierValue(), $this->getEntityResource());
         } else {
             $resource = $this->getNewEntityResource();
         }
