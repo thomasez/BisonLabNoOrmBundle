@@ -62,6 +62,11 @@ abstract class BaseModelAnnotation implements StorableObjectInterface
         return $this->{$this->_entitymanager->getDataArrayIdentifierProperty()};
     }
     
+    public function hasDataArrayIdentifierValue()
+    {
+        return $this->_entitymanager->hasDataArrayIdentifierProperty();
+    }
+    
     /**
      * Set the unique identifier value for this object
      * 
@@ -239,7 +244,11 @@ abstract class BaseModelAnnotation implements StorableObjectInterface
                 $object = $manager->getInstantiatedModel();
                 $object->fromDataArray($single_result, $manager);
                 $object->setResourceLocationPrefix($this->_getResourceLocation() . "/");
-                $value[$object->getDataArrayIdentifierValue()] = $object;
+                if ($object->hasDataArrayIdentifierValue()) {
+                    $value[$object->getDataArrayIdentifierValue()] = $object;
+                } else {
+                    $value[] = $object;
+                }
             }
         } else {
             $value = $manager->getInstantiatedModel();

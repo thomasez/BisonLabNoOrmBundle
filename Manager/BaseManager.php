@@ -43,6 +43,7 @@ abstract class BaseManager
     protected $model;
     protected $_id_property = null;
     protected $_id_column = null;
+    protected $_data_array_identifiable = null;
 
     /**
      * Get an Annotationn reader object
@@ -85,7 +86,7 @@ abstract class BaseManager
      */
     protected function _populateAnnotatedIdValues()
     {
-        if ($this->_id_column === null || $this->_id_property === null) {
+        if ($this->_data_array_identifiable === null) {
             foreach ($this->getReflectedClass($this->model)->getProperties() as $property) {
                 if ($id_annotation = $this->getIdAnnotation($property)) {
                     if (!$column_annotation = $this->getColumnAnnotation($property))
@@ -93,9 +94,12 @@ abstract class BaseManager
 
                     $this->_id_column = ($column_annotation->name) ? $column_annotation->name : $property->name;
                     $this->_id_property = $property->name;
+                    $this->_data_array_identifiable = true;
                     break;
                 }
             }
+            if ($this->_data_array_identifiable === null)
+                $this->_data_array_identifiable = false;
         }
     }
     
@@ -121,6 +125,11 @@ abstract class BaseManager
     {
         $this->_populateAnnotatedIdValues();
         return $this->_id_property;
+    }
+    
+    public function hasDataArrayIdentifierProperty()
+    {
+        return (bool) $this->_data_array_identifiable;
     }
     
     public function getResourceRoute($routename)
