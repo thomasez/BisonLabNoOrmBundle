@@ -3,7 +3,9 @@ RedpillLinproNosqlBundle
 
 A Nosql Bundle for Symfony 2. 
 
-Author: Thomas Lundquist <thomasez@redpill-linpro.com>
+Authors: 
+    Base, Mongo and arraystuff: Thomas Lundquist <thomasez@redpill-linpro.com>
+    Annotations: Danel Andre Eikeland <dae@redpill-linpro.com>
 
 Project started june 2011. 
 
@@ -19,25 +21,22 @@ work as possible to maintain the arrays.
 Installation
 ------------
 
-`Download`_ the bundle and put it under the ``RedpillLinpro\\NosqlBundle\\`` namespace.
+`Download`_ the bundle and put it under the ``RedpillLinpro\\NosqlBundle\\`` namespace, usually under vendor/bundles/
 
 Since I'd have to name it on Github with the complete name and it'll be split 
 into RedpillLinpro/NosqlBundle you have to do a quick mkdir and mv yourself.
 
-Usually in src/ do:
-
-    cd src 
+Usually in vendor/bundles/ do::
 
     mkdir RedpillLinpro
 
     mv RedpillLinproNosqlBundle RedpillLinpro/NosqlBundle
 
-You probably does not have one so creating the src/RedpillLinpro directory
-and add it to app/autoload.php as any other new namespaces::
+You probably do not have one so creating the vendor/bundles/RedpillLinpro directory and add it to app/autoload.php as any other new namespaces::
 
     $loader->registerNamespaces(array(
         ...
-        'RedpillLinpro'    => __DIR__.'/../src/RedpillLinpro',
+        'RedpillLinpro'    => __DIR__.'/../vendor/bundles/RedpillLinpro',
     ));
 
 Then, like for any other bundle, include it in your Kernel class::

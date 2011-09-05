@@ -11,10 +11,19 @@ This bundle does have another bundle inside it and it's perfect for playing.
 Installation
 ------------
 
-First, create the bundle:
+First, create the bundle::
 
-    cd src
-    cp -a NosqlBundle/Resources/Examples/ExamplesBundle .
+    mkdir -p src/RedpillLinpro
+    cd src/RedpillLinpro
+    cp -a ../../vendors/bundles/RedpillLinpro/NosqlBundle/Resources/Examples/ExamplesBundle .
+
+    or
+
+    ln -s ../../vendors/bundles/RedpillLinpro/NosqlBundle/Resources/Examples/ExamplesBundle .
+
+We need to add the RedpillLinpro namespace in src on top of vendor/bundles in app/autoload.php::
+
+   'RedpillLinpro'    => array(__DIR__.'/../vendor/bundles/RedpillLinpro', __DIR__.'/../src/RedpillLinpro'),
 
 Then, like for any other bundle, include it in your Kernel class::
 
@@ -29,9 +38,9 @@ Then, like for any other bundle, include it in your Kernel class::
         ...
     }
 
-Second, we need the web resources available to the public:
+Second, we need the web resources available to the public;
 
-Most unixes and set up apaches can do with a symbolic link:
+Most unixes and set up apaches can do with a symbolic link::
 
     cd web/bundles
     ln -s ../../src/RedpillLinpro/ExamplesBundle/Resources/public examples
