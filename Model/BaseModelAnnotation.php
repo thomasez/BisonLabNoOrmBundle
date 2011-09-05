@@ -161,6 +161,14 @@ abstract class BaseModelAnnotation implements StorableObjectInterface
         return $this->_entitymanager->getAccessService()->call($resource_route, 'POST', $post_params);
     }
     
+    protected function _apiUnset($routename, $params = array(), $post_params = array())
+    {
+        $resource_route = $this->getResourceByRoutename($routename, $params);
+        $resource_route = (substr($resource_route, 0, 1) == "/") ? $resource_route : $this->_getResourceLocation() . '/' . $resource_route;
+        
+        return $this->_entitymanager->getAccessService()->call($resource_route, 'DELETE', $post_params);
+    }
+    
     protected function _applyDataArrayProperty($property, $result, $extracted = null)
     {
         $id_annotation = ($this->_entitymanager->getDataArrayIdentifierProperty() !== null || $extracted !== null) ? null : $this->getIdAnnotation($property);
