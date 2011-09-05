@@ -235,13 +235,13 @@ abstract class BaseModelAnnotation implements StorableObjectInterface
             foreach ($data as $single_result) {
                 $object = $manager->getInstantiatedModel();
                 $object->fromDataArray($single_result, $manager);
-                $object->setResourceLocationPrefix($this->_getResourceLocation());
+                $object->setResourceLocationPrefix($this->_getResourceLocation() . "/");
                 $value[$object->getDataArrayIdentifierValue()] = $object;
             }
         } else {
             $value = $manager->getInstantiatedModel();
             $value->fromDataArray($data, $manager);
-            $value->setResourceLocationPrefix($this->_getResourceLocation());
+            $value->setResourceLocationPrefix($this->_getResourceLocation() . "/");
         }
         
         $this->$property = $value;
