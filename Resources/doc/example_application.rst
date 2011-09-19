@@ -11,21 +11,24 @@ This bundle does have another bundle inside it and it's perfect for playing.
 Installation
 ------------
 
+Zero: Read the NosqlBundle install doc (index.rst) and set up everything
+there, like parameters.ini for the db config.
+
 First, create the bundle::
 
     mkdir -p src/RedpillLinpro
     cd src/RedpillLinpro
-    cp -a ../../vendors/bundles/RedpillLinpro/NosqlBundle/Resources/Examples/ExamplesBundle .
+    cp -a ../../vendor/bundles/RedpillLinpro/NosqlBundle/Resources/Examples/ExamplesBundle .
 
     or
 
-    ln -s ../../vendors/bundles/RedpillLinpro/NosqlBundle/Resources/Examples/ExamplesBundle .
+    ln -s ../../vendor/bundles/RedpillLinpro/NosqlBundle/Resources/Examples/ExamplesBundle .
 
 We need to add the RedpillLinpro namespace in src on top of vendor/bundles in app/autoload.php::
 
-   'RedpillLinpro'    => array(__DIR__.'/../vendor/bundles/RedpillLinpro', __DIR__.'/../src/RedpillLinpro'),
+   'RedpillLinpro'    => array(__DIR__.'/../vendor/bundles', __DIR__.'/src'),
 
-Then, like for any other bundle, include it in your Kernel class::
+Then, like for any other bundle, include it in your Kernel class, usually app/AppKernel::
 
     public function registerBundles()
     {
@@ -49,20 +52,17 @@ Most unixes and set up apaches can do with a symbolic link::
 Configuration
 -------------
 
-First, 'app/config/config.yml':
+First, 'app/config/config.yml', we have to point at the service configuration in our Bundle:
 
 .. configuration-block::
 
     .. code-block:: yaml
 
-      services:
-
-          ...
-
-          contract_manager:
-               class: RedpillLinpro\ExamplesBundle\Manager\ExampleManagerMongo
-               arguments: [ @simple_mongo ]
-
+    imports:
+        - { resource: parameters.ini }
+        - { resource: security.yml }
+        RedpillLinproExamplesBundle:
+            resource: @RedpillLinproExamplesBundle/Resources/config/services.yml
 
 Second, 'app/config/routing.yml':
 
@@ -70,13 +70,15 @@ Second, 'app/config/routing.yml':
 
     .. code-block:: yaml
 
-      _example:
-          resource: "@RedpillLinproExamplesBundle/Controller/ExampleController.php"
-          type:     annotation
-          prefix:   /example
-
+    RedpillLinproExamplesBundle:
+        resource: "@RedpillLinproExamplesBundle/Controller/"
+        type:     annotation
+        prefix:   /example
 
 And then it might even work.
+
+But, what this did was basically point to the config files in the Bundle itself.
+You'll find them, or rather service.yml under Resources/config/. The examples uses annotations for the routing to there are no routing file there.
 
 
 Cooking
