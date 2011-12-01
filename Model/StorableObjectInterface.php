@@ -19,4 +19,10 @@ interface StorableObjectInterface
 
     public static function getClassName();
 
+    public function setDataArrayIdentifierValue($identifier_value);
+
+    public function getDataArrayIdentifierValue();
+
+    public function hasDataArrayIdentifierValue();
+
 }

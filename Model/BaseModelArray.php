@@ -22,32 +22,32 @@ abstract class BaseModelArray implements StorableObjectInterface, \ArrayAccess
 
     private $_strict_model = false;
     private $_property_keys = array();
+    private $id;
+    private $id_key;
 
-    public function fromDataArray($data, \RedpillLinpro\NosqlBundle\Manager\BaseManager $manager)
+    public function __construct($data = array())
     {
-        if (!empty($data)) {
-            if (empty(static::$model_setup)) {
-                $this->_strict_model = false;
-                $this->id = null;
-                foreach ($data as $key => $val) {
-                    $this->$key = $val;
-                    $this->_property_keys[$key] = true;
-                }
-            } else {
-                $this->_strict_model = true;
-                foreach (static::$model_setup as $key => $val) {
-                    $this->_property_keys[$key] = true;
-                    if (isset($data[$key])) {
-                        $this->$key = $data[$key];
-                    } else {
-                        $this->$key = null;
-                    }
+        if (empty(static::$model_setup)) {
+            $this->_strict_model = false;
+            $this->id = null;
+            foreach ($data as $key => $val) {
+                $this->$key = $val;
+                $this->_property_keys[$key] = true;
+            }
+        } else {
+            $this->_strict_model = true;
+            foreach (static::$model_setup as $key => $val) {
+                $this->_property_keys[$key] = true;
+                if (isset($data[$key])) {
+                    $this->$key = $data[$key];
+                } else {
+                    $this->$key = null;
                 }
             }
         }
     }
 
-    public function fromDataArray($data = array())
+    public function fromDataArray($data, \RedpillLinpro\NosqlBundle\Manager\BaseManager $manager)
     {
         foreach ($data as $key => $val)
         {
@@ -79,6 +79,36 @@ abstract class BaseModelArray implements StorableObjectInterface, \ArrayAccess
         return static::$classname;
     }
 
+    /**
+     * Set the unique identifier value for this object
+     * 
+     * This method is used by the manager to set the identifier value to the
+     * value retrieved from the remote call after storing this object
+     * 
+     * @param mixed $identifier_value 
+     */
+    public function setDataArrayIdentifierValue($identifier_value)
+    {
+        $this[$this->id_key] = $identifier_value;
+    }
+
+    /**
+     * Returns the unique identifier value for this object, usually the value
+     * of an $id property, $<objecttype>Id or similar
+     * 
+     * @return mixed
+     */
+    public function getDataArrayIdentifierValue()
+    {
+error_log("getDataArrayIdentifierValue" . $this['_id']);
+        return $this[$this->id_key];
+    }
+    
+    public function hasDataArrayIdentifierValue()
+    {
+        return isset($this->$this->id_key) ? true : null;
+    }
+    
     /*
      * Functions implementing ArrayAccess
      */
@@ -99,14 +129,18 @@ abstract class BaseModelArray implements StorableObjectInterface, \ArrayAccess
 
     public function offsetExists($offset)
     {
+var_dump($this->_property_keys);
         return array_key_exists($offset, $this->_property_keys);
     }
 
     public function offsetGet($offset)
     {
+error_log("Offset:" . $offset);
         if ($offset != 'id' &&  $this->_strict_model 
                 && !array_key_exists($offset, static::$model_setup)) {
             throw new \Exception("The property {$offset} doesn't exist");
+        } elseif (!isset($this->$offset)) {
+            return null;
         }
 
         return $this->$offset;

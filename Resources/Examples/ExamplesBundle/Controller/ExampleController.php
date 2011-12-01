@@ -27,6 +27,7 @@ class ExampleController extends BaseController
         $example_manager = $this->get('example_manager');
 
         $examples = $example_manager->findAll();
+// error_log("Cname:" . $examples[0]->getName());
 
         return $this->render('RedpillLinproExamplesBundle:Example:list.html.twig', 
               array( 'examples' => $examples,

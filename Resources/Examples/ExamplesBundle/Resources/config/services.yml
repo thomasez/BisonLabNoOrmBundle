@@ -1,0 +1,13 @@
+services:
+    simple_mongo:
+        class: RedpillLinpro\NosqlBundle\Services\SimpleMongo
+        arguments:
+            dbhost: %simple_mongo.dbhost%
+            dbname: %simple_mongo.dbname%
+            dbuser: %simple_mongo.dbuser%
+            dbpass: %simple_mongo.dbpass%
+
+    example_manager:
+        class: RedpillLinpro\ExamplesBundle\Manager\Example
+        arguments: [ @simple_mongo ]
+
