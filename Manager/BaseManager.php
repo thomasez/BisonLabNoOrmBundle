@@ -270,12 +270,22 @@ abstract class BaseManager
 
     public function findOneById($id, $params = array())
     {
+        /* This got something to do with the REST stuff I guess. 
+         * Not messing with it now. Should not be here anyway but move to 
+         * the rest based services later.
         if (strpos($this->getEntityResource(), '{:'.$this->getDataArrayIdentifierColumn().'}') === false)
             throw new \Exception('This route does not have the required identification parameter, {'.$this->getDataArrayIdentifierColumn().'}');
                 
         $resource = str_replace('{:'.$this->getDataArrayIdentifierColumn().'}', $id, $this->getEntityResource());
+
+        */
+
+        if (!$id) {
+            throw new \Exception('To get something from findOneById you need to provide an ID');
+        }
+        $resource = $this->getEntityResource();
         $data = $this->access_service->findOneById(
-                $resource, $id, $params);
+                $this->getEntityResource(), $id, $params);
 
         if (!$data) {
             return null;
@@ -319,6 +329,7 @@ abstract class BaseManager
         } else {
             $resource = $this->getNewEntityResource();
         }
+
         $new_data = $this->access_service->save($object, $resource);
 
         if (isset($new_data[$this->getDataArrayIdentifierColumn()])) {
@@ -332,16 +343,22 @@ abstract class BaseManager
     {
 
         $classname = $this->getModelClassname();
-        if (!$object instanceof $classname) {
-            throw new \InvalidArgumentException('This is not an object I can delete, it must be of the same classname defined in this manager');
-        }
 
-        if (!$object->getDataArrayIdentifierValue()) {
-            throw new \InvalidArgumentException('This is not an object I can delete since it does not have a entity identifier value');
+        if ( gettype($object) == 'object') {
+            if (!$object instanceof $classname) {
+                throw new \InvalidArgumentException('This is not an object I can delete, it must be of the same classname defined in this manager');
+            }
+
+            if (!$object->getDataArrayIdentifierValue()) {
+                throw new \InvalidArgumentException('This is not an object I can delete since it does not have a entity identifier value');
+            }
+            $id = $object->getDataArrayIdentifierValue();
+        } else {
+            $id = $object;
         }
+            $status = $this->access_service->remove($id, $this->getEntityResource());
 
         // Save can do both insert and update with MongoDB.
-        $status = $this->access_service->remove($object->getDataArrayIdentifierValue(), $this->getEntityResource());
 
         return $status;
     }

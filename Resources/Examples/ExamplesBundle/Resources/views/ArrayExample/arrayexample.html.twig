@@ -1,0 +1,39 @@
+{% extends "RedpillLinproExamplesBundle::layout.html.twig" %}
+
+{% block title "ArrayExample " ~ id %}
+
+{% block content %}
+
+{%- if id -%}
+
+    <h1>ArrayExample {{ id }}</h1>
+    <form action="{{ path('arrayexample_update',{'id': id}) }}" method="post" {{ form_enctype(form) }}>
+
+{%- else -%}
+
+    <h1>New ArrayExample</h1>
+    <form action="{{ path('arrayexample_insert') }}" method="post" {{ form_enctype(form) }}>
+
+{%- endif -%}
+<table>
+    {% for field in fields %}
+      <tr>
+      <th>
+        {{ form_label(form[field]) }}:
+      </th>
+      <td>
+        {{ form_errors(form[field]) }}
+        {{ form_widget(form[field]) }}
+      </td>
+      </tr>
+    {% endfor %}
+</table>
+      {{ form_rest(form) }}
+      <input type="submit" />
+    </form>
+
+{% set code = code(_self) %}
+
+{% endblock %}
+
+

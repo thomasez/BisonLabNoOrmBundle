@@ -32,6 +32,8 @@ class SimpleMongo implements ServiceInterface
             throw new \InvalidArgumentException("Got no collection to save the data");
         }
 
+        $mongo_collection = $this->mongodb->$collection;
+
         if (isset($data['id']))
         {
             $mongo_id = new \MongoId($data['id']);
@@ -40,6 +42,7 @@ class SimpleMongo implements ServiceInterface
             $mongo_collection->update(array('_id' => $mongo_id), $data);
             // and Forth
             $data['id'] = $mongo_id->{'$id'};
+            unset($data['_id']);
         }
         else
         {
@@ -47,19 +50,6 @@ class SimpleMongo implements ServiceInterface
             $data['id'] = $data['_id']->{'$id'};
             unset($data['_id']);
         }
-   
-        $mongo_collection = $this->mongodb->$collection;
-
-        if (isset($data['id'])) {
-            $id = new \MongoId($data['id']);
-            unset($data['id']);
-            $mongo_collection->update(array('_id' => $id), $data);
-        } else {
-            $mongo_collection->insert($data);
-        }
-
-        $data['id'] = $data['_id'];
-        unset($data['_id']);
 
         return $data;
     }
@@ -87,12 +77,17 @@ class SimpleMongo implements ServiceInterface
     {
         $retarr = array();
 
+        // Hack.
+        $collection = strtolower($collection);
+
         // $this->mongodb->$collection->find() as $data)
-        foreach (iterator_to_array($this->mongodb->$collection->find()) as $data)
-            ; {
+        foreach (iterator_to_array($this->mongodb->$collection->find()) 
+                    as $data) {
+
             $data['id'] = $data['_id'];
             unset($data['_id']);
             $retarr[] = $data;
+
         }
         return $retarr;
     }

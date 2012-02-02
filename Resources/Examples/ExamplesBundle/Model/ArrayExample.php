@@ -16,6 +16,7 @@ class ArrayExample extends BaseModelArray
 
   protected static $classname = "ArrayExample";
 
-  protected static $id_key = "_id";
+  // protected static $id_key = "_id";
+  protected static $id_key = "id";
 
 }

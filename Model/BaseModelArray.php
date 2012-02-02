@@ -27,6 +27,7 @@ abstract class BaseModelArray implements StorableObjectInterface, \ArrayAccess
 
     public function __construct($data = array())
     {
+        $this->id_key = static::$id_key;
         if (empty(static::$model_setup)) {
             $this->_strict_model = false;
             $this->id = null;
@@ -100,7 +101,6 @@ abstract class BaseModelArray implements StorableObjectInterface, \ArrayAccess
      */
     public function getDataArrayIdentifierValue()
     {
-error_log("getDataArrayIdentifierValue" . $this['_id']);
         return $this[$this->id_key];
     }
     
@@ -118,8 +118,7 @@ error_log("getDataArrayIdentifierValue" . $this['_id']);
         $simple_array = array();
 
         foreach ($this as $key => $value) {
-            // This feeels soooo wrong!
-            if (preg_match("/^_/", $key)) {
+            if ($key == $this->id_key) {
                 continue;
             }
             $simple_array[$key] = $value;
@@ -129,13 +128,11 @@ error_log("getDataArrayIdentifierValue" . $this['_id']);
 
     public function offsetExists($offset)
     {
-var_dump($this->_property_keys);
         return array_key_exists($offset, $this->_property_keys);
     }
 
     public function offsetGet($offset)
     {
-error_log("Offset:" . $offset);
         if ($offset != 'id' &&  $this->_strict_model 
                 && !array_key_exists($offset, static::$model_setup)) {
             throw new \Exception("The property {$offset} doesn't exist");

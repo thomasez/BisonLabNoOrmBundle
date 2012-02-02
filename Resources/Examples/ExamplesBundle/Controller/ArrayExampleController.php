@@ -135,6 +135,7 @@ class ArrayExampleController extends BaseController
         $this->get('session')->setFlash('notice', 'Lagra!');
       }
 
+error_log("id:" . $saved_arrayexample->getId());
       return $this->getAction($saved_arrayexample->getId());
 
     }
@@ -188,6 +189,7 @@ class ArrayExampleController extends BaseController
     {
         $arrayexample_manager = $this->get('arrayexample_manager');
 
+error_log("id:" . $id);
         $arrayexample = $arrayexample_manager->findOneById($id);
 
         if (!$arrayexample)
