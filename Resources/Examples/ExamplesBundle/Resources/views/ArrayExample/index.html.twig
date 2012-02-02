@@ -1,11 +1,11 @@
 {% extends "RedpillLinproExamplesBundle::layout.html.twig" %}
 
-{% block title "Example " %}
+{% block title "ArrayExample " %}
 
 {% block content %}
-    <h1>New Example</h1>
+    <h1>New ArrayExample</h1>
 
-<form action="{{ path('example_insert') }}" method="post" {{ form_enctype(form) }}>
+<form action="{{ path('arrayexample_insert') }}" method="post" {{ form_enctype(form) }}>
     {{ form_widget(form) }}
 
     <input type="submit" />

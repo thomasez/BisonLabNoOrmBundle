@@ -4,7 +4,7 @@ namespace RedpillLinpro\ExamplesBundle\Model;
 
 use RedpillLinpro\NosqlBundle\Model\BaseModelArray;
 
-class Example extends BaseModelArray
+class ArrayExample extends BaseModelArray
 {
 
   protected static $model_setup = array(
@@ -14,7 +14,7 @@ class Example extends BaseModelArray
     'Foo'           => 'text',
     );
 
-  protected static $classname = "Example";
+  protected static $classname = "ArrayExample";
 
   protected static $id_key = "_id";
 

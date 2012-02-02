@@ -4,12 +4,12 @@ namespace RedpillLinpro\ExamplesBundle\Form;
 
 use RedpillLinpro\NosqlBundle\Form\BaseForm;
 
-class ExampleForm extends BaseForm
+class ArrayExampleForm extends BaseForm
 {
 
   public function getName()
   {
-    return 'Example';
+    return 'ArrayExample';
   }
 
 }

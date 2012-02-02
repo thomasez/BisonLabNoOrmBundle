@@ -7,7 +7,7 @@ services:
             dbuser: %simple_mongo.dbuser%
             dbpass: %simple_mongo.dbpass%
 
-    example_manager:
-        class: RedpillLinpro\ExamplesBundle\Manager\Example
+    arrayexample_manager:
+        class: RedpillLinpro\ExamplesBundle\Manager\ArrayExample
         arguments: [ @simple_mongo ]
 

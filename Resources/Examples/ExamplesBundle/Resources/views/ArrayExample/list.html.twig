@@ -1,23 +1,23 @@
 {% extends "RedpillLinproExamplesBundle::layout.html.twig" %}
 
-{% block title "Examples" %}
+{% block title "ArrayExamples" %}
 
 {% block content %}
-    <h1>Examples</h1>
+    <h1>ArrayExamples</h1>
 
 <table>
     <tr>
     <th>Name</th>
     <th>&nbsp;</th>
     </tr>
-    {% for example in examples %}
+    {% for arrayexample in arrayexamples %}
       <tr>
       <td>
-      <a href="{{ path('example_get',{ 'id': example.id}) }}">{{ example.Name }}</a>
+      <a href="{{ path('arrayexample_get',{ 'id': arrayexample.id}) }}">{{ arrayexample.Name }}</a>
 
       </td>
       <td>
-      <a href="{{ path('example_delete',{ 'id': example.id}) }}">Delete</a>
+      <a href="{{ path('arrayexample_delete',{ 'id': arrayexample.id}) }}">Delete</a>
       </td>
       </tr>
     {% endfor %}
