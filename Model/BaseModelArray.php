@@ -151,7 +151,7 @@ abstract class BaseModelArray implements StorableObjectInterface, \ArrayAccess
             throw new \Exception("The property {$offset} doesn't exist");
         }
 
-        $this->_property_keys[$key] = true;
+        $this->_property_keys[$offset] = true;
         $this->$offset = $value;
     }
 
