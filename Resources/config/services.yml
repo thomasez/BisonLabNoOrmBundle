@@ -1,0 +1,6 @@
+
+services:
+    twig.extension.pretty_print:
+        class: RedpillLinpro\NosqlBundle\Extension\TwigExtensionPrettyPrint
+        tags:
+            - { name: 'twig.extension' }
