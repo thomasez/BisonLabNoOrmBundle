@@ -66,6 +66,22 @@ abstract class BaseManager
     return $object;
   }
 
+  public function findOneByKeyVal($key, $val)
+  {
+    $objects = array();
+    $data = $this->access_service->findOneByKeyVal(
+                    static::$_collection, $key, $val);
+
+    if (!$data)
+    {
+      return null;
+    }
+
+    $object = new static::$_model($data);
+    return $object;
+
+  }
+
   public function findByKeyVal($key, $val)
   {
     $objects = array();
