@@ -10,7 +10,7 @@
 
 namespace RedpillLinpro\NosqlBundle\Model;
 
-abstract class BaseModelSchema implements StorableObjectInterface, \ArrayAccess
+abstract class BaseModelSchema extends BaseModel
 {
     /*
      * This is for the "Dynamic Schema" stuff. Insert a schema when you 
@@ -18,33 +18,43 @@ abstract class BaseModelSchema implements StorableObjectInterface, \ArrayAccess
      * and so on.
      *
      * I'll keep the option to have a schema as a static in the inheriting model.
+     *
+     * The schema will continue to be called model_setup since well, that's
+     * what it is.
      */
 
-    private $_schema = array();
+    private $_metadata = array();
     private $id;
-    private $id_key;
+    private $_id_key;
 
-    public function __construct($data = array(), $schema = array())
+    public function __construct($data = array(), $metadata = array())
     {
-        if (empty($schema)) {
+
+        $this->_metadata = $metadata;
+
+        if (empty($metadata['schema'])) {
             if (empty(static::$model_setup)) {
                 throw new \Exception("This object type, BaseModelSchema requires a defined schema to be able to handle itself.");
                 return null;
             } else {
                 // Maybe some convert instead? foreach with addToSchema?
-                $this->_schema = static::$model_setup;
+                $this->_metadata['schema'] = static::$model_setup;
             }
-        }
+        } 
 
-        $this->id_key = static::$id_key;
+        $this->_id_key = static::$id_key;
 
-        foreach ($this->_schema as $key) {
+        foreach ($this->_metadata['schema'] as $key => $definition) {
             if (isset($data[$key])) {
                 $this->$key = $data[$key];
             } else {
                 $this->$key = null;
             }
         }
+    }
+
+    public function getSchema() {
+        return $this->_metadata['schema'];
     }
 
     public function fromDataArray($data, \RedpillLinpro\NosqlBundle\Manager\BaseManager $manager)
@@ -89,7 +99,7 @@ abstract class BaseModelSchema implements StorableObjectInterface, \ArrayAccess
      */
     public function setDataArrayIdentifierValue($identifier_value)
     {
-        $this[$this->id_key] = $identifier_value;
+        $this[$this->_id_key] = $identifier_value;
     }
 
     /**
@@ -100,12 +110,12 @@ abstract class BaseModelSchema implements StorableObjectInterface, \ArrayAccess
      */
     public function getDataArrayIdentifierValue()
     {
-        return $this[$this->id_key];
+        return $this[$this->_id_key];
     }
     
     public function hasDataArrayIdentifierValue()
     {
-        return isset($this->$this->id_key) ? true : null;
+        return isset($this->$this->_id_key) ? true : null;
     }
     
     /*
@@ -117,7 +127,7 @@ abstract class BaseModelSchema implements StorableObjectInterface, \ArrayAccess
         $simple_array = array();
 
         foreach ($this as $key => $value) {
-            if ($key == $this->id_key) {
+            if ($key == $this->_id_key) {
                 continue;
             }
             $simple_array[$key] = $value;
@@ -127,12 +137,12 @@ abstract class BaseModelSchema implements StorableObjectInterface, \ArrayAccess
 
     public function offsetExists($offset)
     {
-        return array_key_exists($offset, $this->_schema);
+        return array_key_exists($offset, $this->_metadata['schema']);
     }
 
     public function offsetGet($offset)
     {
-        if ($offset != 'id' && !array_key_exists($offset, $this->_schema)) {
+        if ($offset != 'id' && !array_key_exists($offset, $this->_metadata['schema'])) {
             throw new \Exception("The property {$offset} doesn't exist");
         } elseif (!isset($this->$offset)) {
             return null;
@@ -144,23 +154,23 @@ abstract class BaseModelSchema implements StorableObjectInterface, \ArrayAccess
     public function offsetSet($offset, $value)
     {
 
-        if ($offset != 'id' && !array_key_exists($offset, $this->_schema)) {
+        if ($offset != 'id' && !array_key_exists($offset, $this->_metadata['schema'])) {
             throw new \Exception("The property {$offset} doesn't exist");
         }
 
-        $this->_schema[$offset] = true;
+        $this->_metadata['schema'][$offset] = true;
         $this->$offset = $value;
     }
 
     public function offsetUnset($offset)
     {
 
-        if ($offset != 'id' && !array_key_exists($offset, $this->_schema)) {
+        if ($offset != 'id' && !array_key_exists($offset, $this->_metadata['schema'])) {
             throw new \Exception("The property {$offset} doesn't exist");
         }
 
         // Should I really do this? unset is unset so I guess so, for now.
-        unset($this->_schema[$key]);
+        unset($this->_metadata['schema'][$key]);
 
         unset($this->$offsetSet);
         

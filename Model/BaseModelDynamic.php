@@ -21,13 +21,14 @@ abstract class BaseModelDynamic implements StorableObjectInterface, \ArrayAccess
      * the keys and also have a function for returning a schema so we can
      * show the data and also simple forms.
      */
-    private $_schema = array();
+    private $_metadata = array();
     private $id;
-    private $id_key;
+    private $_id_key;
 
-    public function __construct($data = array())
+    public function __construct($data = array(), $metadata = array())
     {
-        $this->id_key = static::$id_key;
+        $this->_metadata = $metadata;
+        $this->_id_key = static::$id_key;
         $this->id = null;
         foreach ($data as $key => $val) {
             $this->$key = $val;
@@ -40,7 +41,7 @@ abstract class BaseModelDynamic implements StorableObjectInterface, \ArrayAccess
         // We'll define _variables as private and not for our schema.
         if (preg_match("/^_/", $key)) { return; }
 
-        $this->_schema[$key] = array('FormType' => 'text');
+        $this->_metadata['schema'][$key] = array('FormType' => 'text', 'Validator' => array());
     }
 
     public function fromDataArray($data, \RedpillLinpro\NosqlBundle\Manager\BaseManager $manager)
@@ -85,7 +86,7 @@ abstract class BaseModelDynamic implements StorableObjectInterface, \ArrayAccess
      */
     public function setDataArrayIdentifierValue($identifier_value)
     {
-        $this[$this->id_key] = $identifier_value;
+        $this[$this->_id_key] = $identifier_value;
     }
 
     /**
@@ -96,12 +97,12 @@ abstract class BaseModelDynamic implements StorableObjectInterface, \ArrayAccess
      */
     public function getDataArrayIdentifierValue()
     {
-        return $this[$this->id_key];
+        return $this[$this->_id_key];
     }
     
     public function hasDataArrayIdentifierValue()
     {
-        return isset($this->$this->id_key) ? true : null;
+        return isset($this->$this->_id_key) ? true : null;
     }
     
     /*
@@ -113,7 +114,7 @@ abstract class BaseModelDynamic implements StorableObjectInterface, \ArrayAccess
         $simple_array = array();
 
         foreach ($this as $key => $value) {
-            if ($key == $this->id_key) {
+            if ($key == $this->_id_key) {
                 continue;
             }
             $simple_array[$key] = $value;
@@ -123,7 +124,7 @@ abstract class BaseModelDynamic implements StorableObjectInterface, \ArrayAccess
 
     public function offsetExists($offset)
     {
-        return array_key_exists($offset, $this->_schema);
+        return array_key_exists($offset, $this->_metadata['schema']);
     }
 
     public function offsetGet($offset)
@@ -141,7 +142,7 @@ abstract class BaseModelDynamic implements StorableObjectInterface, \ArrayAccess
     public function offsetUnset($offset)
     {
         // Should I really do this? unset is unset so I guess so, for now.
-        unset($this->_schema[$key]);
+        unset($this->_metadata['schema'][$key]);
 
         // Will this work or do we end up with a recurseloop?
         unset($this->$offset);

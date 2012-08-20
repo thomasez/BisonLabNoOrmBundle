@@ -20,9 +20,9 @@ abstract class BaseForm extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        foreach ($options['data']::getFormSetup() as $key => $type)
+        foreach ($options['data']->getSchema() as $key => $definition)
         {
-          $builder->add($key, $type);
+          $builder->add($key, $definition['FormType']);
         }
     }
 
