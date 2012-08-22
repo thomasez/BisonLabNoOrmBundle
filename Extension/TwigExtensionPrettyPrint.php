@@ -41,6 +41,8 @@ function pretty($value)
         if (is_array($value)) { 
             pretty($value); 
         } else {
+            // I want to change \n to <br />. Not perfect but I need it.
+            $value = preg_replace("/\n/", "<br />", $value);
             echo $value . "\n";
         }
 
