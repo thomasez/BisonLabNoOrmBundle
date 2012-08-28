@@ -64,7 +64,7 @@ abstract class BaseModelDynamic implements StorableObjectInterface, \ArrayAccess
 
     function getFormSetup()
     {
-        return static::$model_setup;
+        return $this->_metadata['schema'];
     }
 
     /*
