@@ -94,6 +94,11 @@ class SimpleMongo implements ServiceInterface
     
     public function findOneById($collection, $id, $params = array())
     {
+
+        // Not sure if this is the right way or if I should throw an 
+        // exception. But since I dislike exceptions....
+        if (empty($id)) { return null; }
+
         $data = $this->mongodb->$collection->findOne(
            array('_id' => new \MongoId($id)));
         $data['id'] = $data['_id']->{'$id'};

@@ -34,6 +34,8 @@ class TwigExtensionPrettyPrint extends \Twig_Extension
 
 function pretty($value) 
 {
+    if (empty($value)) { return ""; }
+
     echo "<table>\n";
     foreach($value as $key => $value) {
         
