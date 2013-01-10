@@ -1,0 +1,22 @@
+{
+    "name": "redpilllinpro/nosql-bundle",
+    "type": "symfony-bundle",
+    "description": "Bundle for simple access to (mainly) nosql databases for Symfony",
+    "keywords": ["Nosql adapter rest arrayaccess"],
+    "homepage": "https://github.com/thomasez/RedpillLinproNosqlBundle",
+    "license": "GPLv2",
+    "authors": [
+        {
+            "name": "Thomas Lundquist",
+            "email": "thomasez@redpill-linpro.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.2"
+    },
+    "autoload": {
+        "psr-0": { "RedpillLinpro\\NosqlBundle": "" }
+    },
+    "target-dir": "RedpillLinpro/NosqlBundle"
+}
+
