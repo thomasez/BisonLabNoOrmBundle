@@ -101,6 +101,9 @@ class SimpleMongo implements ServiceInterface
 
         $data = $this->mongodb->$collection->findOne(
            array('_id' => new \MongoId($id)));
+
+        if (is_null($data)) { return null; }
+
         $data['id'] = $data['_id']->{'$id'};
         unset($data['_id']);
         return $data;
@@ -109,6 +112,9 @@ class SimpleMongo implements ServiceInterface
     public function findOneByKeyVal($collection, $key, $val, $params = array())
     {
         $data = $this->mongodb->$collection->findOne(array($key => $val));
+
+        if (is_null($data)) { return null; }
+
         $data['id'] = $data['_id'];
         unset($data['_id']);
         return $data;
@@ -128,6 +134,8 @@ class SimpleMongo implements ServiceInterface
         // Since I am cooking rigth from php.net I'll use while here:
         while ($cursor->hasNext()) {
             $data = $cursor->getNext();
+            $data['id'] = $data['_id'];
+            unset($data['_id']);
             $retarr[] = $data;
         }
         return $retarr;
