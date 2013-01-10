@@ -87,7 +87,7 @@ abstract class BaseManager
     $objects = array();
 
     foreach ($this->access_service->findByKeyVal(
-        static::$_collection, $key, $val) as $o)
+        static::$_collection, $key, $val) as $data)
     {
       $object = new static::$_model($data);
       $objects[] = $object;
