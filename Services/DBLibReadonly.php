@@ -19,8 +19,6 @@ class DBLibReadonly implements ServiceInterfaceReadonly
     {
         $dsn = 'dblib:host='.$dbhost.':'.$dbport.';dbname='.$dbname;
         $this->connection = new \PDO($dsn, $dbuser, $dbpasswd);
-
-error_log("Got a dblib connection " . get_class($this->connection));
     }
 
     public function findOneById($table, $id, $params = array())
@@ -38,12 +36,22 @@ error_log("Got a dblib connection " . get_class($this->connection));
     
     public function findOneByKeyVal($table, $key, $val, $params = array())
     {
-error_log("findOneByKeyVal ($table, $key, $val");
+
+        if (is_string($val)) {
+            $value = mb_convert_encoding($val, "ISO-8859-1");
+        } else {
+            $value = $val;
+        }
+
+        if ($key == "End") { 
+            $key = '[End]'; 
+        }
+
         $q = $this->connection->prepare('SELECT * from '.$table 
                 .' WHERE '.$key.'=:val');
 
         $q->execute(array(
-            ':val' => $val
+            ':val' => $value
             ));
         $data = $q->fetch(\PDO::FETCH_ASSOC);
         return $data;
@@ -51,11 +59,21 @@ error_log("findOneByKeyVal ($table, $key, $val");
     
     public function findByKeyVal($table, $key, $val, $params = array())
     {
+        if (is_string($val)) {
+            $value = mb_convert_encoding($val, "ISO-8859-1");
+        } else {
+            $value = $val;
+        }
+
+        if ($key == "End") { 
+            $key = '[End]'; 
+        }
+
         $q = $this->connection->prepare('SELECT * from '.$table 
                 .' WHERE '.$key.' = :val');
 
         $q->execute(array(
-            ':val' => $val
+            ':val' => $value
             ));
         $data = $q->fetchall();
         return $data;
