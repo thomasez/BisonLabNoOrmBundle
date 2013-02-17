@@ -3,8 +3,19 @@ Installation Symfony 2.1 and newer.
 -----------------------------------
 
 This bundle can be found on Pagckagist so all you should have to do for
-installation is to add ``redpilllinpro/nosql-bundle``` in the require section
+download is to add ``redpilllinpro/nosql-bundle``` in the require section
 of ``composer.json``. For now, the only version available is ``master``.
+
+Run ``php composer.phar update`` and it should be downloaded and added to the autoloader.
+
+You also have to enable the bundle by registering it in ``app/AppKernel.php``::
+
+    $bundles = array(
+        // ...
+       new RedpillLinpro\NosqlBundle\RedpillLinproNosqlBundle(),
+    );
+
+
 
 Installation Symfony 2.0
 ------------------------
@@ -60,7 +71,7 @@ Configuration
 
 Creating the MongoDB database and add the settings to parameters.ini
 
-.. configuration-block::
+.. configuration-block ::
 
     .. code-block:: ini
 
@@ -73,7 +84,7 @@ Creating the MongoDB database and add the settings to parameters.ini
 
 
 
-.. configuration-block::
+.. configuration-block ::
 
     .. code-block:: yaml
 
