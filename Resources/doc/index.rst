@@ -5,6 +5,7 @@ A Nosql Bundle for Symfony 2.
 
 Authors: 
     Base, Mongo and arraystuff: Thomas Lundquist <thomasez@redpill-linpro.com>
+
     Annotations: Danel Andre Eikeland <dae@redpill-linpro.com>
 
 Project started june 2011. 
@@ -13,87 +14,16 @@ This is yet another way to access MongoDB (for now) in Symfony 2 and was
 created because of the disliking of the concept of the Doctrine ODM.
 
 This is way smaller, simpler and definately not enterprisey but seems to 
-work on schema less databases. 
+work on schema less databases.
 
-The concept is to use MongoDB for storage of array objects with as little
-work as possible to maintain the arrays.
+It's basically an adapter - manager setup with model objects that can be plain
+array access or configured objects. They are still meant to be accessed as
+arrays, it's just how the objecs are created that differs.
 
-Installation
-------------
+The main adapter is for MongoDB but there are also an example adapter for
+MS-SQL (ironical? yup. The author just needed to access an MS-SQL table and
+this was the quickest way to handle it.). An adapter for a REST service was
+also created but it was way too specific for being a part of this bundle.
 
-`Download`_ the bundle and put it under the ``RedpillLinpro\\NosqlBundle\\`` namespace, usually under vendor/bundles/
-
-Since I'd have to name it on Github with the complete name and it'll be split 
-into RedpillLinpro/NosqlBundle you have to do a quick mkdir and mv yourself.
-
-Usually in vendor/bundles/ do::
-
-    mkdir RedpillLinpro
-
-    mv RedpillLinproNosqlBundle RedpillLinpro/NosqlBundle
-
-You probably do not have one so creating the vendor/bundles/RedpillLinpro directory and add it to app/autoload.php as any other new namespaces::
-
-    $loader->registerNamespaces(array(
-        ...
-        'RedpillLinpro'    => __DIR__.'/../vendor/bundles/RedpillLinpro',
-    ));
-
-Then, like for any other bundle, include it in your Kernel class::
-
-    public function registerBundles()
-    {
-        $bundles = array(
-            ...
-
-            new RedpillLinpro\NosqlBundle\RedpillLinproNosqlBundle(),
-        );
-
-        ...
-    }
-
-        );
-
-        ...
-    }
-
-        );
-
-        ...
-    }
-
-
-Configuration
--------------
-
-Creating the MongoDB database and add the settings to parameters.ini
-
-.. configuration-block::
-
-    .. code-block:: ini
-
-      [parameters]
-          ...
-          simple_mongo.dbhost = localhost
-          simple_mongo.dbname = example
-          simple_mongo.dbuser = example
-          simple_mongo.dbpass = example
-
-
-
-.. configuration-block::
-
-    .. code-block:: yaml
-
-      services:
-          simple_mongo:
-              class: RedpillLinpro\NosqlBundle\Services\SimpleMongo
-                arguments:
-                    dbhost: %simple_mongo.dbhost%
-                    dbname: %simple_mongo.dbname%
-                    dbuser: %simple_mongo.dbuser%
-                    dbpass: %simple_mongo.dbpass%
-
-
-.. _Download: http://github.com/thomasez/RedpillLinproNosqlBundle
+A simple example application is available for source based documentation.
 
