@@ -52,19 +52,6 @@ Then, like for any other bundle, include it in your Kernel class::
             new RedpillLinpro\NosqlBundle\RedpillLinproNosqlBundle(),
         );
 
-        ...
-    }
-
-        );
-
-        ...
-    }
-
-        );
-
-        ...
-    }
-
 
 Configuration
 -------------
@@ -73,7 +60,7 @@ Creating the MongoDB database and add the settings to parameters.ini
 
 .. configuration-block ::
 
-    .. code-block:: ini
+    .. code-block :: ini
 
       [parameters]
           ...
@@ -86,7 +73,7 @@ Creating the MongoDB database and add the settings to parameters.ini
 
 .. configuration-block ::
 
-    .. code-block:: yaml
+    .. code-block :: yaml
 
       services:
           simple_mongo:
