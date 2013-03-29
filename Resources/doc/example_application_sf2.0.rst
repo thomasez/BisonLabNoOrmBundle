@@ -2,7 +2,7 @@
 Setting up the example application
 ----------------------------------
 
-We do presume you have Symfony set up properly and also the NosqlBundle.
+You have to have configured the NosqlBundle first.
 
 We'll do this quite simple, by some cooking.
 
@@ -18,11 +18,11 @@ First, create the bundle::
 
     mkdir -p src/RedpillLinpro
     cd src/RedpillLinpro
-    cp -a ../../vendor/redpilllinpro/nosql-bundle/RedpillLinpro/NosqlBundle/Resources/Examples/ExamplesBundle .
+    cp -a ../../vendor/bundles/RedpillLinpro/NosqlBundle/Resources/Examples/ExamplesBundle .
 
     or
 
-    ln -s ../../vendor/redpilllinpro/nosql-bundle/RedpillLinpro/NosqlBundle/Resources/Examples/ExamplesBundle .
+    ln -s ../../vendor/bundles/RedpillLinpro/NosqlBundle/Resources/Examples/ExamplesBundle .
 
 We need to add the RedpillLinpro namespace in src on top of vendor/bundles in app/autoload.php::
 
@@ -43,7 +43,7 @@ Then, like for any other bundle, include it in your Kernel class, usually app/Ap
 
 Second, we need the web resources available to the public;
 
-Most unixes and their apaches can do well with a symbolic link::
+Most unixes and set up apaches can do with a symbolic link::
 
     cd web/bundles
     ln -s ../../src/RedpillLinpro/ExamplesBundle/Resources/public examples
@@ -52,20 +52,7 @@ Most unixes and their apaches can do well with a symbolic link::
 Configuration
 -------------
 
-In case you haven't configured the mongodb setup, we'll start there.
-
-Set up MongoDB and add the settings to ``app/config/parameters.yml``
-
-.. configuration-block ::
-
-    .. code-block :: yaml
-
-        simple_mongo.dbhost: example
-        simple_mongo.dbname: example
-        simple_mongo.dbuser: example
-        simple_mongo.dbpass: example
-
-So, in 'app/config/config.yml', we have to point at the service configuration in our Bundle:
+First, 'app/config/config.yml', we have to point at the service configuration in our Bundle:
 
 .. configuration-block::
 
@@ -74,9 +61,10 @@ So, in 'app/config/config.yml', we have to point at the service configuration in
     imports:
         - { resource: parameters.ini }
         - { resource: security.yml }
-        - { resource: @RedpillLinproExamplesBundle/Resources/config/services.yml }
+        RedpillLinproExamplesBundle:
+            resource: @RedpillLinproExamplesBundle/Resources/config/services.yml
 
-Lastly, 'app/config/routing.yml':
+Second, 'app/config/routing.yml':
 
 .. configuration-block::
 

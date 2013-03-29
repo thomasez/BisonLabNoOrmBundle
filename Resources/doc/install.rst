@@ -56,7 +56,7 @@ Then, like for any other bundle, include it in your Kernel class::
 Configuration
 -------------
 
-Creating the MongoDB database and add the settings to parameters.ini
+Set up MongoDB and add the settings to ``app/config/parameters.yml``
 
 .. configuration-block ::
 
@@ -75,14 +75,10 @@ Creating the MongoDB database and add the settings to parameters.ini
 
     .. code-block :: yaml
 
-      services:
-          simple_mongo:
-              class: RedpillLinpro\NosqlBundle\Services\SimpleMongo
-                arguments:
-                    dbhost: %simple_mongo.dbhost%
-                    dbname: %simple_mongo.dbname%
-                    dbuser: %simple_mongo.dbuser%
-                    dbpass: %simple_mongo.dbpass%
+        simple_mongo.dbhost: example
+        simple_mongo.dbname: example
+        simple_mongo.dbuser: example
+        simple_mongo.dbpass: example
 
 
 .. _Download: http://github.com/thomasez/RedpillLinproNosqlBundle

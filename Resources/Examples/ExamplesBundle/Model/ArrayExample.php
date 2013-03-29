@@ -2,9 +2,9 @@
 
 namespace RedpillLinpro\ExamplesBundle\Model;
 
-use RedpillLinpro\NosqlBundle\Model\BaseModelArray;
+use RedpillLinpro\NosqlBundle\Model\BaseModelConfigured;
 
-class ArrayExample extends BaseModelArray
+class ArrayExample extends BaseModelConfigured
 {
 
   protected static $model_setup = array(
