@@ -135,6 +135,15 @@ abstract class BaseModelConfigured implements StorableObjectInterface, \ArrayAcc
         return $simple_array;
     }
 
+    public function __call($name, $args = null)
+    {
+        if (preg_match("/^get(\w+)/i", $name, $matches)) {
+            return $this->offsetGet($key);
+        } elseif (preg_match("/^set(\w+)/i", $name, $matches)) {
+            return $this->offsetSet($matches[1], $args);
+        }
+    }
+
     public function offsetExists($offset)
     {
         return array_key_exists($offset, $this->_metadata['schema']);

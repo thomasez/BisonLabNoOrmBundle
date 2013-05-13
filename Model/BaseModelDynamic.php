@@ -124,10 +124,10 @@ abstract class BaseModelDynamic implements StorableObjectInterface, \ArrayAccess
 
     public function __call($name, $args = null)
     {
-        if ($key = preg_replace("/get(\w+)/i", '$1', $name)) {
+        if (preg_match("/^get(\w+)/i", $name, $matches)) {
             return $this->offsetGet($key);
-        } elseif ($key = preg_replace("/set(\w+)/i", '$1', $name)) {
-            return $this->offsetSet($key, $args);
+        } elseif (preg_match("/^set(\w+)/i", $name, $matches)) {
+            return $this->offsetSet($matches[1], $args);
         }
     }
 
