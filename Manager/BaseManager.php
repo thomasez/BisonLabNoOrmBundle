@@ -96,6 +96,36 @@ abstract class BaseManager
     return $objects;
   }
 
+  public function findOneByKeyValAndSet($criteria = array())
+  {
+    $objects = array();
+    $data = $this->access_service->findOneByKeyValAndSet(
+                    static::$_collection, $criteria);
+
+    if (!$data)
+    {
+      return null;
+    }
+
+    $object = new static::$_model($data);
+    return $object;
+
+  }
+
+  public function findByKeyValAndSet($criteria = array())
+  {
+    $objects = array();
+
+    foreach ($this->access_service->findByKeyValAndSet(
+        static::$_collection, $criteria) as $data)
+    {
+      $object = new static::$_model($data);
+      $objects[] = $object;
+    }
+
+    return $objects;
+  }
+
   public function save($object)
   {
 /*

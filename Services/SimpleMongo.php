@@ -28,6 +28,9 @@ class SimpleMongo implements ServiceInterface
             $data = $data->toDataArray();
         }
 
+// print_r($data);
+error_log("Coll:" . $collection);
+
         if (!$collection) {
             throw new \InvalidArgumentException("Got no collection to save the data");
         }
@@ -131,6 +134,38 @@ class SimpleMongo implements ServiceInterface
         }
     
         $cursor = $this->mongodb->$collection->find(array($key => $val));
+        // Since I am cooking rigth from php.net I'll use while here:
+        while ($cursor->hasNext()) {
+            $data = $cursor->getNext();
+            $data['id'] = $data['_id'];
+            unset($data['_id']);
+            $retarr[] = $data;
+        }
+        return $retarr;
+    }
+
+    public function findOneByKeyValAndSet($collection, $criterias, $params = array())
+    {
+        $data = $this->mongodb->$collection->findOne($criterias);
+
+        if (is_null($data)) { error_log("Hrmf"); return null; }
+
+        $data['id'] = $data['_id'];
+        unset($data['_id']);
+        return $data;
+    }
+    
+    public function findByKeyValAndSet($collection, $criterias, $params = array())
+    {
+        $retarr = array();
+    
+        // PHPs Mongodb thingie has an issue with numbers, it quotes them 
+        // unless it is explocitly typecasted or manipulated in math context.
+        if (is_numeric($val)) {
+            $val = $val * 1;
+        }
+    
+        $cursor = $this->mongodb->$collection->find($criterias);
         // Since I am cooking rigth from php.net I'll use while here:
         while ($cursor->hasNext()) {
             $data = $cursor->getNext();
