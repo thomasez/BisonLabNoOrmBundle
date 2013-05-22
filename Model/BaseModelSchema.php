@@ -138,9 +138,9 @@ abstract class BaseModelSchema implements StorableObjectInterface, \ArrayAccess
     public function __call($name, $args = null)
     {
         if (preg_match("/^get(\w+)/i", $name, $matches)) {
-            return $this->offsetGet($key);
+            return $this->offsetGet($matches[1]);
         } elseif (preg_match("/^set(\w+)/i", $name, $matches)) {
-            return $this->offsetSet($matches[1], $args);
+            return $this->offsetSet($matches[1], $args[0]);
         }
     }
 
