@@ -42,7 +42,9 @@ abstract class BaseModelSchema implements StorableObjectInterface, \ArrayAccess
             }
         } 
 
+        // Gotta check out what I meant with this one..
         $this->_id_key = static::$id_key;
+        $this->id = $data[static::$id_key];
 
         foreach ($this->_metadata['schema'] as $key => $definition) {
             if (isset($data[$key])) {
@@ -51,6 +53,7 @@ abstract class BaseModelSchema implements StorableObjectInterface, \ArrayAccess
                 $this->$key = null;
             }
         }
+
     }
 
     public function getSchema() {
@@ -127,7 +130,10 @@ abstract class BaseModelSchema implements StorableObjectInterface, \ArrayAccess
         $simple_array = array();
 
         foreach ($this as $key => $value) {
-            if ($key == $this->_id_key) {
+            // Why this? Not even I remember.. 
+            // if ($key == $this->_id_key) {
+            // But the id_key itself is not needed.
+            if ($key == "_id_key") {
                 continue;
             }
             $simple_array[$key] = $value;

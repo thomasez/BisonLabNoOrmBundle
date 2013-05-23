@@ -28,9 +28,6 @@ class SimpleMongo implements ServiceInterface
             $data = $data->toDataArray();
         }
 
-// print_r($data);
-error_log("Coll:" . $collection);
-
         if (!$collection) {
             throw new \InvalidArgumentException("Got no collection to save the data");
         }
