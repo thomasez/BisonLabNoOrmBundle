@@ -44,7 +44,8 @@ abstract class BaseModelSchema implements StorableObjectInterface, \ArrayAccess
 
         // Gotta check out what I meant with this one..
         $this->_id_key = static::$id_key;
-        $this->id = $data[static::$id_key];
+        $this->id = isset($data[static::$id_key]) 
+                ? $data[static::$id_key] : null;
 
         foreach ($this->_metadata['schema'] as $key => $definition) {
             if (isset($data[$key])) {
