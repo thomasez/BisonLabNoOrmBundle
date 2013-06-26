@@ -79,6 +79,18 @@ abstract class BaseModelConfigured implements StorableObjectInterface, \ArrayAcc
      * Statics.
      */
 
+    /**
+     *
+     * Need to get the ID key for the adapter/service to grab the 
+     * correct stuff. 
+     * 
+     * @return string?
+     */
+    static function getIdKey()
+    {
+        return static::$id_key;
+    }
+
     static function getFormSetup()
     {
         return static::$model_setup;

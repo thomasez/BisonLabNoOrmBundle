@@ -71,6 +71,18 @@ abstract class BaseModelDynamic implements StorableObjectInterface, \ArrayAccess
      * Statics.
      */
 
+    /**
+     *
+     * Need to get the ID key for the adapter/service to grab the 
+     * correct stuff. 
+     * 
+     * @return string?
+     */
+    static function getIdKey()
+    {
+        return static::$id_key;
+    }
+
     static function getClassName()
     {
         return static::$classname;
