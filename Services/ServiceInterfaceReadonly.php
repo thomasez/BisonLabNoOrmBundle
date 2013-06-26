@@ -15,7 +15,7 @@ interface ServiceInterfaceReadonly
 
   public function findAll($collection, $params = array());
 
-  public function findOneById($collection, $id, $params = array());
+  public function findOneById($collection, $id_key, $id, $params = array());
 
   public function findOneByKeyVal($collection, $key, $val, $params = array());
 

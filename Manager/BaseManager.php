@@ -53,8 +53,10 @@ abstract class BaseManager
 
   public function findOneById($id)
   {
+    // This was kinda annoying and I'm sure I just doing it wrong.
+    $m = static::$_model;
     $data = $this->access_service->findOneById(
-        static::$_collection, $id);
+        static::$_collection, $m::getIdKey(), $id);
 
     if (!$data)
     {

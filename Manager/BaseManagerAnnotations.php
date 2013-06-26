@@ -285,7 +285,7 @@ abstract class BaseManager
         }
         $resource = $this->getEntityResource();
         $data = $this->access_service->findOneById(
-                $this->getEntityResource(), $id, $params);
+                $this->getEntityResource(), 'id', $id, $params);
 
         if (!$data) {
             return null;

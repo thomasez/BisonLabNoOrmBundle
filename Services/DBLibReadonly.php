@@ -21,14 +21,14 @@ class DBLibReadonly implements ServiceInterfaceReadonly
         $this->connection = new \PDO($dsn, $dbuser, $dbpasswd);
     }
 
-    public function findOneById($table, $id, $params = array())
+    public function findOneById($table, $id_key, $id, $params = array())
     {
-        $q = $this->connection->prepare('SELECT * from '.$table.' WHERE id  = :id');
+        $q = $this->connection->prepare('SELECT * from '.$table.' WHERE :id_key  = :id');
 
         $q->execute(array(
+            ':id_key' => $id_key,
             ':id' => $id
             ));
-
         $data = $q->fetch(\PDO::FETCH_ASSOC);
         return $data;
 

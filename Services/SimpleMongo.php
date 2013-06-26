@@ -92,7 +92,7 @@ class SimpleMongo implements ServiceInterface
         return $retarr;
     }
     
-    public function findOneById($collection, $id, $params = array())
+    public function findOneById($collection, $id_key, $id, $params = array())
     {
 
         // Not sure if this is the right way or if I should throw an 
