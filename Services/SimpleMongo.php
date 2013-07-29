@@ -145,7 +145,7 @@ class SimpleMongo implements ServiceInterface
     {
         $data = $this->mongodb->$collection->findOne($criterias);
 
-        if (is_null($data)) { error_log("Hrmf"); return null; }
+        if (is_null($data)) { return null; }
 
         $data['id'] = $data['_id'];
         unset($data['_id']);
