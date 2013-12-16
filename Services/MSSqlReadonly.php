@@ -36,7 +36,8 @@ class MSSqlReadonly implements ServiceInterfaceReadonly
         }
         // Nicked from
         // http://stackoverflow.com/questions/3252651/how-do-you-escape-quotes-in-a-sql-query-using-php
-        $escaped_sql = str_replace("'", "''", $sql);
+        // But not used.
+        // $escaped_sql = str_replace("'", "''", $sql);
         $result = mssql_query($sql, $this->connection);
 
         // No iteration, we'll pick the first one.
@@ -64,9 +65,11 @@ class MSSqlReadonly implements ServiceInterfaceReadonly
         } else {
             $sql = 'SELECT * from '.$table .' WHERE '.$key."='" . $val . "';";
         }
+
         // Nicked from
         // http://stackoverflow.com/questions/3252651/how-do-you-escape-quotes-in-a-sql-query-using-php
-        $escaped_sql = str_replace("'", "''", $sql);
+        // But not used.
+        // $escaped_sql = str_replace("'", "''", $sql);
         $result = mssql_query($sql, $this->connection);
 
         // No iteration, we'll pick the first one.
