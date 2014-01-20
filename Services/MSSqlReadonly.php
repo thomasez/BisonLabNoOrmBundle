@@ -20,6 +20,9 @@ class MSSqlReadonly implements ServiceInterfaceReadonly
 
     public function __construct($dbhost, $dbport = 1433, $dbname, $dbuser, $dbpasswd)
     {
+        // ini_set('mssql.charset', 'UTF-8');
+        // ini_set('mssql.charset', 'windows-1252');
+        ini_set('mssql.charset', 'UCS-2');
         // Connect to mssql server 
         $this->connection = mssql_connect($dbhost . ":" . $dbport, $dbuser, $dbpasswd);
         // Select a database 
@@ -50,7 +53,7 @@ class MSSqlReadonly implements ServiceInterfaceReadonly
     public function findOneByKeyVal($table, $key, $val, $params = array())
     {
         if (is_string($val)) {
-            $value = mb_convert_encoding($val, "ISO-8859-1");
+            $value = mb_convert_encoding($val, "UTF-8");
         } else {
             $value = $val;
         }
@@ -60,16 +63,17 @@ class MSSqlReadonly implements ServiceInterfaceReadonly
             $key = '[End]'; 
         }
 
-        if (is_int($val)) {
-            $sql = 'SELECT * from '.$table .' WHERE '.$key."=" . $val . ";";
+        if (is_int($value)) {
+            $sql = 'SELECT * from '.$table .' WHERE '.$key."=" . $value . ";";
         } else {
-            $sql = 'SELECT * from '.$table .' WHERE '.$key."='" . $val . "';";
+            $sql = 'SELECT * from '.$table .' WHERE '.$key."='" . $value . "';";
         }
 
         // Nicked from
         // http://stackoverflow.com/questions/3252651/how-do-you-escape-quotes-in-a-sql-query-using-php
         // But not used.
         // $escaped_sql = str_replace("'", "''", $sql);
+        // $result = mssql_query($escaped_sql, $this->connection);
         $result = mssql_query($sql, $this->connection);
 
         // No iteration, we'll pick the first one.
@@ -93,9 +97,9 @@ class MSSqlReadonly implements ServiceInterfaceReadonly
         }
 
         if (is_int($val)) {
-            $sql = 'SELECT * from '.$table .' WHERE '.$key."=" . $val . ";";
+            $sql = 'SELECT * from '.$table .' WHERE '.$key."=" . $value . ";";
         } else {
-            $sql = 'SELECT * from '.$table .' WHERE '.$key."='" . $val . "';";
+            $sql = 'SELECT * from '.$table .' WHERE '.$key."='" . $value . "';";
         }
         // Nicked from
         // http://stackoverflow.com/questions/3252651/how-do-you-escape-quotes-in-a-sql-query-using-php
