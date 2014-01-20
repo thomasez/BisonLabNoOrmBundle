@@ -59,6 +59,5 @@ class SugarCrmRestReadonly implements ServiceInterfaceReadonly
         $data = $this->sugar->Search($table);
         return $data;
     }
-    
 
 }
