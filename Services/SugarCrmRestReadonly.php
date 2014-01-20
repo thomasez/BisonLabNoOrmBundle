@@ -57,7 +57,7 @@ class SugarCrmRestReadonly implements ServiceInterfaceReadonly
     public function findAll($table, $params = array())
     {
         $data = $this->sugar->Search($table);
-        return $data;
+        return $data['records'];
     }
 
 }
