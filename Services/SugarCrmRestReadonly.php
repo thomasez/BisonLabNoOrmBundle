@@ -43,7 +43,7 @@ class SugarCrmRestReadonly implements ServiceInterfaceReadonly
         $sopts = array_merge(array($val => $val), $params);
         $data = $this->sugar->Search($table, $sopts);
 
-        return current($data);
+        return current($data['records']);
     }
     
     public function findByKeyVal($table, $key, $val, $params = array())
@@ -51,7 +51,7 @@ class SugarCrmRestReadonly implements ServiceInterfaceReadonly
         $sopts = array_merge(array($key => $val), $params);
         $data = $this->sugar->Search($table, $sopts);
 
-        return $data;
+        return $data['records'];
     }
 
     public function findAll($table, $params = array())
