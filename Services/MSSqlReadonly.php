@@ -20,9 +20,6 @@ class MSSqlReadonly implements ServiceInterfaceReadonly
 
     public function __construct($dbhost, $dbport = 1433, $dbname, $dbuser, $dbpasswd)
     {
-        // ini_set('mssql.charset', 'UTF-8');
-        // ini_set('mssql.charset', 'windows-1252');
-        ini_set('mssql.charset', 'UCS-2');
         // Connect to mssql server 
         $this->connection = mssql_connect($dbhost . ":" . $dbport, $dbuser, $dbpasswd);
         // Select a database 
@@ -53,7 +50,7 @@ class MSSqlReadonly implements ServiceInterfaceReadonly
     public function findOneByKeyVal($table, $key, $val, $params = array())
     {
         if (is_string($val)) {
-            $value = mb_convert_encoding($val, "UTF-8");
+            $value = utf8_decode($val);
         } else {
             $value = $val;
         }
@@ -86,7 +83,7 @@ class MSSqlReadonly implements ServiceInterfaceReadonly
     public function findByKeyVal($table, $key, $val, $params = array())
     {
         if (is_string($val)) {
-            $value = mb_convert_encoding($val, "ISO-8859-1");
+            $value = utf8_decode($val);
         } else {
             $value = $val;
         }
