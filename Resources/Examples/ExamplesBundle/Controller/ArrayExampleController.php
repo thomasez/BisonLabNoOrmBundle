@@ -63,7 +63,7 @@ class ArrayExampleController extends BaseController
       $form = $this->get('form.factory')->create( new Form\ArrayExampleForm(), $arrayexample);
 
       $request = $this->get('request');
-      $form->bindRequest($request);
+      $form->handleRequest($request);
 
       if (!$form->isValid() )
       {
@@ -117,7 +117,7 @@ class ArrayExampleController extends BaseController
       $form = $this->get('form.factory')->create( new Form\ArrayExampleForm(), $arrayexample);
 
       $request = $this->get('request');
-      $form->bindRequest($request);
+      $form->handleRequest($request);
 
       if (!$form->isValid() )
       {
