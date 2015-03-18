@@ -77,10 +77,6 @@ class SimpleMongo implements ServiceInterface
     {
         $retarr = array();
 
-        // Hack.
-        $collection = strtolower($collection);
-
-        // $this->mongodb->$collection->find() as $data)
         foreach (iterator_to_array($this->mongodb->$collection->find()) 
                     as $data) {
 
