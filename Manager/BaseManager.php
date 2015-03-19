@@ -130,13 +130,6 @@ abstract class BaseManager
 
   public function save($object)
   {
-/*
-    error_log("obj:" .  $object->getClassName() . "!=". static::$_model);
-    if ($object->getClassName() != static::$_model)
-    {
-      throw new \InvalidArgumentException('This is not an object I can save');
-    }
-*/
 
     // Save can do both insert and update with MongoDB.
     $new_data = $this->access_service->save($object, static::$_collection);
@@ -153,32 +146,24 @@ abstract class BaseManager
   public function delete($object)
   {
 
-    if (is_object($object))
-    {
-      if ($object->getClassName() != static::$_collection)
-      {
-        throw new \InvalidArgumentException('This is not an object I can delete');
-      }
-
-      if ($object->getId())
-      {
-        $id = $object->getId();
-      }
-    }
-    else
-    {
+    if (is_object($object) && $id = $object->getId()) {
+        // This could be discussed as being superfluous or not, since later
+        // here I'll just accept the object as being an id and just delete it.. 
+        // So why bother checking this then?
+        if ($object->getClassName() != static::$_collection
+            && get_class($object) != static::$_model) {
+            throw new \InvalidArgumentException('This is not an object I can delete. It may be a missing Id or wrong class.');
+        }
+    } elseif (!is_object($object)) {
        $id = $object; 
     }
 
-    if (empty($id))
-    {
-      throw new \InvalidArgumentException('This is not an object I can delete since I do not have a unique identifier which right now is "id"');
+    if (!$id) {
+        throw new \InvalidArgumentException('This is not an object I can delete. It may be a missing Id or wrong class.');
     }
 
-    // Save can do both insert and update with MongoDB.
     $status = $this->access_service->remove($id, static::$_collection);
-
     return $status;
-
   }
+
 }
