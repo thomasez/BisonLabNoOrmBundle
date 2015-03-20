@@ -186,7 +186,10 @@ abstract class BaseModelSchema implements StorableObjectInterface, \ArrayAccess
             throw new \Exception("The property {$offset} doesn't exist");
         }
 
-        $this->_metadata['schema'][$offset] = true;
+        // I don't really like this, but this *is* a schema and if you define
+        // the type as an integer, you have to make it one. And since Symfony
+        // Forms can't handle hidden integers it will try to store them as
+        // strings. So, we may have to handle that here.
         $this->$offset = $value;
     }
 

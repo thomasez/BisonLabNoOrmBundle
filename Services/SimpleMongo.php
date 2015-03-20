@@ -139,7 +139,14 @@ class SimpleMongo implements ServiceInterface
 
     public function findOneByKeyValAndSet($collection, $criterias, $params = array())
     {
-        $data = $this->mongodb->$collection->findOne($criterias);
+        /* According to https://blog.serverdensity.com/checking-if-a-document-exists-mongodb-slow-findone-vs-find/
+         * using find and the cursor is a lot faster..
+         */
+        // $data = $this->mongodb->$collection->findOne($criterias);
+        $cursor = $this->mongodb->$collection->find($criterias);
+        $data = null;
+        if ($cursor->hasNext())
+            $data = $cursor->getNext();
 
         if (is_null($data)) { return null; }
 
