@@ -157,6 +157,15 @@ abstract class BaseModelDynamic implements StorableObjectInterface, \ArrayAccess
     public function offsetSet($offset, $value)
     {
         $this->addToSchema($offset);
+        // I cannot add "integer" to the schema since it may not be meant as
+        // being an integer all the time.
+        // Reason for doing this is that if it's stored as a string in Mongo, it
+        // won't be found when you search with an int. 
+        if (is_numeric($value) ) {
+            $this->$offset = (int)$value;
+        } else {
+            $this->$offset = $value;
+        }
         $this->$offset = $value;
     }
 

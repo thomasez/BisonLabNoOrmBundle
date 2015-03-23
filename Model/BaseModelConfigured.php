@@ -179,8 +179,11 @@ abstract class BaseModelConfigured implements StorableObjectInterface, \ArrayAcc
             throw new \Exception("The property {$offset} doesn't exist");
         }
 
-        $this->_metadata['schema'][$offset] = true;
-        $this->$offset = $value;
+        if ('integer' == $this->_metadata['schema'][$offset]) {
+            $this->$offset = (int)$value;
+        } else {
+            $this->$offset = $value;
+        }
     }
 
     public function offsetUnset($offset)

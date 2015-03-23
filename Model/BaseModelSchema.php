@@ -190,7 +190,17 @@ abstract class BaseModelSchema implements StorableObjectInterface, \ArrayAccess
         // the type as an integer, you have to make it one. And since Symfony
         // Forms can't handle hidden integers it will try to store them as
         // strings. So, we may have to handle that here.
-        $this->$offset = $value;
+        // Yup. Testing it now.
+        // (Should I rather change this to just check on "is_numeric"? Not if
+        // the shema is being used, but I think I'd better should do it in the
+        // dynamic ones. Reason is that if it's stored as a string in Mongo, it
+        // won't be found when you search with an int. 
+        // And even more, should I fail if value is not integer?
+        if ('integer' == $this->_metadata['schema'][$offset]) {
+            $this->$offset = (int)$value;
+        } else {
+            $this->$offset = $value;
+        }
     }
 
     public function offsetUnset($offset)
