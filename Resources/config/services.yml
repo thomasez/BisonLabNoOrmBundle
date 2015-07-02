@@ -4,7 +4,3 @@ services:
         class: RedpillLinpro\NosqlBundle\Extension\TwigExtensionPrettyPrint
         tags:
             - { name: 'twig.extension' }
-
-    property_accessor:
-      class: %property_accessor.class%
-      arguments: [true]
