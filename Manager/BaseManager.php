@@ -51,6 +51,11 @@ abstract class BaseManager
 
   }
 
+  /*
+   * Personally I'd lke to use get for single and find for multiple, but as
+   * long as so many others (at least Doctrine..) uses find and findOne I'll
+   * stick to it aswell. 
+   */
   public function findOneById($id)
   {
     // This was kinda annoying and I'm sure I just doing it wrong.
@@ -98,6 +103,9 @@ abstract class BaseManager
     return $objects;
   }
 
+  /*
+   * Odd name? Basically, this ANDs all elements in the criteria array().
+   */
   public function findOneByKeyValAndSet($criteria = array())
   {
     $objects = array();
@@ -111,9 +119,11 @@ abstract class BaseManager
 
     $object = new static::$_model($data);
     return $object;
-
   }
 
+  /*
+   * Odd name? Basically, this ANDs all elements in the criteria array().
+   */
   public function findByKeyValAndSet($criteria = array())
   {
     $objects = array();
@@ -128,10 +138,13 @@ abstract class BaseManager
     return $objects;
   }
 
+  /*
+   * Save can do both insert and update with MongoDB.
+   * Other adapters can do it however they like and still support this save.
+   * UPSERT, REPLACE INTO, get/post and so on.
+   */
   public function save($object)
   {
-
-    // Save can do both insert and update with MongoDB.
     $new_data = $this->access_service->save($object, static::$_collection);
 
     if (isset($new_data['id']))
@@ -140,9 +153,11 @@ abstract class BaseManager
     }
 
     return $object;
-
   }
 
+  /*
+   * Why is this not called remove? Good question.
+   */
   public function delete($object)
   {
 
@@ -164,6 +179,14 @@ abstract class BaseManager
 
     $status = $this->access_service->remove($id, static::$_collection);
     return $status;
+  }
+
+  /*
+   * Which is why we alias.
+   */
+  public function remove($object)
+  {
+    return $this->delete($object);
   }
 
 }
