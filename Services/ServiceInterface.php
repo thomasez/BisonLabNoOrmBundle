@@ -17,13 +17,21 @@ interface ServiceInterface
 
   public function remove($data, $collection = null);
 
-  public function findAll($collection, $params = array());
+  /*
+   * Options, why not?
+   * For now I would like these:
+   *  - orderBy
+   *  - limit
+   *
+   * For the adaptors, implement what you are able to.
+   */
+  public function findAll($collection, $options = array());
 
-  public function findOneById($collection, $id_key, $id, $params = array());
+  public function findOneById($collection, $id_key, $id, $options = array());
 
-  public function findOneByKeyVal($collection, $key, $val, $params = array());
+  public function findOneByKeyVal($collection, $key, $val, $options = array());
 
-  public function findByKeyVal($collection, $key, $val, $params = array());
+  public function findByKeyVal($collection, $key, $val, $options = array());
   
   // public function call($resource, $method = 'GET', $data = array());
 

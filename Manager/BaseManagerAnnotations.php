@@ -256,10 +256,10 @@ abstract class BaseManager
      * Finders
      */
 
-    public function findAll($params = array())
+    public function findAll($options = array())
     {
         $objects = array();
-        foreach ($this->access_service->findAll($this->getCollectionResource(), $params) as $o) {
+        foreach ($this->access_service->findAll($this->getCollectionResource(), $options) as $o) {
             $object = $this->getInstantiatedModel();
             $object->fromDataArray($o, $this);
             $objects[] = $object;
@@ -268,7 +268,7 @@ abstract class BaseManager
         return $objects;
     }
 
-    public function findOneById($id, $params = array())
+    public function findOneById($id, $options = array())
     {
         /* This got something to do with the REST stuff I guess. 
          * Not messing with it now. Should not be here anyway but move to 
@@ -285,7 +285,7 @@ abstract class BaseManager
         }
         $resource = $this->getEntityResource();
         $data = $this->access_service->findOneById(
-                $this->getEntityResource(), 'id', $id, $params);
+                $this->getEntityResource(), 'id', $id, $options);
 
         if (!$data) {
             return null;
@@ -297,12 +297,12 @@ abstract class BaseManager
         return $object;
     }
 
-    public function findByKeyVal($key, $val, $params = array())
+    public function findByKeyVal($key, $val, $options = array())
     {
         $objects = array();
 
         foreach ($this->access_service->findByKeyVal(
-                $this->getCollectionResource(), $key, $val, $params) as $o) {
+                $this->getCollectionResource(), $key, $val, $options) as $o) {
             $object = $this->getInstantiatedModel();
             $object->fromDataArray($o, $this);
             $objects[] = $object;

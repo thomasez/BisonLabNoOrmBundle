@@ -22,7 +22,7 @@ error_log("DSN:" . $dsn);
         $this->connection = new \PDO($dsn, $dbuser, $dbpasswd);
     }
 
-    public function findOneById($table, $id_key, $id, $params = array())
+    public function findOneById($table, $id_key, $id, $options = array())
     {
         $q = $this->connection->prepare('SELECT * from '.$table.' WHERE :id_key  = :id');
 
@@ -35,7 +35,7 @@ error_log("DSN:" . $dsn);
 
     }
     
-    public function findOneByKeyVal($table, $key, $val, $params = array())
+    public function findOneByKeyVal($table, $key, $val, $options = array())
     {
         if (is_string($val)) {
             $value = mb_convert_encoding($val, "ISO-8859-1");
@@ -73,7 +73,7 @@ print_r(            $this->connection->errorInfo());
         return $data;
     }
     
-    public function findByKeyVal($table, $key, $val, $params = array())
+    public function findByKeyVal($table, $key, $val, $options = array())
     {
         if (is_string($val)) {
             $value = mb_convert_encoding($val, "ISO-8859-1");
@@ -95,7 +95,7 @@ print_r(            $this->connection->errorInfo());
         return $data;
     }
 
-    public function findAll($table, $params = array())
+    public function findAll($table, $options = array())
     {
         $q = $this->connection->prepare('SELECT * from '.$table);
         $q->execute();

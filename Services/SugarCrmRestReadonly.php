@@ -31,7 +31,7 @@ class SugarCrmRestReadonly implements ServiceInterfaceReadonly
             ->connect();
     }
 
-    public function findOneById($table, $id_key, $id, $params = array())
+    public function findOneById($table, $id_key, $id, $options = array())
     {
         // If a 404, handle it, if anything else, throw it further.
         try {
@@ -45,9 +45,9 @@ class SugarCrmRestReadonly implements ServiceInterfaceReadonly
         return $data;
     }
     
-    public function findOneByKeyVal($table, $key, $val, $params = array())
+    public function findOneByKeyVal($table, $key, $val, $options = array())
     {
-        $sopts = array_merge(array($val => $val), $params);
+        $sopts = array_merge(array($val => $val), $options);
         try {
             $data = $this->sugar->Search($table, $sopts);
         } catch (\Guzzle\Http\Exception\ClientErrorResponseException $e) {
@@ -60,9 +60,9 @@ class SugarCrmRestReadonly implements ServiceInterfaceReadonly
         return current($data['records']);
     }
     
-    public function findByKeyVal($table, $key, $val, $params = array())
+    public function findByKeyVal($table, $key, $val, $options = array())
     {
-        $sopts = array_merge(array($key => $val), $params);
+        $sopts = array_merge(array($key => $val), $options);
         // Good question; does search return 404 at all? To be honest, it 
         // shouldn't.
         try {
@@ -77,7 +77,7 @@ class SugarCrmRestReadonly implements ServiceInterfaceReadonly
         return $data['records'];
     }
 
-    public function findAll($table, $params = array())
+    public function findAll($table, $options = array())
     {
         $data = $this->sugar->Search($table);
         return $data['records'];

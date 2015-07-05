@@ -136,42 +136,42 @@ abstract class BaseModelAnnotation implements StorableObjectInterface
         return $this->_resource_location_prefix . $this->_resource_location;
     }
     
-    protected function getResourceByRoutename($routename, $params = array())
+    protected function getResourceByRoutename($routename, $options = array())
     {
         $resource = $this->_entitymanager->getResourceRoute($routename);
-        foreach ($params as $key => $value) {
+        foreach ($options as $key => $value) {
             $resource = str_replace("{:{$key}}", $value, $resource);
         }
         return $resource;
     }
     
-    protected function _apiCall($routename, $params = array())
+    protected function _apiCall($routename, $options = array())
     {
-        return $this->_apiGet($routename, $params);
+        return $this->_apiGet($routename, $options);
     }
     
-    protected function _apiGet($routename, $params = array())
+    protected function _apiGet($routename, $options = array())
     {
-        $resource_route = $this->getResourceByRoutename($routename, $params);
+        $resource_route = $this->getResourceByRoutename($routename, $options);
         $resource_route = (substr($resource_route, 0, 1) == "/") ? $resource_route : $this->_getResourceLocation() . '/' . $resource_route;
         
         return $this->_entitymanager->getAccessService()->call($resource_route);
     }
     
-    protected function _apiSet($routename, $params = array(), $post_params = array())
+    protected function _apiSet($routename, $options = array(), $post_options = array())
     {
-        $resource_route = $this->getResourceByRoutename($routename, $params);
+        $resource_route = $this->getResourceByRoutename($routename, $options);
         $resource_route = (substr($resource_route, 0, 1) == "/") ? $resource_route : $this->_getResourceLocation() . '/' . $resource_route;
         
-        return $this->_entitymanager->getAccessService()->call($resource_route, 'POST', $post_params);
+        return $this->_entitymanager->getAccessService()->call($resource_route, 'POST', $post_options);
     }
     
-    protected function _apiUnset($routename, $params = array(), $post_params = array())
+    protected function _apiUnset($routename, $options = array(), $post_options = array())
     {
-        $resource_route = $this->getResourceByRoutename($routename, $params);
+        $resource_route = $this->getResourceByRoutename($routename, $options);
         $resource_route = (substr($resource_route, 0, 1) == "/") ? $resource_route : $this->_getResourceLocation() . '/' . $resource_route;
         
-        return $this->_entitymanager->getAccessService()->call($resource_route, 'DELETE', $post_params);
+        return $this->_entitymanager->getAccessService()->call($resource_route, 'DELETE', $post_options);
     }
     
     protected function _applyDataArrayProperty($property, $result, $extracted = null)

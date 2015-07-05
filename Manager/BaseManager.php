@@ -36,11 +36,11 @@ abstract class BaseManager
   /*
    * Finders
    */
-  public function findAll($params = array())
+  public function findAll($options = array())
   {
 
     $objects = array();
-    foreach ($this->access_service->findAll(static::$_collection, $params) as $o)
+    foreach ($this->access_service->findAll(static::$_collection, $options) as $o)
     {
       $object = new static::$_model($o);
       $object->setId($o['id']);
@@ -73,7 +73,15 @@ abstract class BaseManager
     return $object;
   }
 
-  public function findOneByKeyVal($key, $val)
+  /*
+   * Options, why not?
+   * For now I would like these:
+   *  - orderBy
+   *  - limit
+   *
+   * For the adaptors, implement what you are able to.
+   */
+  public function findOneByKeyVal($key, $val, $options = array())
   {
     $objects = array();
     $data = $this->access_service->findOneByKeyVal(
@@ -89,7 +97,10 @@ abstract class BaseManager
 
   }
 
-  public function findByKeyVal($key, $val)
+  /* 
+   * Increasingly non-simple.
+   */
+  public function findByKeyVal($key, $val, $options = array())
   {
     $objects = array();
 
@@ -106,7 +117,7 @@ abstract class BaseManager
   /*
    * Odd name? Basically, this ANDs all elements in the criteria array().
    */
-  public function findOneByKeyValAndSet($criteria = array())
+  public function findOneByKeyValAndSet($criteria = array(), $options = array())
   {
     $objects = array();
     $data = $this->access_service->findOneByKeyValAndSet(
@@ -124,7 +135,7 @@ abstract class BaseManager
   /*
    * Odd name? Basically, this ANDs all elements in the criteria array().
    */
-  public function findByKeyValAndSet($criteria = array())
+  public function findByKeyValAndSet($criteria = array(), $options = array())
   {
     $objects = array();
 

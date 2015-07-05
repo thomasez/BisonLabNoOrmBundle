@@ -111,6 +111,15 @@ error_log("No need to save");
     return $status;
   }
 
+  /*
+   * I wonder if this is the only one I need.
+   */
+  public function getHistory($object, $limit = null) {
+    $ = $this->findByKeyVal('id', $this->getId());
+
+
+  }
+
 
   private function _hasChanged($old, $new)
   {

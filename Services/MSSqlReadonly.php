@@ -26,7 +26,7 @@ class MSSqlReadonly implements ServiceInterfaceReadonly
         $db = mssql_select_db($dbname, $this->connection);
     }
 
-    public function findOneById($table, $id_key, $id, $params = array())
+    public function findOneById($table, $id_key, $id, $options = array())
     {
 
         if (is_int($id)) {
@@ -47,7 +47,7 @@ class MSSqlReadonly implements ServiceInterfaceReadonly
 
     }
     
-    public function findOneByKeyVal($table, $key, $val, $params = array())
+    public function findOneByKeyVal($table, $key, $val, $options = array())
     {
         if (is_string($val)) {
             $value = utf8_decode($val);
@@ -80,7 +80,7 @@ class MSSqlReadonly implements ServiceInterfaceReadonly
         return $data;
     }
     
-    public function findByKeyVal($table, $key, $val, $params = array())
+    public function findByKeyVal($table, $key, $val, $options = array())
     {
         if (is_string($val)) {
             $value = utf8_decode($val);
@@ -112,7 +112,7 @@ class MSSqlReadonly implements ServiceInterfaceReadonly
         return $data;
     }
 
-    public function findAll($table, $params = array())
+    public function findAll($table, $options = array())
     {
 
         $sql = 'SELECT * from '.$table .';';

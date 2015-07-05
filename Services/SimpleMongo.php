@@ -74,7 +74,7 @@ class SimpleMongo implements ServiceInterface
                 array('justOne' => true));
     }
 
-    public function findAll($collection, $params = array())
+    public function findAll($collection, $options = array())
     {
         $retarr = array();
 
@@ -89,7 +89,7 @@ class SimpleMongo implements ServiceInterface
         return $retarr;
     }
     
-    public function findOneById($collection, $id_key, $id, $params = array())
+    public function findOneById($collection, $id_key, $id, $options = array())
     {
 
         // Not sure if this is the right way or if I should throw an 
@@ -106,7 +106,7 @@ class SimpleMongo implements ServiceInterface
         return $data;
     }
     
-    public function findOneByKeyVal($collection, $key, $val, $params = array())
+    public function findOneByKeyVal($collection, $key, $val, $options = array())
     {
         $data = $this->mongodb->$collection->findOne(array($key => $val));
 
@@ -117,7 +117,7 @@ class SimpleMongo implements ServiceInterface
         return $data;
     }
     
-    public function findByKeyVal($collection, $key, $val, $params = array())
+    public function findByKeyVal($collection, $key, $val, $options = array())
     {
         $retarr = array();
     
@@ -138,7 +138,7 @@ class SimpleMongo implements ServiceInterface
         return $retarr;
     }
 
-    public function findOneByKeyValAndSet($collection, $criterias, $params = array())
+    public function findOneByKeyValAndSet($collection, $criterias, $options = array())
     {
         /* According to https://blog.serverdensity.com/checking-if-a-document-exists-mongodb-slow-findone-vs-find/
          * using find and the cursor is a lot faster..
@@ -156,7 +156,7 @@ class SimpleMongo implements ServiceInterface
         return $data;
     }
     
-    public function findByKeyValAndSet($collection, $criterias, $params = array())
+    public function findByKeyValAndSet($collection, $criterias, $options = array())
     {
         $retarr = array();
     
