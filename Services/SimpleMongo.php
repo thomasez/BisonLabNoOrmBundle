@@ -128,6 +128,8 @@ class SimpleMongo implements ServiceInterface
         }
     
         $cursor = $this->mongodb->$collection->find(array($key => $val));
+        $this->_handleOptions($cursor, $options);
+
         // Since I am cooking rigth from php.net I'll use while here:
         while ($cursor->hasNext()) {
             $data = $cursor->getNext();
@@ -145,6 +147,8 @@ class SimpleMongo implements ServiceInterface
          */
         // $data = $this->mongodb->$collection->findOne($criterias);
         $cursor = $this->mongodb->$collection->find($criterias);
+        $this->_handleOptions($cursor, $options);
+
         $data = null;
         if ($cursor->hasNext())
             $data = $cursor->getNext();
@@ -167,6 +171,8 @@ class SimpleMongo implements ServiceInterface
         }
     
         $cursor = $this->mongodb->$collection->find($criterias);
+        $this->_handleOptions($cursor, $options);
+
         // Since I am cooking rigth from php.net I'll use while here:
         while ($cursor->hasNext()) {
             $data = $cursor->getNext();
@@ -177,4 +183,18 @@ class SimpleMongo implements ServiceInterface
         return $retarr;
     }
 
+    private function _handleOptions(&$cursor, &$options)
+    {
+        if (isset($options['orderBy'])) {
+            $sort = array();
+            foreach ($options['orderBy'] as $orderBy) {
+                $order = $orderBy[1] == "ASC" ? 1 : -1;
+                $cursor->sort(array($orderBy[0] => $order));
+            }
+        }
+
+        if (isset($options['limit'])) {
+            $cursor->limit($options['limit']);
+        }
+    }
 }

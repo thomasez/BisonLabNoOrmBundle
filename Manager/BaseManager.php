@@ -76,16 +76,19 @@ abstract class BaseManager
   /*
    * Options, why not?
    * For now I would like these:
-   *  - orderBy
+   *  - orderBy =  array($key => [ASC|DESC])
+   *  - orderBy =  array( array($key => [ASC|DESC]), array($key => [ASC|DESC]) )
    *  - limit
    *
    * For the adaptors, implement what you are able to.
    */
   public function findOneByKeyVal($key, $val, $options = array())
   {
+    $this->_handleOptions($options);
+
     $objects = array();
     $data = $this->access_service->findOneByKeyVal(
-                    static::$_collection, $key, $val);
+                    static::$_collection, $key, $val, $options);
 
     if (!$data)
     {
@@ -102,10 +105,11 @@ abstract class BaseManager
    */
   public function findByKeyVal($key, $val, $options = array())
   {
+    $this->_handleOptions($options);
     $objects = array();
 
     foreach ($this->access_service->findByKeyVal(
-        static::$_collection, $key, $val) as $data)
+        static::$_collection, $key, $val, $options) as $data)
     {
       $object = new static::$_model($data);
       $objects[] = $object;
@@ -119,9 +123,10 @@ abstract class BaseManager
    */
   public function findOneByKeyValAndSet($criteria = array(), $options = array())
   {
+    $this->_handleOptions($options);
     $objects = array();
     $data = $this->access_service->findOneByKeyValAndSet(
-                    static::$_collection, $criteria);
+                    static::$_collection, $criteria, $options);
 
     if (!$data)
     {
@@ -137,10 +142,11 @@ abstract class BaseManager
    */
   public function findByKeyValAndSet($criteria = array(), $options = array())
   {
+    $this->_handleOptions($options);
     $objects = array();
 
     foreach ($this->access_service->findByKeyValAndSet(
-        static::$_collection, $criteria) as $data)
+        static::$_collection, $criteria, $options) as $data)
     {
       $object = new static::$_model($data);
       $objects[] = $object;
@@ -198,6 +204,21 @@ abstract class BaseManager
   public function remove($object)
   {
     return $this->delete($object);
+  }
+
+  /*
+   * Helper functions.
+   */
+  private function _handleOptions(&$options)
+  {
+    // I want the adapters as simple as posible, which menas I always send them
+    // multiple orderBy while letting the users of the Bundle to do whatever.
+    if (isset($options['orderBy'])) {
+        // Array of orderBy's? If not, we have to create it.
+        if (!is_array($options['orderBy'][0])) {
+            $options['orderBy'] = array($options['orderBy']);
+        }
+    }
   }
 
 }
