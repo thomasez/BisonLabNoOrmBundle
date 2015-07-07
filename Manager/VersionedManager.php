@@ -36,7 +36,7 @@ abstract class VersionedManager extends BaseManager
    * Are they alike? If yes, no need to go through all this, return.
    * Create new array.
    * Set "data" to the original.
-   * Set "next_version_created_timestamp" to microseconds since epoch.
+   * Set "next_version_created" to microseconds since epoch.
    * Set "id" to $object->getId();
    * Save object.
    * Save version array.
@@ -49,17 +49,15 @@ abstract class VersionedManager extends BaseManager
 
   public function save($object)
   {
-
     $original = array();
 
     // Does it exist?
     if ($object->getId()) {
-        $original_data = $this->findOneById($object->getId());
-        if ($original_data == $original) {
-error_log("No need to save");
+        $original_object = $this->findOneById($object->getId());
+        if ($original_object == $object) {
             return $object;
         }
-        $original['data'] = $original_data;
+        $original['data'] = $original_object->toDataArray();
     }
 
     // Save can do both insert and update with MongoDB.
@@ -70,8 +68,8 @@ error_log("No need to save");
       $object->setId($new_data['id']);
     }
 
-    $original['next_version_created_timestamp'] = round(microtime(true) * 1000);
-    $original['id'] = $object->getId();
+    $original['next_version_created'] = round(microtime(true) * 1000);
+    $original['object_id'] = $object->getId();
 
     $this->access_service->save($original, static::$_versions_collection);
     return $object;
@@ -114,17 +112,34 @@ error_log("No need to save");
   /*
    * I wonder if this is the only one I need.
    */
-  public function getHistory($object, $limit = null) {
-    $ = $this->findByKeyVal('id', $this->getId());
+  public function findFromHistory($object, $limit = null) {
+    // This is a hack, but does it matter? The laternative is to have my own
+    // findByKeyVal here.
+    $history = array();
+    $object_id = $object instanceof static::$_model ? $object->getId() : $object;
+    foreach ($this->access_service->findByKeyVal(static::$_versions_collection,
+        'object_id', $object_id, array(
+        // Cannot use handleOptions in the base manager, aka we need to set
+        // array of arrays here.
+        'orderBy' => array(array('next_version_created', 'DESC')),
+        'limit' => $limit)) as $data) 
+        {
 
-
+        // Replacing.
+      $data['data'] = new static::$_model($data['data']);
+      $history[] = $data;
+    }
+    return $history;
   }
 
-
-  private function _hasChanged($old, $new)
-  {
-     
-
+  /*
+   * No, it's not.
+   */
+  public function findOneFromHistoryById($id) {
+    // This was kinda annoying and I'm sure I just doing it wrong.
+    $m = static::$_model;
+    return $this->access_service->findOneById(
+        static::$_versions_collection, $m::getIdKey(), $id);
   }
 
 }
