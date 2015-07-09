@@ -124,10 +124,16 @@ abstract class VersionedManager extends BaseManager
         'orderBy' => array(array('next_version_created', 'DESC')),
         'limit' => $limit)) as $data) 
         {
-
         // Replacing.
-      $data['data'] = new static::$_model($data['data']);
-      $history[] = $data;
+        // I have no idea why or how we could end up with a data free log item,
+        // but it happens..
+        // I pondered about not returning log items without data, but that's
+        // kinda wrong aswell. Better make the users filter, then they can
+        // choose what they want.
+        if (isset($data['data'])) {
+            $data['data'] = new static::$_model($data['data']);
+            $history[] = $data;
+        }
     }
     return $history;
   }
