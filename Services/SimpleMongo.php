@@ -19,7 +19,7 @@ class SimpleMongo implements ServiceInterface
 
     public function __construct($dbhost, $dbname, $dbuser)
     {
-        $this->mongo = new \Mongo();
+        $this->mongo = new \MongoClient();
         $this->mongodb = $this->mongo->selectDB($dbname);
     }
 
