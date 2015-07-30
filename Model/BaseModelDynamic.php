@@ -119,35 +119,8 @@ abstract class BaseModelDynamic extends BaseModel implements StorableObjectInter
     
     /*
      * Functions implementing ArrayAccess
+     * __call, toDataArray and offsetExists is in BaseModel.
      */
-
-    public function toDataArray()
-    {
-        $simple_array = array();
-
-        foreach ($this as $key => $value) {
-            if ($key == $this->_id_key) {
-                continue;
-            }
-            $simple_array[$key] = $value;
-        }
-        return $simple_array;
-    }
-
-    public function __call($name, $args = null)
-    {
-        if (preg_match("/^get(\w+)/i", $name, $matches)) {
-            return $this->offsetGet($key);
-        } elseif (preg_match("/^set(\w+)/i", $name, $matches)) {
-            return $this->offsetSet($matches[1], $args);
-        }
-    }
-
-    public function offsetExists($offset)
-    {
-        return array_key_exists($offset, $this->_metadata['schema']);
-    }
-
     public function offsetGet($offset)
     {
         return isset($this->$offset) ? $this->$offset : null;

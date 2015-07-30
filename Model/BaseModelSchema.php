@@ -136,38 +136,8 @@ abstract class BaseModelSchema extends BaseModel implements StorableObjectInterf
     
     /*
      * Functions implementing ArrayAccess
+     * __call, toDataArray and offsetExists is in BaseModel.
      */
-
-    public function toDataArray()
-    {
-        $simple_array = array();
-
-        foreach ($this as $key => $value) {
-            // Why this? Not even I remember.. 
-            // if ($key == $this->_id_key) {
-            // But the id_key itself is not needed.
-            if ($key == "_id_key") {
-                continue;
-            }
-            $simple_array[$key] = $value;
-        }
-        return $simple_array;
-    }
-
-    public function __call($name, $args = null)
-    {
-        if (preg_match("/^get(\w+)/i", $name, $matches)) {
-            return $this->offsetGet($matches[1]);
-        } elseif (preg_match("/^set(\w+)/i", $name, $matches)) {
-            return $this->offsetSet($matches[1], $args[0]);
-        }
-    }
-
-    public function offsetExists($offset)
-    {
-        return array_key_exists($offset, $this->_metadata['schema']);
-    }
-
     public function offsetGet($offset)
     {
         if ($offset != 'id' && !array_key_exists($offset, $this->_metadata['schema'])) {
