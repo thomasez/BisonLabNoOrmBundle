@@ -10,7 +10,7 @@
 
 namespace RedpillLinpro\NosqlBundle\Model;
 
-abstract class BaseModelAnnotation implements StorableObjectInterface
+abstract class BaseModelAnnotation extends BaseModel implements StorableObjectInterface
 {
 
     /**

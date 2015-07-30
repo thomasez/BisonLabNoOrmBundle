@@ -10,7 +10,7 @@
 
 namespace RedpillLinpro\NosqlBundle\Model;
 
-abstract class BaseModelDynamic implements StorableObjectInterface, \ArrayAccess
+abstract class BaseModelDynamic extends BaseModel implements StorableObjectInterface, \ArrayAccess
 {
     /*
      * This is the model version for objects / data that has no defined schema.
