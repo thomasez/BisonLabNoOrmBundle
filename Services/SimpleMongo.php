@@ -26,7 +26,7 @@ class SimpleMongo implements ServiceInterface
     public function save($data, $collection = null)
     {
         if (is_object($data)) {
-            $data = $data->toDataArray();
+            $data = $data->toCompleteArray();
         }
 
         if (!$collection) {

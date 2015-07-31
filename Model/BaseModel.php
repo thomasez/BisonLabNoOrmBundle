@@ -21,6 +21,11 @@ abstract class BaseModel
      * Functions implementing ArrayAccess
      */
 
+    /*
+     * This one returns only the data part of the object. I'm not sure it's the
+     * right thing to do and that I'd rather have "completeArray" and a
+     * stripped "toArray" instead
+     */
     public function toDataArray()
     {
         $simple_array = array();
@@ -34,6 +39,16 @@ abstract class BaseModel
             if ($key == "_metadata") {
                 continue;
             }
+            $simple_array[$key] = $value;
+        }
+        return $simple_array;
+    }
+
+    public function toCompleteArray()
+    {
+        $simple_array = array();
+
+        foreach ($this as $key => $value) {
             $simple_array[$key] = $value;
         }
         return $simple_array;
