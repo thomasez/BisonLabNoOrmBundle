@@ -18,7 +18,6 @@ class MysqlReadonly implements ServiceInterfaceReadonly
     public function __construct($dbhost, $dbport = 1433, $dbname, $dbuser, $dbpasswd)
     {
         $dsn = 'mysql:host='.$dbhost.';port='.$dbport.';dbname='.$dbname;
-error_log("DSN:" . $dsn);
         $this->connection = new \PDO($dsn, $dbuser, $dbpasswd);
     }
 

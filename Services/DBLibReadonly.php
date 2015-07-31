@@ -18,7 +18,6 @@ class DBLibReadonly implements ServiceInterfaceReadonly
     public function __construct($dbhost, $dbport = 1433, $dbname, $dbuser, $dbpasswd)
     {
         $dsn = 'dblib:host='.$dbhost.':'.$dbport.';dbname='.$dbname;
-error_log("DSN:" . $dsn);
         $this->connection = new \PDO($dsn, $dbuser, $dbpasswd);
     }
 
@@ -60,16 +59,8 @@ error_log("DSN:" . $dsn);
         $q = $this->connection->prepare($sql);
         $x = $q->execute();
 
-error_log($sql);
-
         $data = $q->fetch(\PDO::FETCH_ASSOC);
-print_r($data);
-error_log("Fikk " . gettype($data));
 
-        if (!$data) {
-error_log("Fikk ikkeno");
-print_r(            $this->connection->errorInfo());
-        }
         return $data;
     }
     
