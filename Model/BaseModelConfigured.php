@@ -23,10 +23,6 @@ abstract class BaseModelConfigured extends BaseModel implements StorableObjectIn
      * what it is.
      */
 
-    private $_metadata = array();
-    private $id;
-    private $_id_key;
-
     public function __construct($data = array(), $metadata = array())
     {
 

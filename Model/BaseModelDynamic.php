@@ -21,10 +21,6 @@ abstract class BaseModelDynamic extends BaseModel implements StorableObjectInter
      * the keys and also have a function for returning a schema so we can
      * show the data and also simple forms.
      */
-    private $_metadata = array();
-    private $id;
-    private $_id_key;
-
     public function __construct($data = array(), $metadata = array())
     {
         $this->_metadata = $metadata;

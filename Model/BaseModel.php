@@ -13,6 +13,10 @@ namespace RedpillLinpro\NosqlBundle\Model;
 abstract class BaseModel
 {
 
+    protected $_metadata = array();
+    protected $id;
+    protected $_id_key;
+
     /*
      * Functions implementing ArrayAccess
      */
