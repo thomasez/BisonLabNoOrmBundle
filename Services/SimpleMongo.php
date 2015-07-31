@@ -112,7 +112,7 @@ class SimpleMongo implements ServiceInterface
 
         if (is_null($data)) { return null; }
 
-        $data['id'] = $data['_id'];
+        $data['id'] = $data['_id']->{'$id'};
         unset($data['_id']);
         return $data;
     }
