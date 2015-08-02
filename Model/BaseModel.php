@@ -31,7 +31,7 @@ abstract class BaseModel
         $simple_array = array();
 
         foreach ($this as $key => $value) {
-            if ($key == $this->_id_key) {
+            if ($key == "_id_key") {
                 continue;
             }
             // Do I want this one? I think so. The metadata isn't a part of the
