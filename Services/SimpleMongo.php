@@ -164,10 +164,12 @@ class SimpleMongo implements ServiceInterface
     {
         $retarr = array();
     
-        // PHPs Mongodb thingie has an issue with numbers, it quotes them 
-        // unless it is explocitly typecasted or manipulated in math context.
-        if (is_numeric($val)) {
-            $val = $val * 1;
+        foreach ($criterias as $key => $val) {
+            // PHPs Mongodb thingie has an issue with numbers, it quotes them 
+            // unless it is explocitly typecasted or manipulated in math context.
+            if (is_numeric($val)) {
+                $criterias[$val] = $val * 1;
+            }
         }
     
         $cursor = $this->mongodb->$collection->find($criterias);
