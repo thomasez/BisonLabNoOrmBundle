@@ -81,7 +81,7 @@ class SimpleMongo implements ServiceInterface
         foreach (iterator_to_array($this->mongodb->$collection->find()) 
                     as $data) {
 
-            $data['id'] = $data['_id'];
+            $data['id'] = $data['_id']->{'$id'};
             unset($data['_id']);
             $retarr[] = $data;
 
@@ -133,7 +133,7 @@ class SimpleMongo implements ServiceInterface
         // Since I am cooking rigth from php.net I'll use while here:
         while ($cursor->hasNext()) {
             $data = $cursor->getNext();
-            $data['id'] = $data['_id'];
+            $data['id'] = $data['_id']->{'$id'};
             unset($data['_id']);
             $retarr[] = $data;
         }
@@ -155,7 +155,7 @@ class SimpleMongo implements ServiceInterface
 
         if (is_null($data)) { return null; }
 
-        $data['id'] = $data['_id'];
+        $data['id'] = $data['_id']->{'$id'};
         unset($data['_id']);
         return $data;
     }
@@ -178,7 +178,7 @@ class SimpleMongo implements ServiceInterface
         // Since I am cooking rigth from php.net I'll use while here:
         while ($cursor->hasNext()) {
             $data = $cursor->getNext();
-            $data['id'] = $data['_id'];
+            $data['id'] = $data['_id']->{'$id'};
             unset($data['_id']);
             $retarr[] = $data;
         }
