@@ -168,7 +168,7 @@ class SimpleMongo implements ServiceInterface
             // PHPs Mongodb thingie has an issue with numbers, it quotes them 
             // unless it is explocitly typecasted or manipulated in math context.
             if (is_numeric($val)) {
-                $criterias[$val] = $val * 1;
+                $criterias[$key] = $val * 1;
             }
         }
     
