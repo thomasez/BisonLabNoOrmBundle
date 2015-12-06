@@ -17,6 +17,9 @@
     "replace": {
         "redpilllinpro/nosql-bundle": "*"
     },
+    "suggest": {
+        "mongodb/mongodb": "The new MongoDB php library"
+    },
     "autoload": {
         "psr-0": { "BisonLab\\NoOrmBundle": "" }
     },
