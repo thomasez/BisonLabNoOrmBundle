@@ -1,21 +1,25 @@
 
-A Nosql Bundle for Symfony 2. 
+This is now a Symfony Bundle for all kinds of DB access in a simple one-table way.
+
+This was A Nosql Bundle for Symfony 2. 
 
 Author: Thomas Lundquist <github@bisonlab.no>
 
 Project started june 2011. 
 
-This is yet another way to access MongoDB (for now) in Symfony 2 and was
+This started as yet another way to access MongoDB in Symfony 2 and was
 created because of the disliking of the concept of the Doctrine ODM.
 
-This is way smaller, simpler and definately not enterprisey but seems to 
-work on schema less databases. 
+The concept is the adapter/mapper/manager with the model being an object with ArrayAccess. The object can use thecollected data dynamically, creating it's own run-time-schema on the fly (Dynamic) or you can write a predefined schema (Static) in a few ways.
 
-The concept is to use MongoDB for storage of array objects with as little
-work as possible to maintain the arrays.
+Right now there are adapters for:
 
-You will have to create the array base somehow and for now it's 
-in the model object.
+ * MongoDB (read and write, with the option to turn on history/logging to a separate collection.)
+ * DBLib - Readonly.
+ * Mysql - Readonly (Since that was what I needed at the time..)
+ * SugarCRM REST v10 - Readonly
+
+As you probably notice, it's both SQL, NoSQL and REST access.
 
 Documentation can be found in  Resources/doc/index.rst
 
@@ -23,6 +27,8 @@ Documentation can be found in  Resources/doc/index.rst
 
 Just for todo:
 
+ - Write access for mysql,
+ - Newest php MongoDb driver.
  - Kyoto Cabinet
  - Couchbase.org
 
