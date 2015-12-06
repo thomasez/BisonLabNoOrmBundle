@@ -14,6 +14,9 @@
     "require": {
         "symfony/framework-bundle": ">=2.2, <3.0"
     },
+    "replace": {
+        "redpilllinpro/nosql-bundle": "*"
+    },
     "autoload": {
         "psr-0": { "BisonLab\\NoOrmBundle": "" }
     },
