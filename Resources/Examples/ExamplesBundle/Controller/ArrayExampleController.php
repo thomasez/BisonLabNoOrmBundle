@@ -1,9 +1,9 @@
 <?php
 
-namespace RedpillLinpro\ExamplesBundle\Controller;
+namespace BisonLab\ExamplesBundle\Controller;
 
-use RedpillLinpro\ExamplesBundle\Model as Model;
-use RedpillLinpro\ExamplesBundle\Form as Form;
+use BisonLab\ExamplesBundle\Model as Model;
+use BisonLab\ExamplesBundle\Form as Form;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -29,7 +29,7 @@ class ArrayExampleController extends BaseController
         $arrayexamples = $arrayexample_manager->findAll();
 // error_log("Cname:" . $arrayexamples[0]->getName());
 
-        return $this->render('RedpillLinproExamplesBundle:ArrayExample:list.html.twig', 
+        return $this->render('BisonLabExamplesBundle:ArrayExample:list.html.twig', 
               array( 'arrayexamples' => $arrayexamples,
               ));
 
@@ -45,7 +45,7 @@ class ArrayExampleController extends BaseController
       $arrayexample = new Model\ArrayExample;
       $form = $this->get('form.factory')->create( new Form\ArrayExampleForm(), $arrayexample);
 
-      return $this->render('RedpillLinproExamplesBundle:ArrayExample:arrayexample.html.twig', 
+      return $this->render('BisonLabExamplesBundle:ArrayExample:arrayexample.html.twig', 
             array( 'form' => $form->createView(), 
                    'id' => null,
                    'fields' => array_keys($arrayexample->getFormSetup()
@@ -143,7 +143,7 @@ error_log("id:" . $saved_arrayexample->getId());
 
     public function putAction()
     {
-        return $this->render('RedpillLinproExamplesBundle:ArrayExample:index.html.twig');
+        return $this->render('BisonLabExamplesBundle:ArrayExample:index.html.twig');
     }
 
     /**
@@ -162,7 +162,7 @@ error_log("id:" . $saved_arrayexample->getId());
           $form = $this->get('form.factory')->create( new Form\ArrayExampleForm(), $arrayexample);
 
           return 
-              $this->render('RedpillLinproExamplesBundle:ArrayExample:arrayexample.html.twig', 
+              $this->render('BisonLabExamplesBundle:ArrayExample:arrayexample.html.twig', 
               array( 'form' => $form->createView(), 'id' => $arrayexample->getId()
               ));
         }
@@ -170,7 +170,7 @@ error_log("id:" . $saved_arrayexample->getId());
         if (count($arrayexamples) > 1)
         {
           return 
-              $this->render('RedpillLinproExamplesBundle:ArrayExample:list.html.twig', 
+              $this->render('BisonLabExamplesBundle:ArrayExample:list.html.twig', 
               array( 'arrayexamples' => $arrayexamples ));
         }
 
@@ -199,7 +199,7 @@ error_log("id:" . $id);
 
         $form = $this->get('form.factory')->create( new Form\ArrayExampleForm(), $arrayexample);
 
-        return $this->render('RedpillLinproExamplesBundle:ArrayExample:arrayexample.html.twig', 
+        return $this->render('BisonLabExamplesBundle:ArrayExample:arrayexample.html.twig', 
               array( 'form' => $form->createView(), 
                     'id' => $arrayexample->getId(),
                     'fields' => array_keys($arrayexample->getFormSetup())

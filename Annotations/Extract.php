@@ -1,6 +1,6 @@
 <?php
 
-namespace RedpillLinpro\NosqlBundle\Annotations;
+namespace BisonLab\NoOrmBundle\Annotations;
 
 class Extract extends \Doctrine\Common\Annotations\Annotation
 {

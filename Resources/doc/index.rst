@@ -1,10 +1,10 @@
-RedpillLinproNosqlBundle
+BisonLabNoOrmBundle
 ==========================
 
 A Nosql Bundle for Symfony 2. 
 
 Authors: 
-    Base, Mongo and arraystuff: Thomas Lundquist <thomasez@redpill-linpro.com>
+    Base, Mongo and arraystuff: Thomas Lundquist <github@bisonlab.no>
 
     Annotations: Danel Andre Eikeland <dae@redpill-linpro.com>
 

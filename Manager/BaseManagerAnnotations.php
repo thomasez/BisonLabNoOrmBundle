@@ -2,13 +2,13 @@
 
 /**
  *
- * @author    Thomas Lundquist <thomasez@redpill-linpro.com>
+ * @author    Thomas Lundquist <github@bisonlab.no>
  * @copyright 2011 Thomas Lundquist
  * @license   http://www.gnu.org/copyleft/lesser.html  LGPL License 2.1
  *
  */
 
-namespace RedpillLinpro\NosqlBundle\Manager;
+namespace BisonLab\NoOrmBundle\Manager;
 
 abstract class BaseManager
 {
@@ -22,7 +22,7 @@ abstract class BaseManager
     // protected static $model       = 'Model\Base';
 
     /**
-     * @var \RedpillLinpro\NosqlBundle\Services\ServiceInterface
+     * @var \BisonLab\NoOrmBundle\Services\ServiceInterface
      */
     protected $access_service;
 
@@ -55,7 +55,7 @@ abstract class BaseManager
         if (self::$_reader === null) {
             self::$_reader = new \Doctrine\Common\Annotations\AnnotationReader(new \Doctrine\Common\Cache\ArrayCache());
             self::$_reader->setEnableParsePhpImports(true);
-            self::$_reader->setDefaultAnnotationNamespace('RedpillLinpro\\NosqlBundle\\Annotations\\');
+            self::$_reader->setDefaultAnnotationNamespace('BisonLab\\NoOrmBundle\\Annotations\\');
         }
         return self::$_reader;
     }
@@ -158,7 +158,7 @@ abstract class BaseManager
         if (!isset($this->new_entity_resource) || !isset($this->entity_resource) || !isset($this->collection_resource) || !isset($this->model)) {
             $rc = new \ReflectionClass(get_called_class());
             $resource_annotation = $this->getResourceAnnotation($rc);
-            if ($resource_annotation instanceof \RedpillLinpro\NosqlBundle\Annotations\Resources) {
+            if ($resource_annotation instanceof \BisonLab\NoOrmBundle\Annotations\Resources) {
                 if ($resource_annotation->collection) {
                     $this->collection_resource = $resource_annotation->collection;
                 }
@@ -170,7 +170,7 @@ abstract class BaseManager
                 }
             }
             $model_annotation = $this->getModelAnnotation($rc);
-            if ($model_annotation instanceof \RedpillLinpro\NosqlBundle\Annotations\Model) {
+            if ($model_annotation instanceof \BisonLab\NoOrmBundle\Annotations\Model) {
                 if ($model_annotation->name) {
                     $this->model = $model_annotation->name;
                 }
@@ -179,7 +179,7 @@ abstract class BaseManager
     }
     
     /**
-     * @return \RedpillLinpro\NosqlBundle\Services\ServiceInterface
+     * @return \BisonLab\NoOrmBundle\Services\ServiceInterface
      */
     public function getAccessService()
     {
@@ -187,11 +187,11 @@ abstract class BaseManager
     }
 
     /**
-     * @return RedpillLinpro\NosqlBundle\Annotations\Resources
+     * @return BisonLab\NoOrmBundle\Annotations\Resources
      */
     public function getResourceAnnotation($rc)
     {
-        return self::getAnnotationsReader()->getClassAnnotation($rc, 'RedpillLinpro\\NosqlBundle\\Annotations\\Resources');
+        return self::getAnnotationsReader()->getClassAnnotation($rc, 'BisonLab\\NoOrmBundle\\Annotations\\Resources');
     }
 
     /**
@@ -199,11 +199,11 @@ abstract class BaseManager
      * 
      * @param \ReflectionProperty $property
      * 
-     * @return RedpillLinpro\NosqlBundle\Annotations\Id
+     * @return BisonLab\NoOrmBundle\Annotations\Id
      */
     public function getIdAnnotation($property)
     {
-        return self::getAnnotationsReader()->getPropertyAnnotation($property, 'RedpillLinpro\\NosqlBundle\\Annotations\\Id');
+        return self::getAnnotationsReader()->getPropertyAnnotation($property, 'BisonLab\\NoOrmBundle\\Annotations\\Id');
     }
     
     /**
@@ -211,19 +211,19 @@ abstract class BaseManager
      * 
      * @param \ReflectionProperty $property
      * 
-     * @return RedpillLinpro\NosqlBundle\Annotations\Column
+     * @return BisonLab\NoOrmBundle\Annotations\Column
      */
     public function getColumnAnnotation($property)
     {
-        return self::getAnnotationsReader()->getPropertyAnnotation($property, 'RedpillLinpro\\NosqlBundle\\Annotations\\Column');
+        return self::getAnnotationsReader()->getPropertyAnnotation($property, 'BisonLab\\NoOrmBundle\\Annotations\\Column');
     }
     
     /**
-     * @return RedpillLinpro\NosqlBundle\Annotations\Model
+     * @return BisonLab\NoOrmBundle\Annotations\Model
      */
     public function getModelAnnotation($rc)
     {
-        return self::getAnnotationsReader()->getClassAnnotation($rc, 'RedpillLinpro\\NosqlBundle\\Annotations\\Model');
+        return self::getAnnotationsReader()->getClassAnnotation($rc, 'BisonLab\\NoOrmBundle\\Annotations\\Model');
     }
 
     public function getCollectionResource()

@@ -1,6 +1,6 @@
 <?php
 
-namespace RedpillLinpro\NosqlBundle\Annotations;
+namespace BisonLab\NoOrmBundle\Annotations;
 
 class Id extends \Doctrine\Common\Annotations\Annotation
 {

@@ -2,13 +2,13 @@
 
 /**
  *
- * @author    Thomas Lundquist <thomasez@redpill-linpro.com>
+ * @author    Thomas Lundquist <github@bisonlab.no>
  * @copyright 2011 Thomas Lundquist
  * @license   http://www.gnu.org/copyleft/lesser.html  LGPL License 2.1
  *
  */
 
-namespace RedpillLinpro\NosqlBundle\Model;
+namespace BisonLab\NoOrmBundle\Model;
 
 abstract class BaseModelDynamic extends BaseModel implements StorableObjectInterface, \ArrayAccess
 {
@@ -40,7 +40,7 @@ abstract class BaseModelDynamic extends BaseModel implements StorableObjectInter
         $this->_metadata['schema'][$key] = array('FormType' => 'text', 'Validator' => array());
     }
 
-    public function fromDataArray($data, \RedpillLinpro\NosqlBundle\Manager\BaseManager $manager)
+    public function fromDataArray($data, \BisonLab\NoOrmBundle\Manager\BaseManager $manager)
     {
         foreach ($data as $key => $val)
         {

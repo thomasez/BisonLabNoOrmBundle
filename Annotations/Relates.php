@@ -1,6 +1,6 @@
 <?php
 
-namespace RedpillLinpro\NosqlBundle\Annotations;
+namespace BisonLab\NoOrmBundle\Annotations;
 
 class Relates extends \Doctrine\Common\Annotations\Annotation
 {

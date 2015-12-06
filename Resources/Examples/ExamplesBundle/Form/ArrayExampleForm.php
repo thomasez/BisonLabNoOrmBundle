@@ -1,8 +1,8 @@
 <?php
 
-namespace RedpillLinpro\ExamplesBundle\Form;
+namespace BisonLab\ExamplesBundle\Form;
 
-use RedpillLinpro\NosqlBundle\Form\BaseForm;
+use BisonLab\NoOrmBundle\Form\BaseForm;
 
 class ArrayExampleForm extends BaseForm
 {

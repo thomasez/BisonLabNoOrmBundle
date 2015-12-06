@@ -2,13 +2,13 @@
 
 /**
  *
- * @author    Thomas Lundquist <thomasez@redpill-linpro.com>
+ * @author    Thomas Lundquist <github@bisonlab.no>
  * @copyright 2011 Thomas Lundquist
  * @license   http://www.gnu.org/copyleft/lesser.html  LGPL License 2.1
  *
  */
 
-namespace RedpillLinpro\NosqlBundle\Model;
+namespace BisonLab\NoOrmBundle\Model;
 
 abstract class BaseModelAnnotation extends BaseModel implements StorableObjectInterface
 {
@@ -19,7 +19,7 @@ abstract class BaseModelAnnotation extends BaseModel implements StorableObjectIn
     protected static $_reader = null;
 
     /**
-     * @var \RedpillLinpro\NosqlBundle\Manager\BaseManager
+     * @var \BisonLab\NoOrmBundle\Manager\BaseManager
      */
     protected $_entitymanager = null;
     
@@ -32,9 +32,9 @@ abstract class BaseModelAnnotation extends BaseModel implements StorableObjectIn
      * for later calls (lazy-loading / auto-retrieving), etc.
      * 
      * @param array $data
-     * @param \RedpillLinpro\NosqlBundle\Manager\BaseManager $manager 
+     * @param \BisonLab\NoOrmBundle\Manager\BaseManager $manager 
      */
-    public function fromDataArray($data, \RedpillLinpro\NosqlBundle\Manager\BaseManager $manager)
+    public function fromDataArray($data, \BisonLab\NoOrmBundle\Manager\BaseManager $manager)
     {
         $this->_entitymanager = $manager;
         $this->_dataArrayMap($data);
@@ -86,11 +86,11 @@ abstract class BaseModelAnnotation extends BaseModel implements StorableObjectIn
      * 
      * @param \ReflectionProperty $property
      * 
-     * @return RedpillLinpro\NosqlBundle\Annotations\Id
+     * @return BisonLab\NoOrmBundle\Annotations\Id
      */
     public function getIdAnnotation($property)
     {
-        return $this->_entitymanager->getAnnotationsReader()->getPropertyAnnotation($property, 'RedpillLinpro\\NosqlBundle\\Annotations\\Id');
+        return $this->_entitymanager->getAnnotationsReader()->getPropertyAnnotation($property, 'BisonLab\\NoOrmBundle\\Annotations\\Id');
     }
     
     /**
@@ -98,11 +98,11 @@ abstract class BaseModelAnnotation extends BaseModel implements StorableObjectIn
      * 
      * @param \ReflectionProperty $property
      * 
-     * @return RedpillLinpro\NosqlBundle\Annotations\Column
+     * @return BisonLab\NoOrmBundle\Annotations\Column
      */
     public function getColumnAnnotation($property)
     {
-        return $this->_entitymanager->getAnnotationsReader()->getPropertyAnnotation($property, 'RedpillLinpro\\NosqlBundle\\Annotations\\Column');
+        return $this->_entitymanager->getAnnotationsReader()->getPropertyAnnotation($property, 'BisonLab\\NoOrmBundle\\Annotations\\Column');
     }
 
     /**
@@ -110,11 +110,11 @@ abstract class BaseModelAnnotation extends BaseModel implements StorableObjectIn
      * 
      * @param \ReflectionProperty $property
      * 
-     * @return RedpillLinpro\NosqlBundle\Annotations\Relates
+     * @return BisonLab\NoOrmBundle\Annotations\Relates
      */
     public function getRelatesAnnotation($property)
     {
-        return $this->_entitymanager->getAnnotationsReader()->getPropertyAnnotation($property, 'RedpillLinpro\\NosqlBundle\\Annotations\\Relates');
+        return $this->_entitymanager->getAnnotationsReader()->getPropertyAnnotation($property, 'BisonLab\\NoOrmBundle\\Annotations\\Relates');
     }
     
     public function setResourceLocationPrefix($rlp)
@@ -187,7 +187,7 @@ abstract class BaseModelAnnotation extends BaseModel implements StorableObjectIn
                 }
             } else {
                 $name = ($column_annotation->name) ? $column_annotation->name : $property->name;
-                if ($extract_annotation = $this->_entitymanager->getAnnotationsReader()->getPropertyAnnotation($property, 'RedpillLinpro\\NosqlBundle\\Annotations\\Extract')) {
+                if ($extract_annotation = $this->_entitymanager->getAnnotationsReader()->getPropertyAnnotation($property, 'BisonLab\\NoOrmBundle\\Annotations\\Extract')) {
 
                     if (!$extract_annotation->hasColumns())
                         throw new \Exception('No columns defined for the extract annotation');
@@ -220,7 +220,7 @@ abstract class BaseModelAnnotation extends BaseModel implements StorableObjectIn
         $relates_annotation = $this->getRelatesAnnotation($reflected_property);
         $related_manager = $relates_annotation->manager;
         $related_manager = new $related_manager($this->_entitymanager->getAccessService());
-        if (!$related_manager instanceof \RedpillLinpro\NosqlBundle\Manager\BaseManager)
+        if (!$related_manager instanceof \BisonLab\NoOrmBundle\Manager\BaseManager)
             throw new \Exception('The manager object must extend the nosql base manager class. Check that the manager= annotation has been correctly defined');
             
         if (is_numeric($this->$property)) {
@@ -234,7 +234,7 @@ abstract class BaseModelAnnotation extends BaseModel implements StorableObjectIn
         $this->_mapRelationData($property, $data, $relates_annotation, $related_manager);
     }
     
-    protected function _mapRelationData($property, $data, \RedpillLinpro\NosqlBundle\Annotations\Relates $relates_annotation, $manager = null)
+    protected function _mapRelationData($property, $data, \BisonLab\NoOrmBundle\Annotations\Relates $relates_annotation, $manager = null)
     {
         if (!$manager) {
             $value = $data;
@@ -261,14 +261,14 @@ abstract class BaseModelAnnotation extends BaseModel implements StorableObjectIn
 
     protected function _extractDataArrayProperty($property, &$result, $extracted = null)
     {
-        $column_annotation = ($extracted !== null) ? null : $this->_entitymanager->getAnnotationsReader()->getPropertyAnnotation($property, 'RedpillLinpro\\NosqlBundle\\Annotations\\Column');
+        $column_annotation = ($extracted !== null) ? null : $this->_entitymanager->getAnnotationsReader()->getPropertyAnnotation($property, 'BisonLab\\NoOrmBundle\\Annotations\\Column');
 
         if ($column_annotation !== null || $extracted !== null) {
             if ($extracted !== null) {
                 $result[$extracted] = $this->$property;
             } else {
                 $name = ($column_annotation->name) ? $column_annotation->name : $property->name;
-                if ($extract_annotation = $this->_entitymanager->getAnnotationsReader()->getPropertyAnnotation($property, 'RedpillLinpro\\NosqlBundle\\Annotations\\Extract')) {
+                if ($extract_annotation = $this->_entitymanager->getAnnotationsReader()->getPropertyAnnotation($property, 'BisonLab\\NoOrmBundle\\Annotations\\Extract')) {
                     $return_value = array();
                     foreach ($extract_annotation->columns as $column => $extract_from_property) {
                         $this->_extractDataArrayProperty($extract_from_property, $return_value, $column);

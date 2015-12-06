@@ -1,9 +1,9 @@
 <?php
 
-namespace RedpillLinpro\ExamplesBundle\Controller;
+namespace BisonLab\ExamplesBundle\Controller;
 
-use RedpillLinpro\NosqlBundle\Form\BaseForm;
-use RedpillLinpro\ExamplesBundle\Model as Model;
+use BisonLab\NoOrmBundle\Form\BaseForm;
+use BisonLab\ExamplesBundle\Model as Model;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;

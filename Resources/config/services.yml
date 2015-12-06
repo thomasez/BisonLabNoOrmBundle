@@ -1,6 +1,6 @@
 
 services:
     twig.extension.pretty_print:
-        class: RedpillLinpro\NosqlBundle\Extension\TwigExtensionPrettyPrint
+        class: BisonLab\NoOrmBundle\Extension\TwigExtensionPrettyPrint
         tags:
             - { name: 'twig.extension' }

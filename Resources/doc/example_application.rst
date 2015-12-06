@@ -2,7 +2,7 @@
 Setting up the example application
 ----------------------------------
 
-We do presume you have Symfony set up properly and also the NosqlBundle.
+We do presume you have Symfony set up properly and also the NoOrmBundle.
 
 We'll do this quite simple, by some cooking.
 
@@ -11,22 +11,22 @@ This bundle does have another bundle inside it and it's perfect for playing.
 Installation
 ------------
 
-Zero: Read the NosqlBundle install doc (index.rst) and set up everything
+Zero: Read the NoOrmBundle install doc (index.rst) and set up everything
 there, like parameters.ini for the db config.
 
 First, create the bundle::
 
-    mkdir -p src/RedpillLinpro
-    cd src/RedpillLinpro
-    cp -a ../../vendor/redpilllinpro/nosql-bundle/RedpillLinpro/NosqlBundle/Resources/Examples/ExamplesBundle .
+    mkdir -p src/BisonLab
+    cd src/BisonLab
+    cp -a ../../vendor/bisonlab/nosql-bundle/BisonLab/NoOrmBundle/Resources/Examples/ExamplesBundle .
 
     or
 
-    ln -s ../../vendor/redpilllinpro/nosql-bundle/RedpillLinpro/NosqlBundle/Resources/Examples/ExamplesBundle .
+    ln -s ../../vendor/bisonlab/nosql-bundle/BisonLab/NoOrmBundle/Resources/Examples/ExamplesBundle .
 
-We need to add the RedpillLinpro namespace in src on top of vendor/bundles in app/autoload.php::
+We need to add the BisonLab namespace in src on top of vendor/bundles in app/autoload.php::
 
-   'RedpillLinpro'    => array(__DIR__.'/../vendor/bundles', __DIR__.'/src'),
+   'BisonLab'    => array(__DIR__.'/../vendor/bundles', __DIR__.'/src'),
 
 Then, like for any other bundle, include it in your Kernel class, usually app/AppKernel::
 
@@ -35,7 +35,7 @@ Then, like for any other bundle, include it in your Kernel class, usually app/Ap
         $bundles = array(
             ...
 
-            new RedpillLinpro\ExamplesBundle\RedpillLinproExamplesBundle(),
+            new BisonLab\ExamplesBundle\BisonLabExamplesBundle(),
         );
 
         ...
@@ -46,7 +46,7 @@ Second, we need the web resources available to the public;
 Most unixes and their apaches can do well with a symbolic link::
 
     cd web/bundles
-    ln -s ../../src/RedpillLinpro/ExamplesBundle/Resources/public examples
+    ln -s ../../src/BisonLab/ExamplesBundle/Resources/public examples
 
 
 Configuration
@@ -74,7 +74,7 @@ So, in 'app/config/config.yml', we have to point at the service configuration in
     imports:
         - { resource: parameters.ini }
         - { resource: security.yml }
-        - { resource: @RedpillLinproExamplesBundle/Resources/config/services.yml }
+        - { resource: @BisonLabExamplesBundle/Resources/config/services.yml }
 
 Lastly, 'app/config/routing.yml':
 
@@ -82,8 +82,8 @@ Lastly, 'app/config/routing.yml':
 
     .. code-block:: yaml
 
-    RedpillLinproExamplesBundle:
-        resource: "@RedpillLinproExamplesBundle/Controller/"
+    BisonLabExamplesBundle:
+        resource: "@BisonLabExamplesBundle/Controller/"
         type:     annotation
         prefix:   /example
 

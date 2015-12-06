@@ -2,17 +2,17 @@
 
 /**
  *
- * @author    Thomas Lundquist <thomasez@redpill-linpro.com>
+ * @author    Thomas Lundquist <github@bisonlab.no>
  * @copyright 2011 Thomas Lundquist
  * @license   http://www.gnu.org/copyleft/lesser.html  LGPL License 2.1
  *
  */
 
 
-namespace RedpillLinpro\NosqlBundle;
+namespace BisonLab\NoOrmBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-class RedpillLinproNosqlBundle extends Bundle
+class BisonLabNoOrmBundle extends Bundle
 {
 }

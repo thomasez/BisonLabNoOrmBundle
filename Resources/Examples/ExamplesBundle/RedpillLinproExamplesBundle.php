@@ -1,9 +1,9 @@
 <?php
 
-namespace RedpillLinpro\ExamplesBundle;
+namespace BisonLab\ExamplesBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-class RedpillLinproExamplesBundle extends Bundle
+class BisonLabExamplesBundle extends Bundle
 {
 }

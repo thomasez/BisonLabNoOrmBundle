@@ -2,7 +2,7 @@
 
 /**
  *
- * @author    Thomas Lundquist <thomasez@redpill-linpro.com>
+ * @author    Thomas Lundquist <github@bisonlab.no>
  * @copyright 2012 Thomas Lundquist
  * @license   http://www.gnu.org/copyleft/lesser.html  LGPL License 2.1
  *
@@ -11,7 +11,7 @@
  *
  */
 
-namespace RedpillLinpro\NosqlBundle\Services;
+namespace BisonLab\NoOrmBundle\Services;
 
 class MSSqlReadonly implements ServiceInterfaceReadonly
 {

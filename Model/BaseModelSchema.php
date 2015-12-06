@@ -2,13 +2,13 @@
 
 /**
  *
- * @author    Thomas Lundquist <thomasez@redpill-linpro.com>
+ * @author    Thomas Lundquist <github@bisonlab.no>
  * @copyright 2011 Thomas Lundquist
  * @license   http://www.gnu.org/copyleft/lesser.html  LGPL License 2.1
  *
  */
 
-namespace RedpillLinpro\NosqlBundle\Model;
+namespace BisonLab\NoOrmBundle\Model;
 
 abstract class BaseModelSchema extends BaseModel implements StorableObjectInterface, \ArrayAccess
 {
@@ -57,7 +57,7 @@ abstract class BaseModelSchema extends BaseModel implements StorableObjectInterf
         return $this->_metadata['schema'];
     }
 
-    public function fromDataArray($data, \RedpillLinpro\NosqlBundle\Manager\BaseManager $manager)
+    public function fromDataArray($data, \BisonLab\NoOrmBundle\Manager\BaseManager $manager)
     {
         foreach ($data as $key => $val)
         {

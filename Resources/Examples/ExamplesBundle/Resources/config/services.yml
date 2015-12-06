@@ -1,6 +1,6 @@
 services:
     simple_mongo:
-        class: RedpillLinpro\NosqlBundle\Services\SimpleMongo
+        class: BisonLab\NoOrmBundle\Services\SimpleMongo
         arguments:
             dbhost: %simple_mongo.dbhost%
             dbname: %simple_mongo.dbname%
@@ -8,6 +8,6 @@ services:
             dbpass: %simple_mongo.dbpass%
 
     arrayexample_manager:
-        class: RedpillLinpro\ExamplesBundle\Manager\ArrayExample
+        class: BisonLab\ExamplesBundle\Manager\ArrayExample
         arguments: [ @simple_mongo ]
 

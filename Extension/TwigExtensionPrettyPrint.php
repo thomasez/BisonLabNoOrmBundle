@@ -1,6 +1,6 @@
 <?php
 
-namespace RedpillLinpro\NosqlBundle\Extension;
+namespace BisonLab\NoOrmBundle\Extension;
   
 /*
  * Pretty printer for the NoSqlBundle arrays / objects.
@@ -14,7 +14,7 @@ class TwigExtensionPrettyPrint extends \Twig_Extension
    {
   
         return array(
-            'prettyprint' => new \Twig_Filter_Function('\RedpillLinpro\NosqlBundle\Extension\twig_pretty_print_filter', 
+            'prettyprint' => new \Twig_Filter_Function('\BisonLab\NoOrmBundle\Extension\twig_pretty_print_filter', 
                 array('needs_environment' => true)),
 
         );

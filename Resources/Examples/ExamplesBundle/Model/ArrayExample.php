@@ -1,8 +1,8 @@
 <?php
 
-namespace RedpillLinpro\ExamplesBundle\Model;
+namespace BisonLab\ExamplesBundle\Model;
 
-use RedpillLinpro\NosqlBundle\Model\BaseModelConfigured;
+use BisonLab\NoOrmBundle\Model\BaseModelConfigured;
 
 class ArrayExample extends BaseModelConfigured
 {
