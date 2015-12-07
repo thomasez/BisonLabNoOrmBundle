@@ -1,0 +1,202 @@
+<?php
+
+/**
+ *
+ * @author    Thomas Lundquist <github@bisonlab.no>
+ * @copyright 2011+ Thomas Lundquist
+ * @license   http://www.gnu.org/copyleft/lesser.html  LGPL License 2.1
+ *
+ */
+
+namespace BisonLab\NoOrmBundle\Services;
+
+use MongoDB\Driver\Manager;
+use MongoDB\Collection;
+use MongoDB\BSON\ObjectID as ObjectID;
+
+class MongoDb implements ServiceInterface
+{
+
+    private $mongodb_manager;
+    private $dbname;
+
+    /* Note to self: Remember port numbers.. Gotta handle that somehow. */
+    public function __construct($dbhost = 'localhost', $dbname, $dbuser, $dbpass, $dbport = 27017)
+    {
+        $up = '';
+        if ($dbuser) {
+            $up = $dbuser;
+            if ($dbpass)
+                $up += ':' . $dbpass;
+            $up += '@';
+        }
+        $uri = 'mongodb://' . $dbhost.':' . $dbport . '/' . $dbname;
+        $this->mongodb_manager = new \MongoDB\Driver\Manager($uri);
+        $this->dbname = $dbname;
+    }
+
+    public function save($data, $collection = null)
+    {
+        $mongo_collection = $this->_getMongoCollection($collection);
+        if (is_object($data)) {
+            $data = $data->toCompleteArray();
+        }
+
+        if (isset($data['id']))
+        {
+            $object_id = new ObjectId($data['id']);
+            // Back 
+            unset($data['id']);
+            $mongo_collection->findOneAndUpdate(array('_id' => $object_id), $data);
+            // and Forth
+            $data['id'] = $object_id->{'$id'};
+            unset($data['_id']);
+        }
+        else
+        {
+            $result = $mongo_collection->insertOne($data);
+            // $id = $result->getInsertedId();
+            // $data['id'] = $data['_id']->{'$id'};
+            // unset($data['_id']);
+            $data =  $this->_convertStdClass($result);
+        }
+
+        return $data;
+    }
+
+    public function remove($data, $collection = null)
+    {
+        $mongo_collection = $this->_getMongoCollection($collection);
+
+        if (is_object($data)) {
+            $id = $data->getId();
+        } else {
+            $id = $data;
+        }
+
+        $oid = new ObjectId($id);
+        return $mongo_collection->deleteOne(array('_id' => $oid));
+    }
+
+    public function findAll($collection, $options = array())
+    {
+        return $this->findByKeyValAndSet($collection, array(), $options);
+    }
+    
+    public function findOneById($collection, $id_key, $id, $options = array())
+    {
+        $mongo_collection = $this->_getMongoCollection($collection);
+
+        // Not sure if this is the right way or if I should throw an 
+        // exception. But since I dislike exceptions. (Yes, I am using them..)
+        if (empty($id)) { return null; }
+
+        return $this->findOneByKeyValAndSet($collection, array('_id' => new ObjectId($id)), $options);
+    }
+    
+    public function findByKeyVal($collection, $key, $val, $options = array())
+    {
+        return $this->findByKeyValAndSet($collection,
+                array($key => $val), $options);
+    }
+
+    public function findOneByKeyVal($collection, $key, $val, $options = array())
+    {
+        return $this->findOneByKeyValAndSet($collection,
+                array($key => $val), $options);
+    }
+    
+    public function findOneByKeyValAndSet($collection, $criterias, $options = array())
+    {
+        $mongo_collection = $this->_getMongoCollection($collection);
+
+        // I used to have find($criterias) here, and then pick the first one,
+        // but since Mongo does have a findOne, I'll rather use that.
+        $data = $mongo_collection->findOne($criterias);
+        if (is_null($data)) { return null; }
+dump($data);
+
+        return $this->_convertStdClass($data);
+    }
+    
+    public function findByKeyValAndSet($collection, $criterias, $options = array())
+    {
+        $mongo_collection = $this->_getMongoCollection($collection);
+    
+        foreach ($criterias as $key => $val) {
+            // PHPs Mongodb thingie has an issue with numbers, it quotes them 
+            // unless it is explocitly typecasted or manipulated in math context.
+            if (is_numeric($val)) {
+                $criterias[$key] = $val * 1;
+            }
+        }
+    
+        $cursor = $mongo_collection->find($criterias);
+        $this->_handleOptions($cursor, $options);
+
+        $retarr = array();
+        foreach ($cursor as $data) {
+            $this->_convertStdClass($data);
+            $retarr[] = $data;
+        }
+        return $retarr;
+    }
+
+    private function _handleOptions(&$cursor, &$options)
+    {
+        if (isset($options['orderBy'])) {
+            $sort = array();
+            foreach ($options['orderBy'] as $orderBy) {
+                $order = $orderBy[1] == "ASC" ? 1 : -1;
+                $cursor->sort(array($orderBy[0] => $order));
+            }
+        }
+
+        if (isset($options['limit'])) {
+            $cursor->limit($options['limit']);
+        }
+    }
+
+    private function _getMongoCollection($collection)
+    {
+        if (!$collection) {
+            throw new \InvalidArgumentException("Got no collection to manage.");
+        }
+        // Lazy, just adding a default. (And since it's not the db name itself,
+        // and the SimpleMongo adapter using the old mongo driver does not use
+        // this, it's a BC thingie aswell.
+        if (!preg_match("/\s+\./", $collection)) {
+            $collection = $this->dbname . "." . $collection;
+        }
+
+        // return $this->mongodb_manager->selectCollection($collection);
+        return new Collection($this->mongodb_manager, $collection);
+    }
+
+    /* Does a bit more than this, since it replaces the ID key _id with the id
+     * key. */
+    /* This should later be reaplced with a "Set default TypeMap" option in the
+     * Library. Re: https://jira.mongodb.org/browse/PHPLIB-138 Until then I do
+     * this insetead of handling the cursor all over the place.
+     */
+    private function _convertStdClass(&$data)
+    {
+
+        $data_arr = json_decode(json_encode($data), true);
+        // TODO: This should be a part of the meta data, not on the object
+        // itself. (And always available, somehow.)
+        $id_key = 'id';
+        if (isset($data_arr['_metadata']) 
+                && isset($data_arr['_metadata']['_id_key'])) {
+            $id_key = $data_arr['_metadata']['_id_key'];
+        } elseif (isset($data_arr['_id_key'])) {
+            $id_key = $data_arr['_id_key'];
+        }
+
+        $data_arr[$id_key] = $data->_id;
+        unset($data_arr['_id']);
+        $data = $data_arr;
+        return $data;
+
+    }
+}
