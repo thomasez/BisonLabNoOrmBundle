@@ -42,23 +42,17 @@ class MongoDb implements ServiceInterface
             $data = $data->toCompleteArray();
         }
 
-        if (isset($data['id']))
-        {
+        if (isset($data['id'])) {
             $object_id = new ObjectId($data['id']);
             // Back 
             unset($data['id']);
-            $mongo_collection->findOneAndUpdate(array('_id' => $object_id), $data);
+            $mongo_collection->replaceOne(array('_id' => $object_id), $data);
             // and Forth
-            $data['id'] = $object_id->{'$id'};
+            $data['id'] = (string)$object_id;
             unset($data['_id']);
-        }
-        else
-        {
+        } else {
             $result = $mongo_collection->insertOne($data);
-            // $id = $result->getInsertedId();
-            // $data['id'] = $data['_id']->{'$id'};
-            // unset($data['_id']);
-            $data =  $this->_convertStdClass($result);
+            $data =  $this->_convertStdClass($result, $result->getInsertedId());
         }
 
         return $data;
@@ -108,19 +102,20 @@ class MongoDb implements ServiceInterface
     
     public function findOneByKeyValAndSet($collection, $criterias, $options = array())
     {
+        $this->_handleOptions($options);
         $mongo_collection = $this->_getMongoCollection($collection);
 
         // I used to have find($criterias) here, and then pick the first one,
         // but since Mongo does have a findOne, I'll rather use that.
-        $data = $mongo_collection->findOne($criterias);
+        $data = $mongo_collection->findOne($criterias, $options);
         if (is_null($data)) { return null; }
-dump($data);
 
         return $this->_convertStdClass($data);
     }
     
     public function findByKeyValAndSet($collection, $criterias, $options = array())
     {
+        $this->_handleOptions($options);
         $mongo_collection = $this->_getMongoCollection($collection);
     
         foreach ($criterias as $key => $val) {
@@ -131,8 +126,7 @@ dump($data);
             }
         }
     
-        $cursor = $mongo_collection->find($criterias);
-        $this->_handleOptions($cursor, $options);
+        $cursor = $mongo_collection->find($criterias, $options);
 
         $retarr = array();
         foreach ($cursor as $data) {
@@ -142,18 +136,19 @@ dump($data);
         return $retarr;
     }
 
-    private function _handleOptions(&$cursor, &$options)
+    /* 
+     * For available options to convert the basic ones:
+     * http://mongodb.github.io/mongo-php-library/api/source-class-MongoDB.Operation.Find.html 
+     */
+    private function _handleOptions(&$options)
     {
         if (isset($options['orderBy'])) {
-            $sort = array();
+            $options['sort'] = array();
             foreach ($options['orderBy'] as $orderBy) {
                 $order = $orderBy[1] == "ASC" ? 1 : -1;
-                $cursor->sort(array($orderBy[0] => $order));
+                $options['sort'][$orderBy[0]] = $order;
             }
-        }
-
-        if (isset($options['limit'])) {
-            $cursor->limit($options['limit']);
+            unset($options['orderBy']);
         }
     }
 
@@ -179,7 +174,7 @@ dump($data);
      * Library. Re: https://jira.mongodb.org/browse/PHPLIB-138 Until then I do
      * this insetead of handling the cursor all over the place.
      */
-    private function _convertStdClass(&$data)
+    private function _convertStdClass(&$data, $new_id = null)
     {
 
         $data_arr = json_decode(json_encode($data), true);
@@ -193,7 +188,12 @@ dump($data);
             $id_key = $data_arr['_id_key'];
         }
 
-        $data_arr[$id_key] = $data->_id;
+        if ($new_id) {
+            $data_arr[$id_key] = $new_id;
+        } else {
+            $data_arr[$id_key] = (string)$data->_id;
+        }
+
         unset($data_arr['_id']);
         $data = $data_arr;
         return $data;
