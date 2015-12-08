@@ -113,10 +113,11 @@ abstract class VersionedManager extends BaseManager
    * I wonder if this is the only one I need.
    */
   public function findFromHistory($object, $limit = null) {
-    // This is a hack, but does it matter? The laternative is to have my own
+    // This is a hack, but does it matter? The alternative is to have my own
     // findByKeyVal here.
     $history = array();
     $object_id = $object instanceof static::$_model ? $object->getId() : $object;
+    $last = null;
     foreach ($this->access_service->findByKeyVal(static::$_versions_collection,
         'object_id', $object_id, array(
         // Cannot use handleOptions in the base manager, aka we need to set
@@ -132,9 +133,19 @@ abstract class VersionedManager extends BaseManager
         // choose what they want.
         if (isset($data['data'])) {
             $data['data'] = new static::$_model($data['data']);
-            $history[] = $data;
+            if ($last)
+                $last['updated_at'] = $data['next_version_created'];
+            /*  Should I always have the entry or just when it has a reason to exist? 
+            else 
+                $data['updated_at'] = null;
+            * Undecided */
+            // Note to self: Do I get every entry now? Not that there should be
+            // any versions without a data part.
+            if ($last) $history[] = $last;
+            $last = $data;
         }
     }
+    if ($last) $history[] = $last;
     return $history;
   }
 
