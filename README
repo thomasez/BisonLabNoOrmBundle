@@ -14,12 +14,16 @@ The concept is the adapter/mapper/manager with the model being an object with Ar
 
 Right now there are adapters for:
 
- * MongoDB (read and write, with the option to turn on history/logging to a separate collection.)
+ * Newest php MongoDb driver. (read and write)
+ * MongoDB (read and write)
  * DBLib - Readonly.
  * Mysql - Readonly (Since that was what I needed at the time..)
  * SugarCRM REST v10 - Readonly
 
 As you probably notice, it's both SQL, NoSQL and REST access.
+
+The read/write adapter can use the "VersionedManager" for automagical logging
+of the old dataset. (Only tested on the MongoDB services.)
 
 Documentation can be found in  Resources/doc/index.rst
 
@@ -28,7 +32,6 @@ Documentation can be found in  Resources/doc/index.rst
 Just for todo:
 
  - Write access for mysql,
- - Newest php MongoDb driver.
  - Kyoto Cabinet
  - Couchbase.org
 
