@@ -9,5 +9,5 @@ services:
 
     arrayexample_manager:
         class: BisonLab\ExamplesBundle\Manager\ArrayExample
-        arguments: [ @simple_mongo ]
+        arguments: [ "@simple_mongo" ]
 
