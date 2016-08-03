@@ -180,12 +180,15 @@ class MongoDb implements ServiceInterface
         // Lazy, just adding a default. (And since it's not the db name itself,
         // and the SimpleMongo adapter using the old mongo driver does not use
         // this, it's a BC thingie aswell.
+        /*
+         *  But, 1.0.0 Release changed this one. the __construct wants the DB name and collection separately.
         if (!preg_match("/\s+\./", $collection)) {
             $collection = $this->dbname . "." . $collection;
         }
+        */
 
         // return $this->mongodb_manager->selectCollection($collection);
-        return new Collection($this->mongodb_manager, $collection);
+        return new Collection($this->mongodb_manager, $this->dbname, $collection);
     }
 
     /* Does a bit more than this, since it replaces the ID key _id with the id

@@ -14,7 +14,7 @@ The concept is the adapter/mapper/manager with the model being an object with Ar
 
 Right now there are adapters for:
 
- * Newest php MongoDb driver. (read and write)
+ * Newest php MongoDb driver. (read and write).
  * MongoDB (read and write)
  * DBLib - Readonly.
  * Mysql - Readonly (Since that was what I needed at the time..)
