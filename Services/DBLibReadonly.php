@@ -12,7 +12,6 @@ namespace BisonLab\NoOrmBundle\Services;
 
 class DBLibReadonly implements ServiceInterfaceReadonly
 {
-
     private $connection;
 
     public function __construct($dbhost, $dbport = 1433, $dbname, $dbuser, $dbpasswd)
@@ -31,7 +30,6 @@ class DBLibReadonly implements ServiceInterfaceReadonly
             ));
         $data = $q->fetch(\PDO::FETCH_ASSOC);
         return $data;
-
     }
     
     public function findOneByKeyVal($table, $key, $val, $options = array())
@@ -93,6 +91,4 @@ class DBLibReadonly implements ServiceInterfaceReadonly
         $data = $q->fetchall();
         return $data;
     }
-    
-
 }

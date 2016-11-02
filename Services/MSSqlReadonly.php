@@ -15,7 +15,6 @@ namespace BisonLab\NoOrmBundle\Services;
 
 class MSSqlReadonly implements ServiceInterfaceReadonly
 {
-
     private $connection;
 
     public function __construct($dbhost, $dbport = 1433, $dbname, $dbuser, $dbpasswd)
@@ -28,7 +27,6 @@ class MSSqlReadonly implements ServiceInterfaceReadonly
 
     public function findOneById($table, $id_key, $id, $options = array())
     {
-
         if (is_int($id)) {
             $sql = 'SELECT * from '.$table .' WHERE '.$id_key."=" . $id . ";";
         } else {
@@ -44,7 +42,6 @@ class MSSqlReadonly implements ServiceInterfaceReadonly
         $data = mssql_fetch_array($result);
         mssql_free_result($result);
         return $data;
-
     }
     
     public function findOneByKeyVal($table, $key, $val, $options = array())
@@ -114,7 +111,6 @@ class MSSqlReadonly implements ServiceInterfaceReadonly
 
     public function findAll($table, $options = array())
     {
-
         $sql = 'SELECT * from '.$table .';';
         $result = mssql_query($sql, $this->connection);
 
@@ -127,6 +123,4 @@ class MSSqlReadonly implements ServiceInterfaceReadonly
 
         return $data;
     }
-    
-
 }

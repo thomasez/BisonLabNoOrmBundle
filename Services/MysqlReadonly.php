@@ -12,7 +12,6 @@ namespace BisonLab\NoOrmBundle\Services;
 
 class MysqlReadonly implements ServiceInterfaceReadonly
 {
-
     private $connection;
 
     public function __construct($dbhost, $dbport = 1433, $dbname, $dbuser, $dbpasswd)
@@ -41,12 +40,10 @@ class MysqlReadonly implements ServiceInterfaceReadonly
 
         $data = $q->fetch(\PDO::FETCH_ASSOC);
         return $data;
-
     }
     
     public function findOneByKeyVal($table, $key, $val, $options = array())
     {
-
         if (is_string($val)) {
             $value = mb_convert_encoding($val, "ISO-8859-1");
         } else {
@@ -88,6 +85,4 @@ class MysqlReadonly implements ServiceInterfaceReadonly
         $data = $q->fetchall();
         return $data;
     }
-    
-
 }

@@ -13,7 +13,6 @@ namespace BisonLab\NoOrmBundle\Services;
 /* The increasingly innacurately names */
 class SimpleMongo implements ServiceInterface
 {
-
     private $mongo;
     private $mongodb;
 
@@ -51,7 +50,6 @@ class SimpleMongo implements ServiceInterface
             $data['id'] = $data['_id']->{'$id'};
             unset($data['_id']);
         }
-
         return $data;
     }
 

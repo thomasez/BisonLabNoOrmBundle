@@ -17,7 +17,6 @@ use MongoDB\BSON\ObjectID as ObjectID;
 
 class MongoDb implements ServiceInterface
 {
-
     private $mongodb_manager;
     private $dbname;
 
@@ -60,7 +59,8 @@ class MongoDb implements ServiceInterface
         $this->_convertStdClass($result);
         return $result;
 
-/*      This triggers a bug somewhere in the MongoDB\Driver.
+/*      
+        // This triggers a bug somewhere in the MongoDB\Driver.
         if (isset($data['id'])) {
             $object_id = new ObjectId($data['id']);
             // Back 
@@ -74,7 +74,6 @@ class MongoDb implements ServiceInterface
             $data =  $this->_convertStdClass($result, $result->getInsertedId());
         }
 */
-
         return $data;
     }
 
@@ -199,7 +198,6 @@ class MongoDb implements ServiceInterface
      */
     private function _convertStdClass(&$data, $new_id = null)
     {
-
         $data_arr = json_decode(json_encode($data), true);
         // TODO: This should be a part of the meta data, not on the object
         // itself. (And always available, somehow.)
@@ -220,6 +218,5 @@ class MongoDb implements ServiceInterface
         unset($data_arr['_id']);
         $data = $data_arr;
         return $data;
-
     }
 }

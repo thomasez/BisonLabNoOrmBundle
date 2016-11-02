@@ -18,7 +18,6 @@ namespace BisonLab\NoOrmBundle\Services;
 // I Only need readonly for now. Lazy? yup.
 class SugarCrmRestReadonly implements ServiceInterfaceReadonly
 {
-
     private $sugar;
 
     public function __construct($base_url, $username, $password)
@@ -82,5 +81,4 @@ class SugarCrmRestReadonly implements ServiceInterfaceReadonly
         $data = $this->sugar->Search($table);
         return $data['records'];
     }
-
 }
