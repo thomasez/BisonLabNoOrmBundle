@@ -35,6 +35,11 @@ class MongoDb implements ServiceInterface
         $this->dbname = $dbname;
     }
 
+    public function getConnection()
+    {
+        return $this->mongodb_manager;
+    }
+
     public function save($data, $collection = null)
     {
         $mongo_collection = $this->_getMongoCollection($collection);

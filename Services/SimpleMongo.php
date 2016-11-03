@@ -22,6 +22,11 @@ class SimpleMongo implements ServiceInterface
         $this->mongodb = $this->mongo->selectDB($dbname);
     }
 
+    public function getConnection()
+    {
+        return $this->mongodb;
+    }
+
     public function save($data, $collection = null)
     {
         if (is_object($data)) {

@@ -30,6 +30,11 @@ class SugarCrmRestReadonly implements ServiceInterfaceReadonly
             ->connect();
     }
 
+    public function getConnection()
+    {
+        return $this->sugar;
+    }
+
     public function findOneById($table, $id_key, $id, $options = array())
     {
         // If a 404, handle it, if anything else, throw it further.

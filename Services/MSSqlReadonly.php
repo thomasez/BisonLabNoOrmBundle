@@ -25,6 +25,11 @@ class MSSqlReadonly implements ServiceInterfaceReadonly
         $db = mssql_select_db($dbname, $this->connection);
     }
 
+    public function getConnection()
+    {
+        return $this->connection;
+    }
+
     public function findOneById($table, $id_key, $id, $options = array())
     {
         if (is_int($id)) {

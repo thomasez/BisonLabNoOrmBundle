@@ -12,6 +12,9 @@ namespace BisonLab\NoOrmBundle\Services;
 
 interface ServiceInterfaceReadonly
 {
+  // This is odd and yes, it will return something different for each
+  // adapter/service. Use with care.
+  public function getConnection();
 
   /*
    * Options, why not?
@@ -28,5 +31,4 @@ interface ServiceInterfaceReadonly
   public function findOneByKeyVal($collection, $key, $val, $options = array());
 
   public function findByKeyVal($collection, $key, $val, $options = array());
-
 }

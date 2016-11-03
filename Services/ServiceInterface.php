@@ -12,6 +12,9 @@ namespace BisonLab\NoOrmBundle\Services;
 
 interface ServiceInterface
 {
+  // This is odd and yes, it will return something different for each
+  // adapter/service. Use with care.
+  public function getConnection();
 
   public function save($data, $collection = null);
 
@@ -34,5 +37,4 @@ interface ServiceInterface
   public function findByKeyVal($collection, $key, $val, $options = array());
   
   // public function call($resource, $method = 'GET', $data = array());
-
 }

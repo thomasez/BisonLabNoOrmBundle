@@ -20,6 +20,11 @@ class MysqlReadonly implements ServiceInterfaceReadonly
         $this->connection = new \PDO($dsn, $dbuser, $dbpasswd);
     }
 
+    public function getConnection()
+    {
+        return $this->connection;
+    }
+
     public function findOneById($table, $id_key, $id, $options = array())
     {
         $sql = 'SELECT * from '.$table.' WHERE ' . $id_key . ' = :id';
