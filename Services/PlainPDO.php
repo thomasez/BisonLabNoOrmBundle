@@ -117,8 +117,7 @@ class PlainPDO implements ServiceInterfaceReadonly
             }
         } else {
             // INSERT
-            $id = $this->connection->lastInsertId($table . '_id_seq');
-            $data[$primary_key] = $id;
+            unset($data[$primary_key]);
             $sql = 'INSERT INTO ' . $table . ' ('
                 . implode(", ", array_keys($data))
                 . ' ) VALUES (:'
@@ -136,6 +135,7 @@ class PlainPDO implements ServiceInterfaceReadonly
             // I'll just take for granted there is an autoincrement.
             // And since PostgreSQL handle that differently, while MySQL ans
             // SQLite just does it, we'll get the ID this way.
+            $id = $this->connection->lastInsertId($table . '_id_seq');
             $object[$primary_key] = $id;
             return $object;
         }
