@@ -43,12 +43,11 @@ abstract class BaseManager
    */
   public function findAll($options = array())
   {
-
     $objects = array();
     foreach ($this->access_service->findAll(static::$_collection, $options) as $o)
     {
       $object = new static::$_model($o);
-      $object->setId($o['id']);
+      $object->setId($o[$object->getIdKey()]);
       $objects[] = $object;
     }
 
@@ -169,9 +168,9 @@ abstract class BaseManager
   {
     $new_data = $this->access_service->save($object, static::$_collection);
 
-    if (isset($new_data['id']))
+    if (isset($new_data[$object->getIdKey()]))
     {
-      $object->setId($new_data['id']);
+      $object->setId($new_data[$object->getIdKey()]);
     }
 
     return $object;

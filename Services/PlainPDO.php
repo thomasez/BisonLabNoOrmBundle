@@ -72,7 +72,8 @@ class PlainPDO implements ServiceInterfaceReadonly
             ))) {
             throw new \Exception($q->errorInfo()[2]);
         }
-        $data = $q->fetchall();
+        // $data = $q->fetchall();
+        $data = $q->fetchall(\PDO::FETCH_ASSOC);
         return $data;
     }
 
@@ -80,7 +81,8 @@ class PlainPDO implements ServiceInterfaceReadonly
     {
         $q = $this->connection->prepare('SELECT * from '.$table);
         $q->execute();
-        $data = $q->fetchall();
+        // $data = $q->fetchall();
+        $data = $q->fetchall(\PDO::FETCH_ASSOC);
         return $data;
     }
 
