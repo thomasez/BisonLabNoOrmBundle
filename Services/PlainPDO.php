@@ -28,10 +28,10 @@ class PlainPDO implements ServiceInterfaceReadonly
 
     public function findOneById($table, $id_key, $id, $options = array())
     {
-        $q = $this->connection->prepare('SELECT * from '.$table.' WHERE :id_key  = :id');
+        $q = $this->connection->prepare('SELECT * from '
+            . $table . ' WHERE ' . $id_key . '=:id');
 
         if (!$q->execute(array(
-                ':id_key' => $id_key,
                 ':id' => $id
             ))) {
             throw new \Exception($q->errorInfo()[2]);
@@ -42,17 +42,9 @@ class PlainPDO implements ServiceInterfaceReadonly
     
     public function findOneByKeyVal($table, $key, $val, $options = array())
     {
-        // I still wonder how I ended up making it like this. But I'm pretty
-        // sure I had a good reason.
-/*
-        $sql = 'SELECT * from '.$table .' WHERE '.$key."='" . $val . "';";
-        $q = $this->connection->prepare($sql);
-        $x = $q->execute();
-*/
         $q = $this->connection->prepare('SELECT * from '.$table 
-                .' WHERE :key = :val');
+                .' WHERE ' . $key . '=:val');
         if (!$x = $q->execute(array(
-            ':key' => $key,
             ':val' => $value
             ))) {
             throw new \Exception($q->errorInfo()[2]);
@@ -65,14 +57,13 @@ class PlainPDO implements ServiceInterfaceReadonly
     public function findByKeyVal($table, $key, $val, $options = array())
     {
         $q = $this->connection->prepare('SELECT * from '.$table 
-                .' WHERE :key = :val');
+                .' WHERE ' . $key . '=:val');
         if (!$x = $q->execute(array(
             ':key' => $key,
             ':val' => $value
             ))) {
             throw new \Exception($q->errorInfo()[2]);
         }
-        // $data = $q->fetchall();
         $data = $q->fetchall(\PDO::FETCH_ASSOC);
         return $data;
     }
