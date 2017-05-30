@@ -20,7 +20,9 @@ class MongoDb implements ServiceInterface
     private $mongodb_manager;
     private $dbname;
 
-    /* Note to self: Remember port numbers.. Gotta handle that somehow. */
+    /* 
+     * TODO: Move to named arguments.
+     */
     public function __construct($dbhost = 'localhost', $dbname, $dbuser, $dbpass, $dbport = 27017)
     {
         $up = '';
