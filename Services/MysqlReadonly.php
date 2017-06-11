@@ -30,17 +30,16 @@ class MysqlReadonly implements ServiceInterfaceReadonly
         $sql = 'SELECT * from '.$table.' WHERE ' . $id_key . ' = :id';
 
         $nsql = 'SELECT * from :table WHERE :id_key  = :id';
-        $q = $this->connection->prepare($sql);
+        $q = $this->connection->prepare($nsql);
 
         if (!$q->execute(array(
-            // ':table' => $table,
-            // ':id_key' => $id_key,
+            ':table' => $table,
+            ':id_key' => $id_key,
             ':id' => $id
             ))) {
 
             print_r($q->errorInfo());
             return null;
-
         };
 
         $data = $q->fetch(\PDO::FETCH_ASSOC);
