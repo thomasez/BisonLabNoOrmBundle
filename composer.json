@@ -4,7 +4,7 @@
     "description": "Bundle for simple access to (mainly) nosql databases for Symfony",
     "keywords": ["Nosql adapter rest arrayaccess"],
     "homepage": "https://github.com/thomasez/BisonLabNoOrmBundle",
-    "license": "GPLv2",
+    "license": "LGPLv2.1",
     "authors": [
         {
             "name": "Thomas Lundquist",
@@ -21,8 +21,6 @@
         "mongodb/mongodb": "The new MongoDB php library"
     },
     "autoload": {
-        "psr-0": { "BisonLab\\NoOrmBundle": "" }
-    },
-    "target-dir": "BisonLab/NoOrmBundle"
+        "psr-4": { "BisonLab\\NoOrmBundle\\": "" }
+    }
 }
-
