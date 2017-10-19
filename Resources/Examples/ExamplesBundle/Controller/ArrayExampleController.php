@@ -50,7 +50,6 @@ class ArrayExampleController extends BaseController
 
     /**
      * @Route("/{id}", name="arrayexample_update", requirements = { "_method"="post"})
-     * @Template()
      */
     public function updateAction($id)
     {
