@@ -19,38 +19,33 @@ class ArrayExampleController extends BaseController
 
     /**
      * @Route("/", name="arrayexample", requirements = { "_method"="get"})
-     * @Template()
      */
     public function indexAction()
     {
-
         $arrayexample_manager = $this->get('arrayexample_manager');
 
         $arrayexamples = $arrayexample_manager->findAll();
-// error_log("Cname:" . $arrayexamples[0]->getName());
-
-        return $this->render('BisonLabExamplesBundle:ArrayExample:list.html.twig', 
-              array( 'arrayexamples' => $arrayexamples,
-              ));
-
+        return $this->render(
+            'BisonLabExamplesBundle:ArrayExample:list.html.twig', 
+            array( 'arrayexamples' => $arrayexamples,
+        ));
     }
 
     /**
      * @Route("/new", name="arrayexample_new", requirements = { "_method"="get"})
-     * @Template()
      */
     public function newAction()
     {
+        $arrayexample = new Model\ArrayExample;
+        $form = $this->get('form.factory')->create(
+            new Form\ArrayExampleForm(), $arrayexample);
 
-      $arrayexample = new Model\ArrayExample;
-      $form = $this->get('form.factory')->create( new Form\ArrayExampleForm(), $arrayexample);
-
-      return $this->render('BisonLabExamplesBundle:ArrayExample:arrayexample.html.twig', 
+        return $this->render(
+            'BisonLabExamplesBundle:ArrayExample:arrayexample.html.twig', 
             array( 'form' => $form->createView(), 
                    'id' => null,
                    'fields' => array_keys($arrayexample->getFormSetup()
-            )));
-
+        )));
     }
 
     /**
@@ -59,85 +54,75 @@ class ArrayExampleController extends BaseController
      */
     public function updateAction($id)
     {
-      $arrayexample = new Model\ArrayExample;
-      $form = $this->get('form.factory')->create( new Form\ArrayExampleForm(), $arrayexample);
+        $arrayexample = new Model\ArrayExample;
+        $form = $this->get('form.factory')->create(new Form\ArrayExampleForm(),
+            $arrayexample);
 
-      $request = $this->get('request');
-      $form->handleRequest($request);
+        $request = $this->get('request');
+        $form->handleRequest($request);
 
-      if (!$form->isValid() )
-      {
-        error_log("Not valid");
-      }
-      if (!$form->isBound() )
-      {
-        error_log("Not bound");
-      }
+        if (!$form->isValid() )
+        {
+            error_log("Not valid");
+        }
+        if (!$form->isBound() )
+        {
+            error_log("Not bound");
+        }
 
-      $arrayexample->setId($id);
+        $arrayexample->setId($id);
 
-      $arrayexample_manager = $this->get('arrayexample_manager');
+        $arrayexample_manager = $this->get('arrayexample_manager');
 
-      if ($arrayexample_manager->save($arrayexample))
-      {
-        $this->get('session')->setFlash('notice', 'Lagra!');
-      }
-
-      return $this->getAction($arrayexample->getId());
-
+        if ($arrayexample_manager->save($arrayexample))
+        {
+            $this->get('session')->setFlash('notice', 'Lagra!');
+        }
+        return $this->getAction($arrayexample->getId());
     }
-
 
     /**
      * @Route("/delete/{id}", name="arrayexample_delete")
-     * @Template()
      */
     public function deleteAction($id)
     {
-      $arrayexample_manager = $this->get('arrayexample_manager');
+        $arrayexample_manager = $this->get('arrayexample_manager');
 
-      if ($arrayexample_manager->delete($id))
-      {
-        $this->get('session')->setFlash('notice', 'Sletta!');
-      }
-
-      return $this->indexAction();
-
+        if ($arrayexample_manager->delete($id))
+        {
+            $this->get('session')->setFlash('notice', 'Sletta!');
+        }
+        return $this->indexAction();
     }
 
     /**
      * @Route("/", name="arrayexample_insert", requirements = { "_method"="post"})
-     * @Template()
      */
     public function insertAction()
     {
+        $arrayexample = new Model\ArrayExample;
 
-      $arrayexample = new Model\ArrayExample;
+        $form = $this->get('form.factory')->create( new Form\ArrayExampleForm(), $arrayexample);
 
-      $form = $this->get('form.factory')->create( new Form\ArrayExampleForm(), $arrayexample);
+        $request = $this->get('request');
+        $form->handleRequest($request);
 
-      $request = $this->get('request');
-      $form->handleRequest($request);
+        if (!$form->isValid() )
+        {
+            error_log("Not valid");
+        }
+        if (!$form->isBound() )
+        {
+            error_log("Not bound");
+        }
 
-      if (!$form->isValid() )
-      {
-        error_log("Not valid");
-      }
-      if (!$form->isBound() )
-      {
-        error_log("Not bound");
-      }
+        $arrayexample_manager = $this->get('arrayexample_manager');
 
-      $arrayexample_manager = $this->get('arrayexample_manager');
-
-      if ($saved_arrayexample = $arrayexample_manager->save($arrayexample))
-      {
-        $this->get('session')->setFlash('notice', 'Lagra!');
-      }
-
-error_log("id:" . $saved_arrayexample->getId());
-      return $this->getAction($saved_arrayexample->getId());
-
+        if ($saved_arrayexample = $arrayexample_manager->save($arrayexample))
+        {
+          $this->get('session')->setFlash('notice', 'Lagra!');
+        }
+        return $this->getAction($saved_arrayexample->getId());
     }
 
 
@@ -148,7 +133,6 @@ error_log("id:" . $saved_arrayexample->getId());
 
     /**
      * @Route("/{key}/{value}", name="arrayexample_arrayexample")
-     * @Template()
      */
     public function searchAction($key, $value)
     {
@@ -178,18 +162,15 @@ error_log("id:" . $saved_arrayexample->getId());
         {
           throw new NotFoundHttpException("No ArrayExample with that value (".$value.")");
         }
-
     }
 
     /**
      * @Route("/{id}", name="arrayexample_get")
-     * @Template()
      */
     public function getAction($id)
     {
         $arrayexample_manager = $this->get('arrayexample_manager');
 
-error_log("id:" . $id);
         $arrayexample = $arrayexample_manager->findOneById($id);
 
         if (!$arrayexample)
@@ -205,6 +186,4 @@ error_log("id:" . $id);
                     'fields' => array_keys($arrayexample->getFormSetup())
         ));
     }
-
-
 }
