@@ -48,17 +48,11 @@ class MysqlReadonly implements ServiceInterfaceReadonly
     
     public function findOneByKeyVal($table, $key, $val, $options = array())
     {
-        if (is_string($val)) {
-            $value = mb_convert_encoding($val, "ISO-8859-1");
-        } else {
-            $value = $val;
-        }
-
         $q = $this->connection->prepare('SELECT * from '.$table 
                 .' WHERE '.$key.'=:val');
 
         $q->execute(array(
-            ':val' => $value
+            ':val' => $val
             ));
         $data = $q->fetch(\PDO::FETCH_ASSOC);
         return $data;
@@ -66,17 +60,11 @@ class MysqlReadonly implements ServiceInterfaceReadonly
     
     public function findByKeyVal($table, $key, $val, $options = array())
     {
-        if (is_string($val)) {
-            $value = mb_convert_encoding($val, "ISO-8859-1");
-        } else {
-            $value = $val;
-        }
-
         $q = $this->connection->prepare('SELECT * from '.$table 
                 .' WHERE '.$key.' = :val');
 
         $q->execute(array(
-            ':val' => $value
+            ':val' => $val
             ));
         $data = $q->fetchall();
         return $data;
