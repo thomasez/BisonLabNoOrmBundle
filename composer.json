@@ -4,7 +4,7 @@
     "description": "Bundle for simple access to (mainly) nosql databases for Symfony",
     "keywords": ["Nosql adapter rest arrayaccess"],
     "homepage": "https://github.com/thomasez/BisonLabNoOrmBundle",
-    "license": "LGPLv2.1",
+    "license": "LGPL-3.0-or-later",
     "authors": [
         {
             "name": "Thomas Lundquist",
