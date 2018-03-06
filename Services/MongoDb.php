@@ -55,6 +55,7 @@ class MongoDb implements ServiceInterface
         } 
 
         /* Good thing this one works. */
+/*      
         $result = $mongo_collection->findOneAndReplace(
             array('_id' => $object_id), 
             $data, 
@@ -65,8 +66,8 @@ class MongoDb implements ServiceInterface
             );
         $this->_convertStdClass($result);
         return $result;
+*/
 
-/*      
         // This triggers a bug somewhere in the MongoDB\Driver.
         if (isset($data['id'])) {
             $object_id = new ObjectId($data['id']);
@@ -77,10 +78,9 @@ class MongoDb implements ServiceInterface
             $data['id'] = (string)$object_id;
             unset($data['_id']);
         } else {
-            // $result = $mongo_collection->insertOne($data);
+            $result = $mongo_collection->insertOne($data);
             $data =  $this->_convertStdClass($result, $result->getInsertedId());
         }
-*/
         return $data;
     }
 
