@@ -45,7 +45,7 @@ class PlainPDO implements ServiceInterfaceReadonly
         $q = $this->connection->prepare('SELECT * from '.$table 
                 .' WHERE ' . $key . '=:val');
         if (!$x = $q->execute(array(
-            ':val' => $value
+            ':val' => $val
             ))) {
             throw new \Exception($q->errorInfo()[2]);
         }
