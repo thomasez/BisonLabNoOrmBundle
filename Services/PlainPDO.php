@@ -48,6 +48,7 @@ class PlainPDO implements ServiceInterfaceReadonly
     {
         $q = $this->connection->prepare('SELECT * from '.$table 
                 .' WHERE ' . $key . '=:val');
+
         if (!$x = $q->execute(array(
             ':val' => $val
             ))) {
@@ -61,10 +62,10 @@ class PlainPDO implements ServiceInterfaceReadonly
     public function findByKeyVal($table, $key, $val, $options = array())
     {
         $q = $this->connection->prepare('SELECT * from '.$table 
-                .' WHERE ' . $key . '=:val');
+                .' WHERE :key=:val');
         if (!$x = $q->execute(array(
             ':key' => $key,
-            ':val' => $value
+            ':val' => $val
             ))) {
             throw new \Exception($q->errorInfo()[2]);
         }
