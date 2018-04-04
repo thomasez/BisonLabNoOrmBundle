@@ -51,7 +51,6 @@ class PlainPDO implements ServiceInterfaceReadonly
         if (!$x = $q->execute(array(
             ':val' => $val
             ))) {
-dump($q);
             throw new \Exception($q->errorInfo()[2]);
         }
 
