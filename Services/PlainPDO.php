@@ -14,10 +14,14 @@ class PlainPDO implements ServiceInterfaceReadonly
 {
     private $connection;
 
-    public function __construct($dbdriver, $dbhost, $dbport = 1433, $dbname, $dbuser, $dbpasswd, $dbcharset = "utf8")
+    public function __construct($dbdriver, $dbhost, $dbport = 1433, $dbname, $dbuser, $dbpasswd, $dbcharset = null) 
     {
         $driver = preg_replace("/pdo_/", "", $dbdriver);
-        $dsn = $driver . ':host='.$dbhost.';port='.$dbport.';dbname='.$dbname.";charset=".$dbcharset;
+        $dsn = $driver . ':host='.$dbhost.';port='.$dbport.';dbname='.$dbname;
+
+        if ($dbcharset)
+            $dsn .= ";charset=".$dbcharset;
+
         $this->connection = new \PDO($dsn, $dbuser, $dbpasswd);
     }
 
@@ -47,6 +51,7 @@ class PlainPDO implements ServiceInterfaceReadonly
         if (!$x = $q->execute(array(
             ':val' => $val
             ))) {
+dump($q);
             throw new \Exception($q->errorInfo()[2]);
         }
 
