@@ -20,6 +20,8 @@ abstract class BaseManager
      */
     // protected static $_collection  = 'Base';
     // protected static $_model       = 'Model\Base';
+    // And if you need it;
+    // protected static $text_search_fields = ["Template"];
 
     protected $access_service;
     protected $options;
@@ -144,6 +146,23 @@ abstract class BaseManager
       
         foreach ($this->access_service->findByKeyValAndSet(
             static::$_collection, $criteria, $options) as $data) {
+          $object = new static::$_model($data);
+          $objects[] = $object;
+        }
+        return $objects;
+    }
+
+    /*
+     * Or is it really simple? It's meant to know fields to search for aswell.
+     */
+    public function simpleTextSearch($text, $options = array())
+    {
+        $this->_handleOptions($options);
+        $objects = array();
+      
+        foreach ($this->access_service->simpleTextSearch(
+            static::$_collection, static::$text_search_fields,
+                $text, $options) as $data) {
           $object = new static::$_model($data);
           $objects[] = $object;
         }

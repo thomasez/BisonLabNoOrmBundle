@@ -10,6 +10,7 @@
 
 namespace BisonLab\NoOrmBundle\Services;
 
+use MongoDB\Driver\Query;
 use MongoDB\Driver\Manager;
 use MongoDB\Collection;
 use MongoDB\Operation\FindOneAndReplace;
@@ -153,6 +154,32 @@ class MongoDb implements ServiceInterface
         }
     
         $cursor = $mongo_collection->find($criterias, $options);
+
+        $retarr = array();
+        foreach ($cursor as $data) {
+            $this->_convertStdClass($data);
+            $retarr[] = $data;
+        }
+        return $retarr;
+    }
+    
+    /*
+     * Very simple, until I need more advanced features.
+     * Fields is not used in mongodb, you gotta define which ones is included
+     * in text searches upfront. (As far as I understood it)
+     * https://docs.mongodb.com/manual/text-search/
+     */ 
+    public function simpleTextSearch($collection, $fields, $text, $options = array())
+    {
+        $this->_handleOptions($options);
+
+        $mongo_collection = $this->_getMongoCollection($collection);
+    
+        $filter = [ '$text' => [ '$search' => $text ]];
+        $query = new Query($filter);
+    
+        $conn = $this->getConnection();
+        $cursor = $conn->executeQuery($mongo_collection, $query);
 
         $retarr = array();
         foreach ($cursor as $data) {
