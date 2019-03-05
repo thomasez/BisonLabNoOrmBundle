@@ -30,8 +30,8 @@ class MongoDb implements ServiceInterface
         if ($dbuser) {
             $up = $dbuser;
             if ($dbpass)
-                $up += ':' . $dbpass;
-            $up += '@';
+                $up .= ':' . $dbpass;
+            $up .= '@';
         }
         $uri = 'mongodb://' . $dbhost.':' . $dbport . '/' . $dbname;
         $this->mongodb_manager = new \MongoDB\Driver\Manager($uri);
