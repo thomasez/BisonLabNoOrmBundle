@@ -22,12 +22,12 @@ class SugarCrmRestReadonly implements ServiceInterfaceReadonly
 
     public function __construct($base_url, $username, $password)
     {
-        $this->sugar = new \Spinegar\Sugar7Wrapper\Rest("Guzzle6");
-        $this->sugar->setClientOption('verify', false)
+        $this->sugar = new \Spinegar\SugarRestClient\Rest();
+        $this->sugar
             ->setUrl($base_url . '/rest/v10/')
             ->setUsername($username)
             ->setPassword($password)
-            ->connect();
+            ;
     }
 
     public function getConnection()
