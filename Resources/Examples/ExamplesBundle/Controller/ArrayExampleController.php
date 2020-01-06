@@ -60,7 +60,7 @@ class ArrayExampleController extends BaseController
         $request = $this->get('request');
         $form->handleRequest($request);
 
-        if (!$form->isValid() )
+        if ($form->isSubmitted() && !$form->isValid() )
         {
             error_log("Not valid");
         }
@@ -106,7 +106,7 @@ class ArrayExampleController extends BaseController
         $request = $this->get('request');
         $form->handleRequest($request);
 
-        if (!$form->isValid() )
+        if ($form->isSubmitted() && !$form->isValid() )
         {
             error_log("Not valid");
         }
