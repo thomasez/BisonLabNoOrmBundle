@@ -1,13 +1,15 @@
 <?php
 
 namespace BisonLab\NoOrmBundle\Extension;
+use Twig\Extension\AbstractExtension;
+use Twig\Environment as TwigEnvironment;
   
 /*
  * Pretty printer for the NoSqlBundle arrays / objects.
  * 
  */
 
-class TwigExtensionPrettyPrint extends \Twig_Extension
+class TwigExtensionPrettyPrint extends AbstractExtension
 {
    
    public function getFilters()
@@ -55,7 +57,7 @@ function pretty($value)
     
 }
 
-function twig_pretty_print_filter(\Twig_Environment $env, $value, $length = 80, $separator = "\n", $preserve = false)
+function twig_pretty_print_filter(TwigEnvironment $env, $value, $length = 80, $separator = "\n", $preserve = false)
 {
         pretty($value);
 return;
