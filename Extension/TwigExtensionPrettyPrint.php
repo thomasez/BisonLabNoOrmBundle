@@ -1,65 +1,75 @@
 <?php
 
-namespace BisonLab\NoOrmBundle\Extension;
+namespace BisonLab\CommonBundle\Extension;
+
 use Twig\Extension\AbstractExtension;
+use Twig\TwigFilter;
 use Twig\Environment as TwigEnvironment;
-  
+
 /*
- * Pretty printer for the NoSqlBundle arrays / objects.
- * 
+ * This was (and stil is) a Pretty printer for the NoSqlBundle arrays / objects.
+ * It works on all arrays basically.
+ * Aka I've nicked it from there.
  */
 
 class TwigExtensionPrettyPrint extends AbstractExtension
 {
-   
-   public function getFilters()
-   {
-  
-        return array(
-            'prettyprint' => new \Twig_Filter_Function('\BisonLab\NoOrmBundle\Extension\twig_pretty_print_filter', 
-                array('needs_environment' => true)),
+    private $attributes;
 
-        );
-    }
-  
-    /**
-     * Returns the name of the extension.
-     *
-     * @return string The extension name
-     */
-    public function getName()
+    public function getFilters()
     {
-        return 'pretty_print';
+        return [
+            new TwigFilter('prettyprint',
+                    [$this, 'twig_pretty_print_filter'],
+                    ['needs_environment' => true])
+        ];
     }
 
-}  
+    private function composeTag($tag, $default = array())
+    {
+        $res = "<" . $tag;
+        $attrs = array();
 
-function pretty($value) 
-{
-    if (empty($value)) { return ""; }
-
-    echo "<table>\n";
-    foreach($value as $key => $value) {
-        
-        echo "<tr>\n<th valign='top'>$key</th>\n<td>";
-        if (is_array($value)) { 
-            pretty($value); 
+        if (isset($this->attributes[$tag])) {
+            $attrs = $this->attributes[$tag];
         } else {
-            // I want to change \n to <br />. Not perfect but I need it.
-            $value = preg_replace("/\n/", "<br />", $value);
-            echo $value . "\n";
+            $attrs = $default;
         }
-
-        echo "</td>\n</tr>\n";
-
+        foreach ($attrs as $k => $v) {
+            $res .= ' ' . $k . '="' . $v . '"';
+        } 
+        return $res . ">\n";
     }
-    echo "</table>\n";
-    
-}
 
-function twig_pretty_print_filter(TwigEnvironment $env, $value, $length = 80, $separator = "\n", $preserve = false)
-{
-        pretty($value);
-return;
-}
+    function pretty($data)
+    {
+        if (empty($data)) { return ""; }
+        echo $this->composeTag('table');
+        $tr = $this->composeTag('tr');
+        $th = $this->composeTag('th', array('valign' => 'top'));
+        $td = $this->composeTag('td');
 
+        foreach($data as $key => $value) {
+            echo $tr;
+            echo $th . $key . "</th>\n";
+            echo $td;
+            if (is_array($value)) {
+                $this->pretty($value);
+            } elseif ($value instanceof \DateTime) {
+                echo $value->format('Y-m-d H:i') . "\n";
+            } else {
+                // I want to change \n to <br />. Not perfect but I need it.
+                $value = preg_replace("/\n/", "<br />", $value);
+                echo $value . "\n";
+            }
+            echo "</td>\n</tr>\n";
+        }
+        echo "</table>\n";
+    }
+
+    function twig_pretty_print_filter(TwigEnvironment $env, $value, $attributes = array())
+    {
+        $this->attributes = $attributes;
+        return $this->pretty($value);
+    }
+}
