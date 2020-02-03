@@ -1,4 +1,3 @@
-
 services:
     twig.extension.pretty_print:
         class: BisonLab\NoOrmBundle\Extension\TwigExtensionPrettyPrint
