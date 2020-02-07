@@ -20,13 +20,18 @@ class SugarCrmRestReadonly implements ServiceInterfaceReadonly
 {
     private $sugar;
 
-    public function __construct($base_url, $username, $password)
+    public function __construct($base_url, $username, $password, $platform = "sugar_wrapper")
     {
+        if (!preg_match("/rest\/v\d\d/", $base_url)) {
+            $base_url .= '/rest/v10/';
+        }
+
         $this->sugar = new \Spinegar\SugarRestClient\Rest();
         $this->sugar
-            ->setUrl($base_url . '/rest/v10/')
+            ->setUrl($base_url)
             ->setUsername($username)
             ->setPassword($password)
+            ->setPlatform($platform)
             ;
     }
 
