@@ -54,6 +54,16 @@ abstract class BaseModel
         return $simple_array;
     }
 
+    public function __get($name)
+    {
+        return $this->offsetGet($name);
+    }
+
+    public function __set($name, $value)
+    {
+        return $this->offsetSet($name, $value);
+    }
+
     public function __call($name, $args = null)
     {
         if (preg_match("/^get(\w+)/i", $name, $matches)) {
@@ -67,5 +77,4 @@ abstract class BaseModel
     {
         return array_key_exists($offset, $this->_metadata['schema']);
     }
-
 }
