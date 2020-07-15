@@ -6,9 +6,9 @@
  * @copyright 2014 Thomas Lundquist
  * @license   http://www.gnu.org/copyleft/lesser.html  LGPL License 2.1
  *
- * This is for communicating with Sugar CRM REST API from v10, aka Sugar 7.X
- * It does depend on spinegar/sugarcrm7-api-wrapper-class
- * (But you have to read this or fine out by yourself, I cannot add it as a
+ * This is for communicating with Sugar CRM REST API from v10 and above, aka
+ * Sugar 7.X It does depend on spinegar/sugarcrm7-api-wrapper-class
+ * (But you have to read this or find out by yourself, I cannot add it as a
  * dependency in composer.json, this it just one of many adapters.)
  *
  */
@@ -20,10 +20,10 @@ class SugarCrmRestReadonly implements ServiceInterfaceReadonly
 {
     private $sugar;
 
-    public function __construct($base_url, $username, $password, $platform = "sugar_wrapper")
+    public function __construct($base_url, $username, $password, $platform = "sugar-wrapper")
     {
-        if (!preg_match("/rest\/v\d\d/", $base_url)) {
-            $base_url .= '/rest/v10/';
+        if (!preg_match("/rest\/v[\d_]+/", $base_url)) {
+            $base_url .= '/rest/v11_5/';
         }
 
         $this->sugar = new \Spinegar\SugarRestClient\Rest();
