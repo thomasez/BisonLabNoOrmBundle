@@ -6,7 +6,7 @@ A Nosql Bundle for Symfony 2.
 Authors: 
     Base, Mongo and arraystuff: Thomas Lundquist <github@bisonlab.no>
 
-    Annotations: Danel Andre Eikeland <dae@redpill-linpro.com>
+    Annotations (not longer here): Danel Andre Eikeland <dae@redpill-linpro.com>
 
 Project started june 2011. 
 
