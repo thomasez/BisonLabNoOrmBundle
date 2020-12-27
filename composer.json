@@ -18,6 +18,7 @@
         "redpilllinpro/nosql-bundle": "*"
     },
     "suggest": {
+        "bisonlab/sugarcrm-bundle": "dev-master",
         "mongodb/mongodb": "The new MongoDB php library"
     },
     "autoload": {
