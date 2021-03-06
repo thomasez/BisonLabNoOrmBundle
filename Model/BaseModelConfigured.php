@@ -137,6 +137,11 @@ abstract class BaseModelConfigured extends BaseModel implements StorableObjectIn
             return null;
         }
 
+        if ('datetime' == $this->_metadata['schema'][$offset]) {
+            $dt = new \DateTime();
+            $dt->setTimestamp($this->$offset);
+            return $dt;
+        }
         return $this->$offset;
     }
 
@@ -148,6 +153,16 @@ abstract class BaseModelConfigured extends BaseModel implements StorableObjectIn
 
         if ('integer' == $this->_metadata['schema'][$offset]) {
             $this->$offset = (int)$value;
+        } elseif ('datetime' == $this->_metadata['schema'][$offset]) {
+            // Be a tad flexible about what you receive
+            if ($value instanceOf \DateTimeInterface)
+                $this->$offset = $value->getTimestamp();
+            elseif (is_numeric($value)) // Let's pretend this is a timestamp.
+                $this->$offset = $value;
+            elseif (empty($value))
+                $this->$offset = null;
+            else
+                throw new \Exception("The property {$offset} was not a datetime object nor timestamp");
         } else {
             $this->$offset = $value;
         }
