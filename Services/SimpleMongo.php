@@ -10,7 +10,7 @@
 
 namespace BisonLab\NoOrmBundle\Services;
 
-/* The increasingly innacurately names */
+/* The increasingly innacurately named */
 class SimpleMongo implements ServiceInterface
 {
     private $mongo;
@@ -94,7 +94,6 @@ class SimpleMongo implements ServiceInterface
     
     public function findOneById($collection, $id_key, $id, $options = array())
     {
-
         // Not sure if this is the right way or if I should throw an 
         // exception. But since I dislike exceptions....
         if (empty($id)) { return null; }

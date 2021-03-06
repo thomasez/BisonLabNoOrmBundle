@@ -25,7 +25,6 @@ abstract class BaseModelSchema extends BaseModel implements StorableObjectInterf
 
     public function __construct($data = array(), $metadata = array())
     {
-
         $this->_metadata = $metadata;
 
         if (empty($metadata['schema'])) {
@@ -50,10 +49,10 @@ abstract class BaseModelSchema extends BaseModel implements StorableObjectInterf
                 $this->$key = null;
             }
         }
-
     }
 
-    public function getSchema() {
+    public function getSchema()
+    {
         return $this->_metadata['schema'];
     }
 
@@ -147,7 +146,6 @@ abstract class BaseModelSchema extends BaseModel implements StorableObjectInterf
 
     public function offsetSet($offset, $value)
     {
-
         if ($offset != 'id' && !array_key_exists($offset, $this->_metadata['schema'])) {
             throw new \Exception("The property {$offset} doesn't exist");
         }
@@ -171,18 +169,12 @@ abstract class BaseModelSchema extends BaseModel implements StorableObjectInterf
 
     public function offsetUnset($offset)
     {
-
         if ($offset != 'id' && !array_key_exists($offset, $this->_metadata['schema'])) {
             throw new \Exception("The property {$offset} doesn't exist");
         }
 
         // Should I really do this? unset is unset so I guess so, for now.
         unset($this->_metadata['schema'][$key]);
-
         unset($this->$offsetSet);
-        
-        // $this->$offsetSet($offset, null);
     }
-
 }
-

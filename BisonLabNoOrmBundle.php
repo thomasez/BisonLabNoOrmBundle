@@ -7,8 +7,6 @@
  * @license   http://www.gnu.org/copyleft/lesser.html  LGPL License 2.1
  *
  */
-
-
 namespace BisonLab\NoOrmBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;

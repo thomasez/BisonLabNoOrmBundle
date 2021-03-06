@@ -25,7 +25,6 @@ abstract class BaseModelConfigured extends BaseModel implements StorableObjectIn
 
     public function __construct($data = array(), $metadata = array())
     {
-
         $this->_metadata = $metadata;
 
         if (empty($metadata['schema'])) {
@@ -143,7 +142,6 @@ abstract class BaseModelConfigured extends BaseModel implements StorableObjectIn
 
     public function offsetSet($offset, $value)
     {
-
         if ($offset != 'id' && !array_key_exists($offset, $this->_metadata['schema'])) {
             throw new \Exception("The property {$offset} doesn't exist");
         }
@@ -157,7 +155,6 @@ abstract class BaseModelConfigured extends BaseModel implements StorableObjectIn
 
     public function offsetUnset($offset)
     {
-
         if ($offset != 'id' && !array_key_exists($offset, $this->_metadata['schema'])) {
             throw new \Exception("The property {$offset} doesn't exist");
         }
@@ -166,9 +163,5 @@ abstract class BaseModelConfigured extends BaseModel implements StorableObjectIn
         unset($this->_metadata['schema'][$key]);
 
         unset($this->$offsetSet);
-        
-        // $this->$offsetSet($offset, null);
     }
-
 }
-

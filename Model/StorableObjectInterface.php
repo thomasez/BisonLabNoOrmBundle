@@ -12,7 +12,6 @@ namespace BisonLab\NoOrmBundle\Model;
 
 interface StorableObjectInterface
 {
-
     public function fromDataArray($data, \BisonLab\NoOrmBundle\Manager\BaseManager $manager);
 
     public function toDataArray();
@@ -24,5 +23,4 @@ interface StorableObjectInterface
     public function getDataArrayIdentifierValue();
 
     public function hasDataArrayIdentifierValue();
-
 }

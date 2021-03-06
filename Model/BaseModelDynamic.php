@@ -145,8 +145,5 @@ abstract class BaseModelDynamic extends BaseModel implements StorableObjectInter
 
         // Will this work or do we end up with a recurseloop?
         unset($this->$offset);
-        // ALternative: $this->$offset = null;
     }
-
 }
-

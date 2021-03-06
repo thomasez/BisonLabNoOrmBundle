@@ -12,7 +12,6 @@ namespace BisonLab\NoOrmBundle\Model;
 
 abstract class BaseModel
 {
-
     protected $_metadata = array();
     protected $id;
     protected $_id_key;
