@@ -155,7 +155,12 @@ abstract class VersionedManager extends BaseManager
     {
         // This was kinda annoying and I'm sure I just doing it wrong.
         $m = static::$_model;
-        return $this->access_service->findOneById(
-            static::$_versions_collection, $m::getIdKey(), $id);
+
+        if ($data = $this->access_service->findOneById(
+                static::$_versions_collection, $m::getIdKey(), $id)) {
+            $data['data'] = new static::$_model($data['data']);
+            return $data;
+        }
+        return null;
     }
 }
