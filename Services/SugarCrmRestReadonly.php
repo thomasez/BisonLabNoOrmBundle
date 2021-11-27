@@ -45,7 +45,7 @@ class SugarCrmRestReadonly implements ServiceInterfaceReadonly
         // If a 404, handle it, if anything else, throw it further.
         try {
             $data = $this->sugar->retrieve($table, $id);
-        } catch (\Guzzle\Http\Exception\ClientErrorResponseException $e) {
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
             if ($e->getResponse()->getStatusCode() == 404)
                 return null;
             else
