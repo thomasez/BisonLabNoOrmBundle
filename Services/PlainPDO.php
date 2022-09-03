@@ -10,7 +10,7 @@
 
 namespace BisonLab\NoOrmBundle\Services;
 
-class PlainPDO implements ServiceInterfaceReadonly
+class PlainPDO implements ServiceInterface
 {
     private $connection;
 
