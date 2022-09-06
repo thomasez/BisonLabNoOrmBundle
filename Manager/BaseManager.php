@@ -44,6 +44,11 @@ abstract class BaseManager
         return $this->access_service->getConnection();
     }
 
+    public function getAccessService()
+    {
+        return $this->access_service;
+    }
+
     /*
      * Finders
      */
