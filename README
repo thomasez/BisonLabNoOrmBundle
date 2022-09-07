@@ -19,13 +19,15 @@ Right now there are adapters for:
  * DBLib - Readonly.
  * Mysql - Readonly (Since that was what I needed at the time..)
  * SugarCRM REST v10 - Readonly
+ * PlainPDO - Readwrite
+ * Postgres jsonb adapter as an alternative to MongoDB
 
 As you probably notice, it's both SQL, NoSQL and REST access.
 
 The read/write adapter can use the "VersionedManager" for automagical logging
-of the old dataset. (Only tested on the MongoDB services.)
+of the old dataset. (Only tested on the MongoDB and Postgres json services.)
 
-Documentation can be found in  Resources/doc/index.rst
+Documentation can be found in Resources/doc/index.rst
 
 -- more will arrive in this README later
 
@@ -38,5 +40,4 @@ Just for todo:
 And as a REST interface readonly-example:
 
  OpenBeerDatabase.com
-
 
