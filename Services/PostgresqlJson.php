@@ -34,8 +34,6 @@ class PostgresqlJson implements ServiceInterface
             $data = $data->toCompleteArray();
         }
 
-        $pg_arr = ['data' => json_encode($data, true)];
-
         $id_key = 'id';
         if (isset($data['_metadata']) 
                 && isset($data['_metadata']['_id_key'])) {
@@ -46,8 +44,7 @@ class PostgresqlJson implements ServiceInterface
 
         // Deciding INSERT / UPDATE
         if ($id = $data[$id_key] ?? null) {
-            $where = ['id' => $id];
-            if (pg_update($this->connection, $table, $pg_arr, $where))
+            if (pg_query_params($this->connection, 'UPDATE ' . $table . ' set data=$1 where id=$2;', array(json_encode($data, true), $id)))
                 return $data;
             else
                 throw new \Exception("Woops");
