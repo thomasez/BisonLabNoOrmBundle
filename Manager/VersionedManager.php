@@ -13,40 +13,41 @@ namespace BisonLab\NoOrmBundle\Manager;
 
 abstract class VersionedManager extends BaseManager
 {
-  /* 
-   * Remember to put these in the Manager extending this one.
-   * Right now they are all the same but I define different names here.
-   * Or rather, they have to be defined in the object extending this one.
-   */
-  // protected static $_versions_collection  = 'BaseVersions';
+   /*
+    * Remember to put these in the Manager extending this one.
+    * Right now they are all the same but I define different names here.
+    * Or rather, they have to be defined in the object extending this one.
+    */
+   // protected static $_versions_collection  = 'BaseVersions';
 
-  /* This is where we add the copying to a versioned collection. */
-  /* This read was quite good:
-   * http://askasya.com/post/trackversions
-   * I want to keep this compatible with the basic non-versioned stuff
-   * alas I cannot touch the main collection.
-   * I'd also like to not having to neither find, nor update the
-   * versioned/history records. Not sure why, since my priority is not
-   * performance, but as long as I can do without, I will anyway.
-   * What will hurt by this method is retrieving data from the versions
-   * collection.  
-   * So, the plan? It's shorter than the reasoning above.
-   * 
-   * Grab the "original"
-   * Are they alike? If yes, no need to go through all this, return.
-   * Create new array.
-   * Set "data" to the original.
-   * Set "next_version_created" to microseconds since epoch.
-   * Set "id" to $object->getId();
-   * Save object.
-   * Save version array.
-   *
-   * This has one negative side effect; if you want to know when the current
-   * version was created you have to find the last one saved in the versions
-   * collection. Aka, you need to check the previous record to find the updated
-   * timestamp.
-   */
+   /* This is where we add the copying to a versioned collection. */
 
+   /*
+    * This read was quite good:
+    * http://askasya.com/post/trackversions
+    * I want to keep this compatible with the basic non-versioned stuff
+    * alas I cannot touch the main collection.
+    * I'd also like to not having to neither find, nor update the
+    * versioned/history records. Not sure why, since my priority is not
+    * performance, but as long as I can do without, I will anyway.
+    * What will hurt by this method is retrieving data from the versions
+    * collection.
+    * So, the plan? It's shorter than the reasoning above.
+    *
+    * Grab the "original"
+    * Are they alike? If yes, no need to go through all this, return.
+    * Create new array.
+    * Set "data" to the original.
+    * Set "next_version_created" to microseconds since epoch.
+    * Set "id" to $object->getId();
+    * Save object.
+    * Save version array.
+    *
+    * This has one negative side effect; if you want to know when the current
+    * version was created you have to find the last one saved in the versions
+    * collection. Aka, you need to check the previous record to find the updated
+    * timestamp.
+    */
     public function save($object)
     {
         $original = array();
@@ -121,7 +122,7 @@ abstract class VersionedManager extends BaseManager
             'object_id', $object_id, array(
             // Cannot use handleOptions in the base manager, aka we need to set
             // array of arrays here.
-            'orderBy' => array(array('next_version_created', 'DESC')),
+            'orderBy' => array(['next_version_created', 'DESC']),
             'limit' => $limit)) as $data) 
             {
             // Replacing.

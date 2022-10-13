@@ -109,7 +109,7 @@ class PostgresqlJson implements ServiceInterface
     {
         $table = strtolower($collection);
         // For now there are none I care about.
-        $this->_handleOptions($options);
+        $ostring = $this->_handleOptions($options, $collection);
 
         $result = pg_query_params($this->connection, 'SELECT * FROM ' . $table . ' WHERE data @> $1', array(json_encode($criterias, true)));
         $blob = pg_fetch_assoc($result);
@@ -122,9 +122,11 @@ class PostgresqlJson implements ServiceInterface
     {
         $table = strtolower($collection);
         // For now there are none I care about.
-        $this->_handleOptions($options);
-
-        $result = pg_query_params($this->connection, 'SELECT * FROM ' . $table . ' WHERE data @> $1', array(json_encode($criterias, true)));
+        $ostring = $this->_handleOptions($options, $collection);
+        $query = 'SELECT * FROM ' . $table . ' WHERE data @> $1';
+        if (!empty($ostring))
+            $query .= " " . $ostring;
+        $result = pg_query_params($this->connection, $query, array(json_encode($criterias, true)));
         $all = pg_fetch_all($result);
         if (!is_array($all))
             return [];
@@ -144,7 +146,7 @@ class PostgresqlJson implements ServiceInterface
      */ 
     public function simpleTextSearch($collection, $fields, $text, $options = array())
     {
-        $this->_handleOptions($options);
+        $ostring = $this->_handleOptions($options, $collection);
         $table = strtolower($collection);
     
         $filter = [ '$text' => [ '$search' => $text ]];
@@ -165,16 +167,19 @@ class PostgresqlJson implements ServiceInterface
      * For available options to convert the basic ones:
      * http://mongodb.github.io/mongo-php-library/api/source-class-MongoDB.Operation.Find.html 
      */
-    private function _handleOptions(&$options)
+    private function _handleOptions($options, $collection)
     {
-        if (isset($options['orderBy'])) {
-            $options['sort'] = array();
-            foreach ($options['orderBy'] as $orderBy) {
-                $order = $orderBy[1] == "ASC" ? 1 : -1;
-                $options['sort'][$orderBy[0]] = $order;
+        $options = array_change_key_case($options, CASE_LOWER);
+        $ostring = '';
+        if (isset($options['orderby'])) {
+            $ostring = "ORDER BY";
+            $osa = [];
+            foreach ($options['orderby'] as $orderBy) {
+                $osa[] = " data->>'" . $orderBy[0] . "' " . $orderBy[1];
             }
-            unset($options['orderBy']);
+            $ostring .= join(",", $osa);
         }
+        return $ostring;
     }
 
     /* Does a bit more than this, since it replaces the ID key _id with the id

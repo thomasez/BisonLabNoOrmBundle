@@ -189,9 +189,10 @@ class SimpleMongo implements ServiceInterface
 
     private function _handleOptions(&$cursor, &$options)
     {
-        if (isset($options['orderBy'])) {
+        $options = array_change_key_case($options, CASE_LOWER);
+        if (isset($options['orderby'])) {
             $sort = array();
-            foreach ($options['orderBy'] as $orderBy) {
+            foreach ($options['orderby'] as $orderBy) {
                 $order = $orderBy[1] == "ASC" ? 1 : -1;
                 $cursor->sort(array($orderBy[0] => $order));
             }

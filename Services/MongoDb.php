@@ -195,13 +195,14 @@ class MongoDb implements ServiceInterface
      */
     private function _handleOptions(&$options)
     {
-        if (isset($options['orderBy'])) {
+        $options = array_change_key_case($options, CASE_LOWER);
+        if (isset($options['orderby'])) {
             $options['sort'] = array();
-            foreach ($options['orderBy'] as $orderBy) {
+            foreach ($options['orderby'] as $orderBy) {
                 $order = $orderBy[1] == "ASC" ? 1 : -1;
                 $options['sort'][$orderBy[0]] = $order;
             }
-            unset($options['orderBy']);
+            unset($options['orderby']);
         }
     }
 
