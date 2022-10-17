@@ -49,8 +49,10 @@ class PostgresqlJson implements ServiceInterface
             else
                 throw new \Exception("Woops");
         } else {
-            $result = pg_query_params($this->connection, 'INSERT INTO ' . $table . ' (data) VALUES ($1) RETURNING *', array(json_encode($data, true)));
-            $blob = pg_fetch_assoc($result);
+            if ($result = pg_query_params($this->connection, 'INSERT INTO ' . $table . ' (data) VALUES ($1) RETURNING *', array(json_encode($data, true))))
+                $blob = pg_fetch_assoc($result);
+            else
+                throw new \Exception("Woops");
         }
         return $this->_convertBlob($blob);
     }
@@ -70,13 +72,14 @@ class PostgresqlJson implements ServiceInterface
 
     public function findAll($collection, $options = array())
     {
-        $table = strtolower($collection);
-        $result = pg_query_params($this->connection, 'SELECT * FROM ' . $table . ';', []);
-        $all = pg_fetch_all($result);
         $retarr = array();
-        foreach ($all as $blob) {
-            $data = $this->_convertBlob($blob);
-            $retarr[] = $data;
+        $table = strtolower($collection);
+        if ($result = pg_query_params($this->connection, 'SELECT * FROM ' . $table . ';', [])) {
+            $all = pg_fetch_all($result);
+            foreach ($all as $blob) {
+                $data = $this->_convertBlob($blob);
+                $retarr[] = $data;
+            }
         }
         return $retarr;
     }
@@ -88,9 +91,11 @@ class PostgresqlJson implements ServiceInterface
         if (empty($id)) { return null; }
         $table = strtolower($collection);
 
-        $result = pg_query_params($this->connection, 'SELECT * FROM ' . $table . ' WHERE ID=$1;', array($id));
-        $blob = pg_fetch_assoc($result);
-        return $this->_convertBlob($blob);
+        if ($result = pg_query_params($this->connection, 'SELECT * FROM ' . $table . ' WHERE ID=$1;', array($id))) {
+            $blob = pg_fetch_assoc($result);
+            return $this->_convertBlob($blob);
+        }
+        return null;
     }
     
     public function findByKeyVal($collection, $key, $val, $options = array())
@@ -111,29 +116,31 @@ class PostgresqlJson implements ServiceInterface
         // For now there are none I care about.
         $ostring = $this->_handleOptions($options, $collection);
 
-        $result = pg_query_params($this->connection, 'SELECT * FROM ' . $table . ' WHERE data @> $1', array(json_encode($criterias, true)));
-        $blob = pg_fetch_assoc($result);
-        if ($blob)
-            return $this->_convertBlob($blob);
+        if ($result = pg_query_params($this->connection, 'SELECT * FROM ' . $table . ' WHERE data @> $1', array(json_encode($criterias, true)))) {
+            $blob = pg_fetch_assoc($result);
+            if ($blob)
+                return $this->_convertBlob($blob);
+        }
         return null;
     }
     
     public function findByKeyValAndSet($collection, $criterias, $options = array())
     {
         $table = strtolower($collection);
+        $retarr = array();
         // For now there are none I care about.
         $ostring = $this->_handleOptions($options, $collection);
         $query = 'SELECT * FROM ' . $table . ' WHERE data @> $1';
         if (!empty($ostring))
             $query .= " " . $ostring;
-        $result = pg_query_params($this->connection, $query, array(json_encode($criterias, true)));
-        $all = pg_fetch_all($result);
-        if (!is_array($all))
-            return [];
-        $retarr = array();
-        foreach ($all as $blob) {
-            $data = $this->_convertBlob($blob);
-            $retarr[] = $data;
+        if ($result = pg_query_params($this->connection, $query, array(json_encode($criterias, true)))) {
+            $all = pg_fetch_all($result);
+            if (!is_array($all))
+                return [];
+            foreach ($all as $blob) {
+                $data = $this->_convertBlob($blob);
+                $retarr[] = $data;
+            }
         }
         return $retarr;
     }
@@ -148,17 +155,18 @@ class PostgresqlJson implements ServiceInterface
     {
         $ostring = $this->_handleOptions($options, $collection);
         $table = strtolower($collection);
+        $retarr = array();
     
         $filter = [ '$text' => [ '$search' => $text ]];
         // *very* simple.
-        $result = pg_query_params($this->connection, "SELECT * FROM " . $table . " WHERE (data #>> '{}') ~  $1", array($text));
-        $all = pg_fetch_all($result);
-        if (!is_array($all))
-            return [];
-        $retarr = array();
-        foreach ($all as $blob) {
-            $data = $this->_convertBlob($blob);
-            $retarr[] = $data;
+        if ($result = pg_query_params($this->connection, "SELECT * FROM " . $table . " WHERE (data #>> '{}') ~  $1", array($text))) {
+            $all = pg_fetch_all($result);
+            if (!is_array($all))
+                return [];
+            foreach ($all as $blob) {
+                $data = $this->_convertBlob($blob);
+                $retarr[] = $data;
+            }
         }
         return $retarr;
     }
