@@ -113,10 +113,12 @@ class PostgresqlJson implements ServiceInterface
     public function findOneByKeyValAndSet($collection, $criterias, $options = array())
     {
         $table = strtolower($collection);
-        // For now there are none I care about.
         $ostring = $this->_handleOptions($options, $collection);
 
-        if ($result = pg_query_params($this->connection, 'SELECT * FROM ' . $table . ' WHERE data @> $1', array(json_encode($criterias, true)))) {
+        $query = 'SELECT * FROM ' . $table . ' WHERE data @> $1';
+        if (!empty($ostring))
+            $query .= " " . $ostring;
+        if ($result = pg_query_params($this->connection, $query, array(json_encode($criterias, true)))) {
             $blob = pg_fetch_assoc($result);
             if ($blob)
                 return $this->_convertBlob($blob);
@@ -128,15 +130,12 @@ class PostgresqlJson implements ServiceInterface
     {
         $table = strtolower($collection);
         $retarr = array();
-        // For now there are none I care about.
         $ostring = $this->_handleOptions($options, $collection);
         $query = 'SELECT * FROM ' . $table . ' WHERE data @> $1';
         if (!empty($ostring))
             $query .= " " . $ostring;
         if ($result = pg_query_params($this->connection, $query, array(json_encode($criterias, true)))) {
             $all = pg_fetch_all($result);
-            if (!is_array($all))
-                return [];
             foreach ($all as $blob) {
                 $data = $this->_convertBlob($blob);
                 $retarr[] = $data;
