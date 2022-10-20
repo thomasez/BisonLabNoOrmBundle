@@ -1,5 +1,7 @@
 <?php
 
+namespace BisonLab\NoOrmBundle\Manager;
+
 /**
  *
  * @author    Thomas Lundquist <github@bisonlab.no>
@@ -7,9 +9,7 @@
  * @license   http://www.gnu.org/copyleft/lesser.html  LGPL License 2.1
  *
  */
-
-
-namespace BisonLab\NoOrmBundle\Manager;
+use BisonLab\NoOrmBundle\Services\ServiceInterface;
 
 abstract class BaseManager
 {
@@ -26,7 +26,7 @@ abstract class BaseManager
     protected $access_service;
     protected $options;
 
-    public function __construct($access_service, $options = array())
+    public function __construct(?ServiceInterface $access_service, $options = array())
     {
         $this->access_service = $access_service;
         // Not sure I use this at all and must not be confused with options
