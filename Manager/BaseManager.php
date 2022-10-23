@@ -26,7 +26,7 @@ abstract class BaseManager
     protected $access_service;
     protected $options;
 
-    public function __construct(?ServiceInterface $access_service, $options = array())
+    public function __construct($access_service, $options = array())
     {
         $this->access_service = $access_service;
         // Not sure I use this at all and must not be confused with options
