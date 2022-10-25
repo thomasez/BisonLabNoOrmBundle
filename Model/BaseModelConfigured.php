@@ -128,8 +128,7 @@ abstract class BaseModelConfigured extends BaseModel implements StorableObjectIn
     /*
      * Functions implementing ArrayAccess
      */
-
-    public function offsetGet($offset)
+    public function offsetGet(mixed $offset): mixed
     {
         if ($offset != 'id' && !array_key_exists($offset, $this->_metadata['schema'])) {
             throw new \Exception("The property {$offset} doesn't exist");
@@ -145,7 +144,7 @@ abstract class BaseModelConfigured extends BaseModel implements StorableObjectIn
         return $this->$offset;
     }
 
-    public function offsetSet($offset, $value)
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         if ($offset != 'id' && !array_key_exists($offset, $this->_metadata['schema'])) {
             throw new \Exception("The property {$offset} doesn't exist");
@@ -168,7 +167,7 @@ abstract class BaseModelConfigured extends BaseModel implements StorableObjectIn
         }
     }
 
-    public function offsetUnset($offset)
+    public function offsetUnset(mixed $offset): void
     {
         if ($offset != 'id' && !array_key_exists($offset, $this->_metadata['schema'])) {
             throw new \Exception("The property {$offset} doesn't exist");

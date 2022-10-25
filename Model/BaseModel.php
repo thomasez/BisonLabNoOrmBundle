@@ -72,7 +72,7 @@ abstract class BaseModel
         }
     }
 
-    public function offsetExists($offset)
+    public function offsetExists(mixed $offset): bool
     {
         return array_key_exists($offset, $this->_metadata['schema']);
     }

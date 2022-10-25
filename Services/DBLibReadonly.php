@@ -13,21 +13,37 @@ namespace BisonLab\NoOrmBundle\Services;
 class DBLibReadonly implements ServiceInterfaceReadonly
 {
     private $connection;
+    private $dsn;
+    private $dbuser;
+    private $dbpasswd;
 
     public function __construct($dbhost, $dbport = 1433, $dbname, $dbuser, $dbpasswd)
     {
-        $dsn = 'dblib:host='.$dbhost.':'.$dbport.';dbname='.$dbname;
-        $this->connection = new \PDO($dsn, $dbuser, $dbpasswd);
+        $this->dsn = 'dblib:host='.$dbhost.':'.$dbport.';dbname='.$dbname;
+        $this->dbuser = $dbuser;
+        $this->dbpasswd = $dbpasswd;
+    }
+
+    public function setConnectionOptions(mixed $options): void
+    {
+        if (isset($options['dsn']))
+            $this->dsn = $options['dsn'];
+        if (isset($options['dbuser']))
+            $this->dbuser = $options['dbuser'];
+        if (isset($options['dbuser']))
+            $this->dbuser = $options['dbuser'];
     }
 
     public function getConnection()
     {
+        if (!$this->connection)
+            $this->connection = new \PDO($dsn, $dbuser, $dbpasswd);
         return $this->connection;
     }
 
     public function findOneById($table, $id_key, $id, $options = array())
     {
-        $q = $this->connection->prepare('SELECT * from '.$table.' WHERE :id_key  = :id');
+        $q = $this->getConnection()->prepare('SELECT * from '.$table.' WHERE :id_key  = :id');
 
         $q->execute(array(
             ':id_key' => $id_key,
@@ -52,14 +68,14 @@ class DBLibReadonly implements ServiceInterfaceReadonly
         // I still wonder how I ended up making it like this. But I'm pretty
         // sure I had a good reason.
 /*
-        $q = $this->connection->prepare('SELECT * from '.$table 
+        $q = $this->getConnection()->prepare('SELECT * from '.$table
                 .' WHERE '.$key.'=:val');
         $x = $q->execute(array(
             ':val' => $value
             ));
 */
         $sql = 'SELECT * from '.$table .' WHERE '.$key."='" . $val . "';";
-        $q = $this->connection->prepare($sql);
+        $q = $this->getConnection()->prepare($sql);
         $x = $q->execute();
 
         $data = $q->fetch(\PDO::FETCH_ASSOC);
@@ -79,7 +95,7 @@ class DBLibReadonly implements ServiceInterfaceReadonly
             $key = '[End]'; 
         }
 
-        $q = $this->connection->prepare('SELECT * from '.$table 
+        $q = $this->getConnection()->prepare('SELECT * from '.$table
                 .' WHERE '.$key.' = :val');
 
         $q->execute(array(
@@ -91,7 +107,7 @@ class DBLibReadonly implements ServiceInterfaceReadonly
 
     public function findAll($table, $options = array())
     {
-        $q = $this->connection->prepare('SELECT * from '.$table);
+        $q = $this->getConnection()->prepare('SELECT * from '.$table);
         $q->execute();
         $data = $q->fetchall();
         return $data;

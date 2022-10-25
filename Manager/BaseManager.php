@@ -9,7 +9,7 @@ namespace BisonLab\NoOrmBundle\Manager;
  * @license   http://www.gnu.org/copyleft/lesser.html  LGPL License 2.1
  *
  */
-use BisonLab\NoOrmBundle\Services\ServiceInterface;
+use BisonLab\NoOrmBundle\Services\ServiceInterfaceReadonly;
 
 abstract class BaseManager
 {
@@ -26,7 +26,7 @@ abstract class BaseManager
     protected $access_service;
     protected $options;
 
-    public function __construct($access_service, $options = array())
+    public function __construct(ServiceInterfaceReadonly $access_service, $options = array())
     {
         $this->access_service = $access_service;
         // Not sure I use this at all and must not be confused with options

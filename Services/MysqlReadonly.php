@@ -13,15 +13,31 @@ namespace BisonLab\NoOrmBundle\Services;
 class MysqlReadonly implements ServiceInterfaceReadonly
 {
     private $connection;
+    private $dsn;
+    private $dbuser;
+    private $dbpasswd;
 
     public function __construct($dbhost, $dbport = 1433, $dbname, $dbuser, $dbpasswd)
     {
-        $dsn = 'mysql:host='.$dbhost.';port='.$dbport.';dbname='.$dbname;
-        $this->connection = new \PDO($dsn, $dbuser, $dbpasswd);
+        $this->dsn = 'mysql:host='.$dbhost.';port='.$dbport.';dbname='.$dbname;
+        $this->dbuser = $dbuser;
+        $this->dbpasswd = $dbpasswd;
+    }
+
+    public function setConnectionOptions(mixed $options): void
+    {
+        if (isset($options['dsn']))
+            $this->dsn = $options['dsn'];
+        if (isset($options['dbuser']))
+            $this->dbuser = $options['dbuser'];
+        if (isset($options['dbpasswd']))
+            $this->dbpasswd = $options['dbpasswd'];
     }
 
     public function getConnection()
     {
+        if (!$this->connection)
+            $this->connection = new \PDO($this->dsn, $this->dbuser, $this->dbpasswd);
         return $this->connection;
     }
 
@@ -30,7 +46,7 @@ class MysqlReadonly implements ServiceInterfaceReadonly
         $sql = 'SELECT * from '.$table.' WHERE ' . $id_key . ' = :id';
 
         $nsql = 'SELECT * from :table WHERE :id_key  = :id';
-        $q = $this->connection->prepare($nsql);
+        $q = $this->getConnection()->prepare($nsql);
 
         if (!$q->execute(array(
             ':table' => $table,
@@ -48,7 +64,7 @@ class MysqlReadonly implements ServiceInterfaceReadonly
     
     public function findOneByKeyVal($table, $key, $val, $options = array())
     {
-        $q = $this->connection->prepare('SELECT * from '.$table 
+        $q = $this->getConnection()->prepare('SELECT * from '.$table
                 .' WHERE '.$key.'=:val');
 
         $q->execute(array(
@@ -60,7 +76,7 @@ class MysqlReadonly implements ServiceInterfaceReadonly
     
     public function findByKeyVal($table, $key, $val, $options = array())
     {
-        $q = $this->connection->prepare('SELECT * from '.$table 
+        $q = $this->getConnection()->prepare('SELECT * from '.$table
                 .' WHERE '.$key.' = :val');
 
         $q->execute(array(
@@ -72,7 +88,7 @@ class MysqlReadonly implements ServiceInterfaceReadonly
 
     public function findAll($table, $options = array())
     {
-        $q = $this->connection->prepare('SELECT * from '.$table);
+        $q = $this->getConnection()->prepare('SELECT * from '.$table);
         $q->execute();
         $data = $q->fetchall();
         return $data;

@@ -133,7 +133,7 @@ abstract class BaseModelSchema extends BaseModel implements StorableObjectInterf
      * Functions implementing ArrayAccess
      * __call, toDataArray and offsetExists is in BaseModel.
      */
-    public function offsetGet($offset)
+    public function offsetGet(mixed $offset): mixed
     {
         if ($offset != 'id' && !array_key_exists($offset, $this->_metadata['schema'])) {
             throw new \Exception("The property {$offset} doesn't exist");
@@ -149,7 +149,7 @@ abstract class BaseModelSchema extends BaseModel implements StorableObjectInterf
         return $this->$offset;
     }
 
-    public function offsetSet($offset, $value)
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         if ($offset != 'id' && !array_key_exists($offset, $this->_metadata['schema'])) {
             throw new \Exception("The property {$offset} doesn't exist");
@@ -182,7 +182,7 @@ abstract class BaseModelSchema extends BaseModel implements StorableObjectInterf
         }
     }
 
-    public function offsetUnset($offset)
+    public function offsetUnset(mixed $offset): void
     {
         if ($offset != 'id' && !array_key_exists($offset, $this->_metadata['schema'])) {
             throw new \Exception("The property {$offset} doesn't exist");

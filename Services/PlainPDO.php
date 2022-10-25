@@ -1,5 +1,7 @@
 <?php
 
+namespace BisonLab\NoOrmBundle\Services;
+
 /**
  *
  * @author    Thomas Lundquist <github@bisonlab.no>
@@ -7,32 +9,42 @@
  * @license   http://www.gnu.org/copyleft/lesser.html  LGPL License 2.1
  *
  */
-
-namespace BisonLab\NoOrmBundle\Services;
-
 class PlainPDO implements ServiceInterface
 {
     private $connection;
 
     public function __construct($dbdriver, $dbhost, $dbport = 1433, $dbname, $dbuser, $dbpasswd, $dbcharset = null) 
     {
-        $driver = preg_replace("/pdo_/", "", $dbdriver);
-        $dsn = $driver . ':host='.$dbhost.';port='.$dbport.';dbname='.$dbname;
-
+        $this->driver = preg_replace("/pdo_/", "", $dbdriver);
+        $this->dsn = $this->driver . ':host='.$dbhost.';port='.$dbport.';dbname='.$dbname;
         if ($dbcharset)
-            $dsn .= ";charset=".$dbcharset;
+            $this->dsn .= ";charset=".$dbcharset;
+        $this->dbuser = $dbuser;
+        $this->dbpasswd = $dbpasswd;
+    }
 
-        $this->connection = new \PDO($dsn, $dbuser, $dbpasswd);
+    public function setConnectionOptions(mixed $options): void
+    {
+        if (isset($options['dsn']))
+            $this->dsn = $options['dsn'];
+        if (isset($options['dbuser']))
+            $this->dbuser = $options['dbuser'];
+        if (isset($options['dbpasswd']))
+            $this->dbpasswd = $options['dbpasswd'];
+        if (isset($options['dbdriver']))
+            $this->driver = preg_replace("/pdo_/", "", $options['dbdriver']);
     }
 
     public function getConnection()
     {
+        if (!$this->connection)
+            $this->connection = new \PDO($this->dsn, $this->dbuser, $this->dbpasswd);
         return $this->connection;
     }
 
     public function findOneById($table, $id_key, $id, $options = array())
     {
-        $q = $this->connection->prepare('SELECT * from '
+        $q = $this->getConnection()->prepare('SELECT * from '
             . $table . ' WHERE ' . $id_key . '=:id');
 
         if (!$q->execute(array(
@@ -46,7 +58,7 @@ class PlainPDO implements ServiceInterface
     
     public function findOneByKeyVal($table, $key, $val, $options = array())
     {
-        $q = $this->connection->prepare('SELECT * from '.$table 
+        $q = $this->getConnection()->prepare('SELECT * from '.$table 
                 .' WHERE ' . $key . '=:val');
 
         if (!$x = $q->execute(array(
@@ -61,7 +73,7 @@ class PlainPDO implements ServiceInterface
     
     public function findByKeyVal($table, $key, $val, $options = array())
     {
-        $q = $this->connection->prepare('SELECT * from '.$table 
+        $q = $this->getConnection()->prepare('SELECT * from '.$table 
                 .' WHERE ' . $key . '=:val');
         if (!$x = $q->execute(array(
             ':val' => $val
@@ -74,7 +86,7 @@ class PlainPDO implements ServiceInterface
 
     public function findAll($table, $options = array())
     {
-        $q = $this->connection->prepare('SELECT * from '.$table);
+        $q = $this->getConnection()->prepare('SELECT * from '.$table);
         $q->execute();
         // $data = $q->fetchall();
         $data = $q->fetchall(\PDO::FETCH_ASSOC);
@@ -108,7 +120,7 @@ class PlainPDO implements ServiceInterface
             }
             $sql .= implode(", ", $keysets);
             $sql .= " WHERE id=:id;";
-            $q = $this->connection->prepare($sql);
+            $q = $this->getConnection()->prepare($sql);
             if (!$q->execute($values)) {
                 throw new \Exception($q->errorInfo()[2]);
             }
@@ -124,7 +136,7 @@ class PlainPDO implements ServiceInterface
             foreach ($data as $key => $val) {
                 $values[":".$key] = $val;
             }
-            $q = $this->connection->prepare($sql);
+            $q = $this->getConnection()->prepare($sql);
             if (!$q->execute($values)) {
                 throw new \Exception($q->errorInfo()[2]);
             }
@@ -132,7 +144,7 @@ class PlainPDO implements ServiceInterface
             // I'll just take for granted there is an autoincrement.
             // And since PostgreSQL handle that differently, while MySQL ans
             // SQLite just does it, we'll get the ID this way.
-            $id = $this->connection->lastInsertId($table . '_id_seq');
+            $id = $this->getConnection()->lastInsertId($table . '_id_seq');
             $object[$primary_key] = $id;
             return $object;
         }

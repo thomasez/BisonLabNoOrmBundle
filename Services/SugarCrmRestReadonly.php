@@ -18,7 +18,7 @@ namespace BisonLab\NoOrmBundle\Services;
 // I Only need readonly for now. Lazy? yup.
 class SugarCrmRestReadonly implements ServiceInterfaceReadonly
 {
-    private $sugar;
+    private $connection;
 
     public function __construct($base_url, $username, $password, $platform = "sugar-wrapper")
     {
@@ -26,8 +26,8 @@ class SugarCrmRestReadonly implements ServiceInterfaceReadonly
             $base_url .= '/rest/v11_5/';
         }
 
-        $this->sugar = new \Spinegar\SugarRestClient\Rest();
-        $this->sugar
+        $this->connection = new \Spinegar\SugarRestClient\Rest();
+        $this->connection
             ->setUrl($base_url)
             ->setUsername($username)
             ->setPassword($password)
@@ -35,16 +35,20 @@ class SugarCrmRestReadonly implements ServiceInterfaceReadonly
             ;
     }
 
+    public function setConnectionOptions(mixed $options): void
+    {
+    }
+
     public function getConnection()
     {
-        return $this->sugar;
+        return $this->connection;
     }
 
     public function findOneById($table, $id_key, $id, $options = array())
     {
         // If a 404, handle it, if anything else, throw it further.
         try {
-            $data = $this->sugar->retrieve($table, $id);
+            $data = $this->getConnection()->retrieve($table, $id);
         } catch (\GuzzleHttp\Exception\ClientException $e) {
             if ($e->getResponse()->getStatusCode() == 404)
                 return null;
@@ -58,7 +62,7 @@ class SugarCrmRestReadonly implements ServiceInterfaceReadonly
     {
         $sopts = array_merge(array($val => $val), $options);
         try {
-            $data = $this->sugar->Search($table, $sopts);
+            $data = $this->getConnection()->Search($table, $sopts);
         } catch (\Guzzle\Http\Exception\ClientErrorResponseException $e) {
             if ($e->getResponse()->getStatusCode() == 404)
                 return null;
@@ -75,7 +79,7 @@ class SugarCrmRestReadonly implements ServiceInterfaceReadonly
         // Good question; does search return 404 at all? To be honest, it 
         // shouldn't.
         try {
-            $data = $this->sugar->Search($table, $sopts);
+            $data = $this->getConnection()->Search($table, $sopts);
         } catch (\Guzzle\Http\Exception\ClientErrorResponseException $e) {
             if ($e->getResponse()->getStatusCode() == 404)
                 return null;
@@ -88,7 +92,7 @@ class SugarCrmRestReadonly implements ServiceInterfaceReadonly
 
     public function findAll($table, $options = array())
     {
-        $data = $this->sugar->Search($table);
+        $data = $this->getConnection()->Search($table);
         return $data['records'];
     }
 }

@@ -13,18 +13,35 @@ namespace BisonLab\NoOrmBundle\Services;
 /* The increasingly innacurately named */
 class SimpleMongo implements ServiceInterface
 {
-    private $mongo;
-    private $mongodb;
+    private $dbhost;
+    private $dbname;
+    private $dbuser;
+    private $connection;
 
     public function __construct($dbhost, $dbname, $dbuser)
     {
-        $this->mongo = new \MongoClient();
-        $this->mongodb = $this->mongo->selectDB($dbname);
+        $this->dbhost = $dbhost;
+        $this->dbname = $dbname;
+        $this->dbuser = $dbuser;
+    }
+
+    public function setConnectionOptions(mixed $options): void
+    {
+        if (isset($options['dbhost']))
+            $this->dbhost = $options['dbhost'];
+        if (isset($options['dbname']))
+            $this->dbname = $options['dbname'];
+        if (isset($options['dbuser']))
+            $this->dbuser = $options['dbuser'];
     }
 
     public function getConnection()
     {
-        return $this->mongodb;
+        if (!$this->connection) {
+            $this->mongo = new \MongoClient();
+            $this->connection = $this->mongo->selectDB($this->dbname);
+        }
+        return $this->connection;
     }
 
     public function save($data, $collection = null)
@@ -37,7 +54,7 @@ class SimpleMongo implements ServiceInterface
             throw new \InvalidArgumentException("Got no collection to save the data");
         }
 
-        $mongo_collection = $this->mongodb->$collection;
+        $mongo_collection = $this->getConnection()->$collection;
 
         if (isset($data['id']))
         {
@@ -70,7 +87,7 @@ class SimpleMongo implements ServiceInterface
             $id = $data;
         }
 
-        $mongo_collection = $this->mongodb->$collection;
+        $mongo_collection = $this->getConnection()->$collection;
 
         $mid = new \MongoId($id);
         return $mongo_collection->remove(array('_id' => $mid), 
@@ -81,7 +98,7 @@ class SimpleMongo implements ServiceInterface
     {
         $retarr = array();
 
-        foreach (iterator_to_array($this->mongodb->$collection->find()) 
+        foreach (iterator_to_array($this->getConnection()->$collection->find()) 
                     as $data) {
 
             $data['id'] = $data['_id']->{'$id'};
@@ -98,7 +115,7 @@ class SimpleMongo implements ServiceInterface
         // exception. But since I dislike exceptions....
         if (empty($id)) { return null; }
 
-        $data = $this->mongodb->$collection->findOne(
+        $data = $this->getConnection()->$collection->findOne(
            array('_id' => new \MongoId($id)));
 
         if (is_null($data)) { return null; }
@@ -110,7 +127,7 @@ class SimpleMongo implements ServiceInterface
     
     public function findOneByKeyVal($collection, $key, $val, $options = array())
     {
-        $data = $this->mongodb->$collection->findOne(array($key => $val));
+        $data = $this->getConnection()->$collection->findOne(array($key => $val));
 
         if (is_null($data)) { return null; }
 
@@ -129,7 +146,7 @@ class SimpleMongo implements ServiceInterface
             $val = $val * 1;
         }
     
-        $cursor = $this->mongodb->$collection->find(array($key => $val));
+        $cursor = $this->getConnection()->$collection->find(array($key => $val));
         $this->_handleOptions($cursor, $options);
 
         // Since I am cooking rigth from php.net I'll use while here:
@@ -147,8 +164,8 @@ class SimpleMongo implements ServiceInterface
         /* According to https://blog.serverdensity.com/checking-if-a-document-exists-mongodb-slow-findone-vs-find/
          * using find and the cursor is a lot faster..
          */
-        // $data = $this->mongodb->$collection->findOne($criterias);
-        $cursor = $this->mongodb->$collection->find($criterias);
+        // $data = $this->getConnection()->$collection->findOne($criterias);
+        $cursor = $this->getConnection()->$collection->find($criterias);
         $this->_handleOptions($cursor, $options);
 
         $data = null;
@@ -174,7 +191,7 @@ class SimpleMongo implements ServiceInterface
             }
         }
     
-        $cursor = $this->mongodb->$collection->find($criterias);
+        $cursor = $this->getConnection()->$collection->find($criterias);
         $this->_handleOptions($cursor, $options);
 
         // Since I am cooking rigth from php.net I'll use while here:

@@ -16,17 +16,43 @@ namespace BisonLab\NoOrmBundle\Services;
 class MSSqlReadonly implements ServiceInterfaceReadonly
 {
     private $connection;
+    private $dbhost;
+    private $dbport;
+    private $dbname;
+    private $dbuser;
+    private $dbpasswd;
 
     public function __construct($dbhost, $dbport = 1433, $dbname, $dbuser, $dbpasswd)
     {
-        // Connect to mssql server 
-        $this->connection = mssql_connect($dbhost . ":" . $dbport, $dbuser, $dbpasswd);
-        // Select a database 
-        $db = mssql_select_db($dbname, $this->connection);
+        $this->dbhost = $dbhost;
+        $this->dbport = $dbport;
+        $this->dbname = $dbname;
+        $this->dbuser = $dbuser;
+        $this->dbpasswd = $dbpasswd;
+    }
+
+    public function setConnectionOptions(mixed $options): void
+    {
+        if (isset($options['dbhost']))
+            $this->dbhost = $options['dbhost'];
+        if (isset($options['dbport']))
+            $this->dbport = $options['dbport'];
+        if (isset($options['dbname']))
+            $this->dbname = $options['dbname'];
+        if (isset($options['dbuser']))
+            $this->dbuser = $options['dbuser'];
+        if (isset($options['dbpasswd']))
+            $this->dbpasswd = $options['dbpasswd'];
     }
 
     public function getConnection()
     {
+        if (!$this->connection) {
+            // Connect to mssql server
+            $this->connection = mssql_connect($dbhost . ":" . $dbport, $dbuser, $dbpasswd);
+            // Select a database
+            $db = mssql_select_db($dbname, $this->connection);
+        }
         return $this->connection;
     }
 
@@ -41,7 +67,7 @@ class MSSqlReadonly implements ServiceInterfaceReadonly
         // http://stackoverflow.com/questions/3252651/how-do-you-escape-quotes-in-a-sql-query-using-php
         // But not used.
         // $escaped_sql = str_replace("'", "''", $sql);
-        $result = mssql_query($sql, $this->connection);
+        $result = mssql_query($sql, $this->getConnection());
 
         // No iteration, we'll pick the first one.
         $data = mssql_fetch_array($result);
@@ -72,8 +98,8 @@ class MSSqlReadonly implements ServiceInterfaceReadonly
         // http://stackoverflow.com/questions/3252651/how-do-you-escape-quotes-in-a-sql-query-using-php
         // But not used.
         // $escaped_sql = str_replace("'", "''", $sql);
-        // $result = mssql_query($escaped_sql, $this->connection);
-        $result = mssql_query($sql, $this->connection);
+        // $result = mssql_query($escaped_sql, $this->getConnection());
+        $result = mssql_query($sql, $this->getConnection());
 
         // No iteration, we'll pick the first one.
         $data = mssql_fetch_array($result);
@@ -103,7 +129,7 @@ class MSSqlReadonly implements ServiceInterfaceReadonly
         // Nicked from
         // http://stackoverflow.com/questions/3252651/how-do-you-escape-quotes-in-a-sql-query-using-php
         $escaped_sql = str_replace("'", "''", $sql);
-        $result = mssql_query($sql, $this->connection);
+        $result = mssql_query($sql, $this->getConnection());
 
         $data = array();
         while ($row = mssql_fetch_array($result)) {
@@ -117,7 +143,7 @@ class MSSqlReadonly implements ServiceInterfaceReadonly
     public function findAll($table, $options = array())
     {
         $sql = 'SELECT * from '.$table .';';
-        $result = mssql_query($sql, $this->connection);
+        $result = mssql_query($sql, $this->getConnection());
 
         // No iteration, we'll pick the first one.
         $data = array();

@@ -12,18 +12,27 @@ namespace BisonLab\NoOrmBundle\Services;
 class PostgresqlJson implements ServiceInterface
 {
     private $connection;
+    private $dsn;
 
     /* 
      * Use the database-url like Doctrine does.
      */
-    public function __construct($database_url)
+    public function __construct($dsn)
     {
-        if (!$this->connection = pg_connect($database_url))
-            throw new \Exception("Could not connect to Postgesql database");
+        $this->dsn = $dsn;
+    }
+
+    public function setConnectionOptions(mixed $options): void
+    {
+        if (isset($options['dsn']))
+            $this->dsn = $options['dsn'];
     }
 
     public function getConnection()
     {
+        if (!$this->connection)
+            if (!$this->connection = pg_connect($this->dsn))
+                throw new \Exception("Could not connect to Postgesql database");
         return $this->connection;
     }
 
@@ -44,12 +53,12 @@ class PostgresqlJson implements ServiceInterface
 
         // Deciding INSERT / UPDATE
         if ($id = $data[$id_key] ?? null) {
-            if (pg_query_params($this->connection, 'UPDATE ' . $table . ' set data=$1 where id=$2;', array(json_encode($data, true), $id)))
+            if (pg_query_params($this->getConnection(), 'UPDATE ' . $table . ' set data=$1 where id=$2;', array(json_encode($data, true), $id)))
                 return $data;
             else
                 throw new \Exception("Woops");
         } else {
-            if ($result = pg_query_params($this->connection, 'INSERT INTO ' . $table . ' (data) VALUES ($1) RETURNING *', array(json_encode($data, true))))
+            if ($result = pg_query_params($this->getConnection(), 'INSERT INTO ' . $table . ' (data) VALUES ($1) RETURNING *', array(json_encode($data, true))))
                 $blob = pg_fetch_assoc($result);
             else
                 throw new \Exception("Woops");
@@ -67,14 +76,14 @@ class PostgresqlJson implements ServiceInterface
             $id = $data;
         }
         $where = ['id' => $id];
-        return pg_delete($this->connection, $table, $where);
+        return pg_delete($this->getConnection(), $table, $where);
     }
 
     public function findAll($collection, $options = array())
     {
         $retarr = array();
         $table = strtolower($collection);
-        if ($result = pg_query_params($this->connection, 'SELECT * FROM ' . $table . ';', [])) {
+        if ($result = pg_query_params($this->getConnection(), 'SELECT * FROM ' . $table . ';', [])) {
             $all = pg_fetch_all($result);
             foreach ($all as $blob) {
                 $data = $this->_convertBlob($blob);
@@ -91,7 +100,7 @@ class PostgresqlJson implements ServiceInterface
         if (empty($id)) { return null; }
         $table = strtolower($collection);
 
-        if ($result = pg_query_params($this->connection, 'SELECT * FROM ' . $table . ' WHERE ID=$1;', array($id))) {
+        if ($result = pg_query_params($this->getConnection(), 'SELECT * FROM ' . $table . ' WHERE ID=$1;', array($id))) {
             $blob = pg_fetch_assoc($result);
             return $this->_convertBlob($blob);
         }
@@ -118,7 +127,7 @@ class PostgresqlJson implements ServiceInterface
         $query = 'SELECT * FROM ' . $table . ' WHERE data @> $1';
         if (!empty($ostring))
             $query .= " " . $ostring;
-        if ($result = pg_query_params($this->connection, $query, array(json_encode($criterias, true)))) {
+        if ($result = pg_query_params($this->getConnection(), $query, array(json_encode($criterias, true)))) {
             $blob = pg_fetch_assoc($result);
             if ($blob)
                 return $this->_convertBlob($blob);
@@ -134,7 +143,7 @@ class PostgresqlJson implements ServiceInterface
         $query = 'SELECT * FROM ' . $table . ' WHERE data @> $1';
         if (!empty($ostring))
             $query .= " " . $ostring;
-        if ($result = pg_query_params($this->connection, $query, array(json_encode($criterias, true)))) {
+        if ($result = pg_query_params($this->getConnection(), $query, array(json_encode($criterias, true)))) {
             $all = pg_fetch_all($result);
             foreach ($all as $blob) {
                 $data = $this->_convertBlob($blob);
@@ -146,9 +155,6 @@ class PostgresqlJson implements ServiceInterface
     
     /*
      * Very simple, until I need more advanced features.
-     * Fields is not used in mongodb, you gotta define which ones is included
-     * in text searches upfront. (As far as I understood it)
-     * https://docs.mongodb.com/manual/text-search/
      */ 
     public function simpleTextSearch($collection, $fields, $text, $options = array())
     {
@@ -158,7 +164,7 @@ class PostgresqlJson implements ServiceInterface
     
         $filter = [ '$text' => [ '$search' => $text ]];
         // *very* simple.
-        if ($result = pg_query_params($this->connection, "SELECT * FROM " . $table . " WHERE (data #>> '{}') ~  $1", array($text))) {
+        if ($result = pg_query_params($this->getConnection(), "SELECT * FROM " . $table . " WHERE (data #>> '{}') ~  $1", array($text))) {
             $all = pg_fetch_all($result);
             if (!is_array($all))
                 return [];

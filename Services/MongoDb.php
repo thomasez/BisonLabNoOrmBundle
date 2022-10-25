@@ -18,29 +18,54 @@ use MongoDB\BSON\ObjectID as ObjectID;
 
 class MongoDb implements ServiceInterface
 {
-    private $mongodb_manager;
+    private $connection;
+    private $dbhost;
+    private $dbport;
     private $dbname;
+    private $dbuser;
+    private $dbpasswd;
 
     /* 
      * TODO: Move to named arguments.
      */
     public function __construct($dbhost = 'localhost', $dbname, $dbuser, $dbpass, $dbport = 27017)
     {
-        $up = '';
-        if ($dbuser) {
-            $up = $dbuser;
-            if ($dbpass)
-                $up .= ':' . $dbpass;
-            $up .= '@';
-        }
-        $uri = 'mongodb://' . $dbhost.':' . $dbport . '/' . $dbname;
-        $this->mongodb_manager = new \MongoDB\Driver\Manager($uri);
+        $this->dbhost = $dbhost;
+        $this->dbport = $dbport;
         $this->dbname = $dbname;
+        $this->dbuser = $dbuser;
+        $this->dbpasswd = $dbpasswd;
+    }
+
+    public function setConnectionOptions(mixed $options): void
+    {
+        if (isset($options['dbhost']))
+            $this->dbhost = $options['dbhost'];
+        if (isset($options['dbport']))
+            $this->dbport = $options['dbport'];
+        if (isset($options['dbname']))
+            $this->dbname = $options['dbname'];
+        if (isset($options['dbuser']))
+            $this->dbuser = $options['dbuser'];
+        if (isset($options['dbpasswd']))
+            $this->dbpasswd = $options['dbpasswd'];
     }
 
     public function getConnection()
     {
-        return $this->mongodb_manager;
+        if (!$this->connection) {
+            $up = '';
+            if ($this->dbuser) {
+                $up = $this->dbuser;
+                if ($this->dbpass)
+                    $up .= ':' . $this->dbpass;
+                $up .= '@';
+            }
+            $uri = 'mongodb://' . $this->dbhost.':'
+                . $this->dbport . '/' . $this->dbname;
+            $this->connection = new \MongoDB\Driver\Manager($uri);
+        }
+        return $this->connection;
     }
 
     public function save($data, $collection = null)
@@ -221,8 +246,8 @@ class MongoDb implements ServiceInterface
         }
         */
 
-        // return $this->mongodb_manager->selectCollection($collection);
-        return new Collection($this->mongodb_manager, $this->dbname, $collection);
+        // return $this->getConnection()->selectCollection($collection);
+        return new Collection($this->getConnection(), $this->dbname, $collection);
     }
 
     /* Does a bit more than this, since it replaces the ID key _id with the id

@@ -117,13 +117,13 @@ abstract class BaseModelDynamic extends BaseModel implements StorableObjectInter
      * Functions implementing ArrayAccess
      * __call, toDataArray and offsetExists is in BaseModel.
      */
-    public function offsetGet($offset)
+    public function offsetGet(mixed $offset): mixed
     {
         return isset($this->$offset) ? $this->$offset : null;
     }
 
     /* We'll swallow everything in this setup. */
-    public function offsetSet($offset, $value)
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         $this->addToSchema($offset);
         // I cannot add "integer" to the schema since it may not be meant as
@@ -138,7 +138,7 @@ abstract class BaseModelDynamic extends BaseModel implements StorableObjectInter
         $this->$offset = $value;
     }
 
-    public function offsetUnset($offset)
+    public function offsetUnset(mixed $offset): void
     {
         // Should I really do this? unset is unset so I guess so, for now.
         unset($this->_metadata['schema'][$key]);
