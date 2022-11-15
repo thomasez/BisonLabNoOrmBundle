@@ -59,7 +59,8 @@ class TwigExtensionPrettyPrint extends AbstractExtension
                 echo $value->format('Y-m-d H:i') . "\n";
             } else {
                 // I want to change \n to <br />. Not perfect but I need it.
-                $value = preg_replace("/\n/", "<br />", $value);
+                if (!empty($value))
+                    $value = preg_replace("/\n/", "<br />", $value);
                 echo $value . "\n";
             }
             echo "</td>\n</tr>\n";
