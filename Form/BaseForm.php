@@ -17,14 +17,11 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 abstract class BaseForm extends AbstractType
 {
-
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         foreach ($options['data']->getSchema() as $key => $definition)
         {
           $builder->add($key, $definition['FormType']);
         }
     }
-
 }
-
