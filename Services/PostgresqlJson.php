@@ -19,7 +19,9 @@ class PostgresqlJson implements ServiceInterface
      */
     public function __construct($dsn)
     {
-        $this->dsn = $dsn;
+        // If we use the DATABASE_URL from Doctrine it's just too much
+        // informatrion in it. Alas we'd better cut it.
+        $this->dsn = preg_replace("/\?server.*/", "", $dsn);
     }
 
     public function setConnectionOptions(mixed $options): void
