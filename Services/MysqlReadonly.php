@@ -17,7 +17,7 @@ class MysqlReadonly implements ServiceInterfaceReadonly
     private $dbuser;
     private $dbpasswd;
 
-    public function __construct($dbhost, $dbport = 1433, $dbname, $dbuser, $dbpasswd)
+    public function __construct($dbhost, $dbport, $dbname, $dbuser, $dbpasswd)
     {
         $this->dsn = 'mysql:host='.$dbhost.';port='.$dbport.';dbname='.$dbname;
         $this->dbuser = $dbuser;

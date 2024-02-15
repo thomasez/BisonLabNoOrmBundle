@@ -17,7 +17,7 @@ class DBLibReadonly implements ServiceInterfaceReadonly
     private $dbuser;
     private $dbpasswd;
 
-    public function __construct($dbhost, $dbport = 1433, $dbname, $dbuser, $dbpasswd)
+    public function __construct($dbhost, $dbport, $dbname, $dbuser, $dbpasswd)
     {
         $this->dsn = 'dblib:host='.$dbhost.':'.$dbport.';dbname='.$dbname;
         $this->dbuser = $dbuser;

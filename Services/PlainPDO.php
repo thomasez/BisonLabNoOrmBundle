@@ -12,8 +12,12 @@ namespace BisonLab\NoOrmBundle\Services;
 class PlainPDO implements ServiceInterface
 {
     private $connection;
+    private $driver;
+    private $dsn;
+    private $dbuser;
+    private $dbpasswd;
 
-    public function __construct($dbdriver, $dbhost, $dbport = 1433, $dbname, $dbuser, $dbpasswd, $dbcharset = null) 
+    public function __construct($dbdriver, $dbhost, $dbport, $dbname, $dbuser, $dbpasswd, $dbcharset = null) 
     {
         $this->driver = preg_replace("/pdo_/", "", $dbdriver);
         $this->dsn = $this->driver . ':host='.$dbhost.';port='.$dbport.';dbname='.$dbname;

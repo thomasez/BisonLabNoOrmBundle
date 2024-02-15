@@ -22,7 +22,7 @@ class MSSqlReadonly implements ServiceInterfaceReadonly
     private $dbuser;
     private $dbpasswd;
 
-    public function __construct($dbhost, $dbport = 1433, $dbname, $dbuser, $dbpasswd)
+    public function __construct($dbhost, $dbport, $dbname, $dbuser, $dbpasswd)
     {
         $this->dbhost = $dbhost;
         $this->dbport = $dbport;
