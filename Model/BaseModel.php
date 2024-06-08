@@ -10,6 +10,7 @@
 
 namespace BisonLab\NoOrmBundle\Model;
 
+#[\AllowDynamicProperties]
 abstract class BaseModel
 {
     protected $_metadata = array();

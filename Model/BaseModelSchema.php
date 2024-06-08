@@ -10,6 +10,7 @@
 
 namespace BisonLab\NoOrmBundle\Model;
 
+#[\AllowDynamicProperties]
 abstract class BaseModelSchema extends BaseModel implements StorableObjectInterface, \ArrayAccess
 {
     /*
@@ -22,7 +23,6 @@ abstract class BaseModelSchema extends BaseModel implements StorableObjectInterf
      * The schema will continue to be called model_setup since well, that's
      * what it is.
      */
-
     public function __construct($data = array(), $metadata = array())
     {
         $this->_metadata = $metadata;

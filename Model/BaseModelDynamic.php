@@ -10,6 +10,7 @@
 
 namespace BisonLab\NoOrmBundle\Model;
 
+#[\AllowDynamicProperties]
 abstract class BaseModelDynamic extends BaseModel implements StorableObjectInterface, \ArrayAccess
 {
     /*
