@@ -166,7 +166,7 @@ class PostgresqlJson implements ServiceInterface
     
         $filter = [ '$text' => [ '$search' => $text ]];
         // *very* simple.
-        if ($result = pg_query_params($this->getConnection(), "SELECT * FROM " . $table . " WHERE (data #>> '{}') ~  $1", array($text))) {
+        if ($result = pg_query_params($this->getConnection(), "SELECT * FROM " . $table . " WHERE LOWER(data #>> '{}') ~  $1", array(mb_strtolower($text)))) {
             $all = pg_fetch_all($result);
             if (!is_array($all))
                 return [];
